@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>trex DataLab - Portfolio (Staj Çalışmaları)</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="bg-surface-faint text-on-surface font-body-md text-body-md h-screen overflow-hidden flex antialiased">
+    <!-- SideNavBar -->
+    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant z-20 flex flex-col py-6 px-4">
+        <!-- Brand -->
+        <div class="mb-8 flex items-center gap-3 px-2">
+            <span aria-label="T-REX Logo" class="material-symbols-outlined font-headline-lg text-headline-lg font-bold text-white" style="font-variation-settings: 'FILL' 1;">analytics</span>
+            <div>
+                <h1 class="font-headline-md text-[20px] font-bold text-white leading-tight">trex DataLab</h1>
+                <p class="font-label-mono text-[10px] text-white/60 uppercase tracking-wider">Precision Data Platform</p>
+            </div>
+        </div>
+
+        <!-- CTA Action -->
+        <div class="mb-6">
+            <a href="/" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+                <span class="material-symbols-outlined text-sm">upload</span>
+                <span>Yeni Veri Yükle</span>
+            </a>
+        </div>
+
+        <!-- Main Navigation -->
+        <div class="flex-1 space-y-2 font-body-md text-body-md">
+            <!-- Dashboard -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <!-- Data Quality -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/data-quality">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Data Quality</span>
+            </a>
+            <!-- Preprocessing -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/preprocessing">
+                <span class="material-symbols-outlined">construction</span>
+                <span>Preprocessing</span>
+            </a>
+            <!-- Visualization -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/visualization">
+                <span class="material-symbols-outlined">insights</span>
+                <span>Visualization</span>
+            </a>
+            <!-- Portfolio (Active) -->
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="/portfolio">
+                <span class="material-symbols-outlined filled" style="font-variation-settings: 'FILL' 1;">folder_shared</span>
+                <span class="font-medium">Portfolio</span>
+            </a>
+        </div>
+
+        <!-- Footer Navigation -->
+        <div class="mt-auto space-y-1 pt-4 border-t border-white/10 font-body-md text-body-md">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined text-[20px]">settings</span>
+                <span>Settings</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined text-[20px]">help</span>
+                <span>Support</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="ml-[260px] w-[calc(100%-260px)] flex flex-col h-screen overflow-hidden">
+        <!-- TopAppBar -->
+        <header class="h-16 border-b border-border-subtle bg-surface flex justify-between items-center px-gutter w-full shrink-0 z-10">
+            <!-- Left: Search Box -->
+            <div class="flex items-center gap-6">
+                <div class="relative hidden lg:block w-64">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                    <input class="w-full pl-9 pr-4 py-1.5 bg-surface-container text-sm rounded border-none focus:ring-1 focus:ring-primary text-on-surface placeholder:text-on-surface-variant/70" placeholder="Ara..." type="text">
+                </div>
+            </div>
+
+            <!-- Center & Right Navigation -->
+            <div class="flex items-center gap-6">
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Hızlı İşlemler</a>
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Raporlar</a>
+                </nav>
+                <div class="w-px h-6 bg-border-subtle mx-2"></div>
+                <div class="flex items-center gap-3">
+                    <button class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container" title="Bildirimler">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <button class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container" title="Kullanıcı Profili">
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </button>
+                    <button id="exportPdfBtn" type="button" class="ml-2 font-data-table text-primary hover:text-primary-container font-medium px-3 py-1.5 rounded border border-primary/30 hover:bg-primary/5 transition-colors text-sm flex items-center gap-1 cursor-pointer">
+                        <span class="material-symbols-outlined text-sm">download</span>
+                        <span>Dışa Aktar</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Canvas -->
+        <main class="flex-1 overflow-y-auto p-gutter custom-scrollbar">
+            <div class="max-w-[1440px] mx-auto space-y-8 pb-12">
+                <!-- 1. Page Header -->
+                <div class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <p class="font-label-mono text-xs text-primary uppercase font-semibold mb-1">PORTFOLIO &gt; STAJ ÇALIŞMALARI</p>
+                        <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Staj Süreci ve Veri Analizi Çalışmaları</h2>
+                        <p class="text-on-surface-variant font-body-md max-w-4xl">
+                            Staj sürecinde <strong>OEE (Overall Equipment Effectiveness)</strong> ve <strong>Predictive Maintenance</strong> veri analizi çalışmaları yapılmış; aşağıda süreç, yöntemler ve elde edilen görseller paylaşılmaktadır.
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-success-green/10 text-success-green border border-success-green/20 shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-success-green mr-2 animate-pulse"></span>
+                            Tamamlandı
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 2. Staj Süreci — Yatay Timeline (8 Adım) -->
+                <section class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 class="font-label-mono text-xs text-on-surface-variant uppercase tracking-wider font-bold">STAJ SÜRECİ</h3>
+                            <p class="text-xs text-slate-gray mt-0.5">Endüstriyel veri analizinden makine öğrenmesi modelleme aşamasına adımlar</p>
+                        </div>
+                        <span class="text-xs font-label-mono text-primary font-bold bg-primary/10 px-2.5 py-1 rounded-full">6 / 8 Adım Tamamlandı</span>
+                    </div>
+
+                    <!-- Horizontal Timeline Flow -->
+                    <div class="relative overflow-x-auto pb-4">
+                        <div class="min-w-[760px] relative py-4 px-2">
+                            <!-- Background connecting line -->
+                            <div class="absolute left-6 right-6 top-8 h-[3px] bg-border-subtle -translate-y-1/2 z-0"></div>
+                            <!-- Active progress line (Covers steps 1 to 6) -->
+                            <div class="absolute left-6 right-[28%] top-8 h-[3px] bg-primary -translate-y-1/2 z-0"></div>
+
+                            <!-- Steps Grid -->
+                            <div class="relative z-10 grid grid-cols-8 gap-2 text-center">
+                                <!-- Step 1 -->
+                                <div class="flex flex-col items-center gap-2 group">
+                                    <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md transition-transform group-hover:scale-110">
+                                        <span class="material-symbols-outlined text-[20px]">database</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-label-mono text-[11px] text-on-surface font-bold block leading-tight">Veri Toplama</span>
+                                        <span class="text-[10px] text-slate-gray">OEE + AI4I</span>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2 -->
+                                <div class="flex flex-col items-center gap-2 group">
+                                    <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md transition-transform group-hover:scale-110">
+                                        <span class="material-symbols-outlined text-[20px]">mop</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-label-mono text-[11px] text-on-surface font-bold block leading-tight">Veri Temizleme</span>
+                                        <span class="text-[10px] text-slate-gray">Eksik / Tip</span>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3 -->
+                                <div class="flex flex-col items-center gap-2 group">
+                                    <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md transition-transform group-hover:scale-110">
+                                        <span class="material-symbols-outlined text-[20px]">monitoring</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-label-mono text-[11px] text-on-surface font-bold block leading-tight">OEE Hesaplama</span>
+                                        <span class="text-[10px] text-slate-gray">A × P × Q</span>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4 -->
+                                <div class="flex flex-col items-center gap-2 group">
+                                    <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md transition-transform group-hover:scale-110">
+                                        <span class="material-symbols-outlined text-[20px]">troubleshoot</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-label-mono text-[11px] text-on-surface font-bold block leading-tight">Duruş Analizi</span>
+                                        <span class="text-[10px] text-slate-gray">Pareto Analizi</span>
+                                    </div>
+                                </div>
+
+                                <!-- Step 5 -->
+                                <div class="flex flex-col items-center gap-2 group">
+                                    <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md transition-transform group-hover:scale-110">
+                                        <span class="material-symbols-outlined text-[20px]">insights</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-label-mono text-[11px] text-on-surface font-bold block leading-tight">EDA</span>
+                                        <span class="text-[10px] text-slate-gray">Korelasyon / Dağılım</span>
+                                    </div>
+                                </div>
+
+                                <!-- Step 6 -->
+                                <div class="flex flex-col items-center gap-2 group">
+                                    <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md transition-transform group-hover:scale-110">
+                                        <span class="material-symbols-outlined text-[20px]">calculate</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-label-mono text-[11px] text-on-surface font-bold block leading-tight">İstatistik</span>
+                                        <span class="text-[10px] text-slate-gray">Test &amp; CI</span>
+                                    </div>
+                                </div>
+
+                                <!-- Step 7 (Pending/Modeling) -->
+                                <div class="flex flex-col items-center gap-2 group">
+                                    <div class="w-10 h-10 rounded-full bg-surface border-2 border-primary text-primary flex items-center justify-center shadow-sm">
+                                        <span class="material-symbols-outlined text-[20px]">psychology</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-label-mono text-[11px] text-primary font-bold block leading-tight">Modelleme</span>
+                                        <span class="text-[10px] text-slate-gray">AI4I Modelleri</span>
+                                    </div>
+                                </div>
+
+                                <!-- Step 8 (Pending/Optimization) -->
+                                <div class="flex flex-col items-center gap-2 opacity-50">
+                                    <div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-border-subtle text-on-surface-variant flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-[20px]">tune</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-label-mono text-[11px] text-on-surface-variant font-bold block leading-tight">Optimizasyon</span>
+                                        <span class="text-[10px] text-slate-gray">GridSearchCV</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Bento Grid: Teknoloji & Yöntemler (Sol 4/12) + Model Sonuçları (Sağ 8/12) -->
+                <div class="grid grid-cols-12 gap-6">
+                    <!-- Left Column: Tech Stack & Summary (4/12) -->
+                    <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+                        <!-- Tech Stack Card -->
+                        <section class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-label-mono text-xs text-on-surface-variant uppercase mb-4 flex items-center gap-2 font-bold">
+                                    <span class="material-symbols-outlined text-primary text-[18px]">terminal</span>
+                                    <span>Kullanılan Yöntemler</span>
+                                </h3>
+
+                                <div class="space-y-4">
+                                    <!-- Veri Analizi -->
+                                    <div>
+                                        <p class="text-xs font-semibold text-slate-gray mb-1.5">Veri Analizi &amp; Görselleştirme:</p>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Pandas</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">NumPy</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Matplotlib</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Seaborn</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- İstatistik -->
+                                    <div>
+                                        <p class="text-xs font-semibold text-slate-gray mb-1.5">İstatistiksel Yöntemler:</p>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Güven Aralığı (CI)</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Hipotez Testleri</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Korelasyon</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Regresyon</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Makine Öğrenmesi -->
+                                    <div>
+                                        <p class="text-xs font-semibold text-slate-gray mb-1.5">Makine Öğrenmesi:</p>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Logistic Regression</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Decision Tree</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Random Forest</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">Cross Validation</span>
+                                            <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface hover:bg-surface-container transition-colors cursor-default">GridSearchCV</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Project Summary Card -->
+                        <section class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm">
+                            <h3 class="font-label-mono text-xs text-on-surface-variant uppercase mb-3 flex items-center gap-2 font-bold">
+                                <span class="material-symbols-outlined text-primary text-[18px]">info</span>
+                                <span>Staj Özeti</span>
+                            </h3>
+                            <p class="font-body-md text-sm text-on-surface-variant leading-relaxed">
+                                Stajda bir üretim tesisinin OEE ve duruş verileri analiz edilerek ekipman verimliliğindeki kayıplar tespit edildi; ayrıca AI4I 2020 Predictive Maintenance veri setiyle makine arıza tahmini üzerine sınıflandırma çalışması yapıldı.
+                            </p>
+                        </section>
+                    </div>
+
+                    <!-- Right Column: Model Results Table (8/12) -->
+                    <div class="col-span-12 lg:col-span-8 flex flex-col">
+                        <section class="bg-surface border border-border-subtle rounded-xl shadow-sm overflow-hidden flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                    <div>
+                                        <h3 class="font-label-mono text-xs text-on-surface-variant uppercase flex items-center gap-2 font-bold">
+                                            <span class="material-symbols-outlined text-primary text-[18px]">table_chart</span>
+                                            <span>Model Sonuçları (AI4I 2020)</span>
+                                        </h3>
+                                        <p class="text-xs text-slate-gray mt-0.5">Sınıflandırma algoritmalarının arıza tahmin başarı metrikleri</p>
+                                    </div>
+                                    <span class="font-label-mono text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-bold">En İyi: Random Forest</span>
+                                </div>
+
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="bg-surface-faint border-b border-border-subtle">
+                                                <th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant">Model</th>
+                                                <th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant text-right">Precision</th>
+                                                <th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant text-right">Recall</th>
+                                                <th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant text-right">F1-Score</th>
+                                                <th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant text-right">PR-AUC</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="font-data-table text-data-table divide-y divide-border-subtle">
+                                            <!-- Logistic Regression -->
+                                            <tr class="hover:bg-surface-container-lowest transition-colors">
+                                                <td class="py-3 px-4 text-on-surface font-medium">Logistic Regression</td>
+                                                <td class="py-3 px-4 text-on-surface-variant text-right font-label-mono">0.78</td>
+                                                <td class="py-3 px-4 text-on-surface-variant text-right font-label-mono">0.82</td>
+                                                <td class="py-3 px-4 text-on-surface-variant text-right font-label-mono">0.80</td>
+                                                <td class="py-3 px-4 text-on-surface-variant text-right font-label-mono">0.75</td>
+                                            </tr>
+                                            <!-- Decision Tree -->
+                                            <tr class="hover:bg-surface-container-lowest transition-colors">
+                                                <td class="py-3 px-4 text-on-surface font-medium">Decision Tree</td>
+                                                <td class="py-3 px-4 text-on-surface-variant text-right font-label-mono">0.84</td>
+                                                <td class="py-3 px-4 text-on-surface-variant text-right font-label-mono">0.79</td>
+                                                <td class="py-3 px-4 text-on-surface-variant text-right font-label-mono">0.81</td>
+                                                <td class="py-3 px-4 text-on-surface-variant text-right font-label-mono">0.83</td>
+                                            </tr>
+                                            <!-- Random Forest (Best Model Highlighted) -->
+                                            <tr class="bg-primary/5 hover:bg-primary/10 transition-colors border-l-4 border-l-primary">
+                                                <td class="py-3 px-4 text-primary font-bold flex items-center gap-2">
+                                                    <span>Random Forest</span>
+                                                    <span class="material-symbols-outlined text-[16px] text-warning-orange" title="En Yüksek Performanslı Model">star</span>
+                                                </td>
+                                                <td class="py-3 px-4 text-primary font-bold text-right font-label-mono">0.92</td>
+                                                <td class="py-3 px-4 text-primary font-bold text-right font-label-mono">0.89</td>
+                                                <td class="py-3 px-4 text-primary font-bold text-right font-label-mono">0.90</td>
+                                                <td class="py-3 px-4 text-primary font-bold text-right font-label-mono">0.94</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Footer note with mandatory comment -->
+                            <!-- TODO: Değerleri AI4I notebook'undaki gerçek sonuçlarla değiştir -->
+                            <div class="p-3 bg-surface-container-low border-t border-border-subtle text-xs text-slate-gray flex items-center justify-between">
+                                <span class="flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+                                    <span>Model metrikleri 5-katlı çapraz doğrulama (5-Fold CV) ile hesaplanmıştır.</span>
+                                </span>
+                                <span class="font-label-mono text-[11px]">Metrikler: Test Seti</span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- 4. Grafik Galerisi (12 Kart) -->
+                <section class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-headline-md text-[18px] font-semibold text-on-surface flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">gallery_thumbnail</span>
+                                <span>Grafik Galerisi</span>
+                            </h3>
+                            <p class="text-xs text-slate-gray">OEE duruş analizi ve AI4I kestirimci bakım veri seti görselleştirmeleri</p>
+                        </div>
+                        <span class="text-xs font-label-mono text-slate-gray bg-surface-container px-3 py-1 rounded-full">12 Analiz Grafiği</span>
+                    </div>
+
+                    <!-- 12 Cards Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <!-- 1. OEE Timeseries -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="OEE / Availability / Performance Trendi">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">OEE / Availability / Performance Trendi</span>
+                                <button onclick="openModal('portfolio/grafikler/oee_timeseries.png', 'OEE / Availability / Performance Trendi')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/oee_timeseries.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/oee_timeseries.png';" alt="OEE, Kullanılabilirlik ve Performans Zaman Serisi Trendi" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'OEE / Availability / Performance Trendi')">
+                            </div>
+                        </div>
+
+                        <!-- 2. OEE Histogram -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="OEE Dağılımı">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">OEE Dağılımı</span>
+                                <button onclick="openModal('portfolio/grafikler/oee_histogram.png', 'OEE Dağılımı')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/oee_histogram.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/oee_histogram.png';" alt="OEE Dağılım Histogramı ve İstatistiksel Dağılım" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'OEE Dağılımı')">
+                            </div>
+                        </div>
+
+                        <!-- 3. Günlük Plansız Duruş Süresi -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="Günlük Plansız Duruş Süresi">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">Günlük Plansız Duruş Süresi</span>
+                                <button onclick="openModal('portfolio/grafikler/gunluk_plansiz_durus.png', 'Günlük Plansız Duruş Süresi')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/gunluk_plansiz_durus.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/gunluk_plansiz_durus.png';" alt="Günlük Plansız Duruş Süresi ve Duruş Sayısı Grafiği" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'Günlük Plansız Duruş Süresi')">
+                            </div>
+                        </div>
+
+                        <!-- 4. Planlı vs Plansız Duruş -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="Planlı vs Plansız Duruş">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">Planlı vs Plansız Duruş</span>
+                                <button onclick="openModal('portfolio/grafikler/planli_plansiz_durus.png', 'Planlı vs Plansız Duruş')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/planli_plansiz_durus.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/planli_plansiz_durus.png';" alt="Planlı ve Plansız Duruş Sürelerinin Karşılaştırması" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'Planlı vs Plansız Duruş')">
+                            </div>
+                        </div>
+
+                        <!-- 5. StopGroup Pareto -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="StopGroup Pareto">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">StopGroup Pareto</span>
+                                <button onclick="openModal('portfolio/grafikler/stop_group_pareto.png', 'StopGroup Pareto')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/stop_group_pareto.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/stop_group_pareto.png';" alt="Duruş Grupları Pareto Analizi Grafiği" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'StopGroup Pareto')">
+                            </div>
+                        </div>
+
+                        <!-- 6. StopLocation Dağılımı -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="StopLocation Dağılımı">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">StopLocation Dağılımı</span>
+                                <button onclick="openModal('portfolio/grafikler/stop_location_dagilim.png', 'StopLocation Dağılımı')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/stop_location_dagilim.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/stop_location_dagilim.png';" alt="Duruş Lokasyonları Dağılımı Grafiği" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'StopLocation Dağılımı')">
+                            </div>
+                        </div>
+
+                        <!-- 7. Ürün Bazlı Duruş Süresi -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="Ürün Bazlı Duruş Süresi">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">Ürün Bazlı Duruş Süresi</span>
+                                <button onclick="openModal('portfolio/grafikler/urun_kodu_durus.png', 'Ürün Bazlı Duruş Süresi')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/urun_kodu_durus.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/urun_kodu_durus.png';" alt="Ürün Koduna Göre Duruş Süreleri Dağılımı" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'Ürün Bazlı Duruş Süresi')">
+                            </div>
+                        </div>
+
+                        <!-- 8. Makine Arıza Dağılımı -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="Makine Arıza Dağılımı">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">Makine Arıza Dağılımı</span>
+                                <button onclick="openModal('portfolio/grafikler/ariza_dagilimi.png', 'Makine Arıza Dağılımı')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/ariza_dagilimi.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/ariza_dagilimi.png';" alt="AI4I Makine Arıza ve Sağlıklı Durum Dağılımı" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'Makine Arıza Dağılımı')">
+                            </div>
+                        </div>
+
+                        <!-- 9. Arıza Türleri -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="Arıza Türleri">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">Arıza Türleri</span>
+                                <button onclick="openModal('portfolio/grafikler/ariza_turleri.png', 'Arıza Türleri')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/ariza_turleri.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/ariza_turleri.png';" alt="Makine Arıza Türleri Dağılım Grafiği (HDF, OSF, PWF, TWF, RNF)" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'Arıza Türleri')">
+                            </div>
+                        </div>
+
+                        <!-- 10. Ürün Tipi Dağılımı -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="Ürün Tipi Dağılımı">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">Ürün Tipi Dağılımı</span>
+                                <button onclick="openModal('portfolio/grafikler/type_dagilimi.png', 'Ürün Tipi Dağılımı')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/type_dagilimi.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/type_dagilimi.png';" alt="Ürün Tipi Dağılım Grafiği (L, M, H)" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'Ürün Tipi Dağılımı')">
+                            </div>
+                        </div>
+
+                        <!-- 11. Sensör Dağılımları -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="Sensör Dağılımları">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">Sensör Dağılımları</span>
+                                <button onclick="openModal('portfolio/grafikler/sensor_dagilimlari.png', 'Sensör Dağılımları')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/sensor_dagilimlari.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/sensor_dagilimlari.png';" alt="Sensör Ölçümleri İstatistiksel Dağılım Grafiği" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'Sensör Dağılımları')">
+                            </div>
+                        </div>
+
+                        <!-- 12. Sensör Korelasyon Matrisi -->
+                        <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col group hover:shadow-md transition-all" data-export-section="gallery" data-export-title="Sensör Korelasyon Matrisi">
+                            <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                                <span class="font-label-mono text-xs font-bold text-on-surface">Sensör Korelasyon Matrisi</span>
+                                <button onclick="openModal('portfolio/grafikler/sensor_korelasyon.png', 'Sensör Korelasyon Matrisi')" class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container" title="Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+                                </button>
+                            </div>
+                            <div class="h-56 bg-surface-faint p-2 flex items-center justify-center overflow-hidden">
+                                <img src="portfolio/grafikler/sensor_korelasyon.png" onerror="this.onerror=null; this.src='/static/portfolio/grafikler/sensor_korelasyon.png';" alt="Sensörler Arası Pearson Korelasyon Isı Haritası" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.03] cursor-pointer" onclick="openModal(this.src, 'Sensör Korelasyon Matrisi')">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. Staj Kapsamı (Scope) Tags -->
+                <section class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-label-mono text-xs text-on-surface-variant font-bold uppercase mr-2 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-primary text-[16px]">done_all</span>
+                            <span>STAJ KAPSAMI:</span>
+                        </span>
+                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Veri Temizleme</span>
+                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Exploratory Data Analysis (EDA)</span>
+                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">İstatistiksel Testler</span>
+                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Regresyon</span>
+                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Sınıflandırma (Classification)</span>
+                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Model Değerlendirme</span>
+                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Cross Validation</span>
+                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Hiperparametre Optimizasyonu</span>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Image Lightbox Modal -->
+    <div id="imageModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-surface rounded-2xl border border-border-subtle max-w-4xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-fade-in">
+            <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                <h4 id="modalTitle" class="font-headline-md text-base font-semibold text-on-surface">Grafik Önizleme</h4>
+                <button onclick="closeModal()" class="text-slate-gray hover:text-error p-1 rounded-lg hover:bg-surface-container transition-colors">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+            <div class="p-4 flex items-center justify-center overflow-auto flex-1 bg-surface-faint">
+                <img id="modalImage" src="" alt="Büyütülmüş Grafik Görseli" class="max-h-[70vh] object-contain rounded-lg shadow-sm">
+            </div>
+            <div class="p-3 border-t border-border-subtle bg-surface-container-lowest flex justify-between items-center text-xs text-slate-gray">
+                <span class="font-label-mono">trex DataLab Portfolyo Galerisi</span>
+                <button onclick="closeModal()" class="px-4 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-medium hover:bg-primary-container transition-colors">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // Modal functions
+        function openModal(src, title) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            if (modal && modalImg && modalTitle) {
+                modalImg.src = src;
+                modalTitle.textContent = title || 'Grafik Önizleme';
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal on backdrop click
+        document.getElementById('imageModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('imageModal')) {
+                closeModal();
+            }
+        });
+
+        // Export PDF Button Handler
+        document.getElementById('exportPdfBtn').addEventListener('click', () => {
+            window.print();
+        });
+    </script>
+</body>
+
+</html>

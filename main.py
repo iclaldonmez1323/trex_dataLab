@@ -1,4 +1,5 @@
 import io
+import os
 from typing import Dict, Any, Optional
 from fastapi import FastAPI, File, UploadFile, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -96,6 +97,11 @@ async def serve_preprocessing():
 @app.get("/visualization")
 async def serve_visualization():
     return FileResponse("static/visualization.html")
+
+
+@app.get("/portfolio")
+async def serve_portfolio():
+    return FileResponse("static/portfolio.html")
 
 
 @app.post("/api/upload")
@@ -1074,5 +1080,8 @@ async def reset_dataset():
     preprocessing_history_stack = []
     return JSONResponse(content={"status": "success", "message": "Veri seti sıfırlandı."})
 
+
+if os.path.exists("portfolio/grafikler"):
+    app.mount("/portfolio/grafikler", StaticFiles(directory="portfolio/grafikler"), name="portfolio_grafikler")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")

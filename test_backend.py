@@ -133,6 +133,17 @@ def test_api():
     assert "groups" in r_box.json()
     print("[OK] GET /api/visualization/chart types OK")
 
+    print("Testing GET /portfolio ...")
+    r = client.get("/portfolio")
+    assert r.status_code == 200
+    assert "Staj Çalışmaları" in r.text
+    print("[OK] GET /portfolio OK")
+
+    print("Testing static image serving for portfolio ...")
+    r_img = client.get("/portfolio/grafikler/oee_timeseries.png")
+    assert r_img.status_code == 200
+    print("[OK] GET /portfolio/grafikler/oee_timeseries.png OK")
+
     print("Testing DELETE /api/reset ...")
     r = client.delete("/api/reset")
     assert r.status_code == 200
