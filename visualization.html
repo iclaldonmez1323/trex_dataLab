@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>trex DataLab - Görselleştirme ve Keşif</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Apache ECharts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(74, 85, 104, 0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-surface-faint text-on-surface font-body-md text-body-md h-screen overflow-hidden flex">
+
+    <!-- SideNavBar (260px) -->
+    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant z-20 flex flex-col py-6 px-4">
+        <!-- Brand -->
+        <div class="mb-8 flex items-center gap-3 px-2">
+            <div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-on-primary-container">
+                <span class="material-symbols-outlined fill" data-icon="dataset">dataset</span>
+            </div>
+            <div>
+                <h1 class="font-headline-md text-[20px] font-bold text-white leading-tight">trex DataLab</h1>
+                <p class="font-label-mono text-[10px] text-white/60">Precision Data Platform</p>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <a href="/" class="mb-8 w-full py-2.5 px-4 bg-primary text-on-primary rounded-lg font-data-table flex items-center justify-center gap-2 hover:bg-primary-container transition-all text-center">
+            <span class="material-symbols-outlined text-sm">upload</span>
+            Yeni Veri Yükle
+        </a>
+
+        <!-- Navigation Tabs -->
+        <div class="flex-1 space-y-1">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-body-md">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/data-quality">
+                <span class="material-symbols-outlined">analytics</span>
+                <span class="font-body-md">Data Quality</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/preprocessing">
+                <span class="material-symbols-outlined">construction</span>
+                <span class="font-body-md">Preprocessing</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90" href="/visualization">
+                <span class="material-symbols-outlined fill" data-icon="insights">insights</span>
+                <span class="font-body-md font-medium">Visualization</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/portfolio">
+                <span class="material-symbols-outlined">folder_shared</span>
+                <span class="font-body-md">Portfolio</span>
+            </a>
+        </div>
+
+        <!-- Footer Tabs -->
+        <div class="mt-auto space-y-1 pt-4 border-t border-white/10">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="font-body-md">Settings</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined">help</span>
+                <span class="font-body-md">Support</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="ml-sidebar-width w-[calc(100%-260px)] flex flex-col h-screen">
+        
+        <!-- TopAppBar -->
+        <header class="h-16 border-b border-border-subtle bg-surface flex justify-between items-center px-gutter w-full shrink-0 z-10">
+            <div class="flex items-center gap-6">
+                <div class="relative hidden lg:block w-64">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                    <input class="w-full pl-9 pr-4 py-1.5 bg-surface-container text-sm rounded border-none focus:ring-1 focus:ring-primary text-on-surface placeholder:text-on-surface-variant/70" placeholder="Veri setinde ara..." type="text">
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="/">Hızlı İşlemler</a>
+                    <a class="font-body-md text-primary font-bold border-b-2 border-primary pb-1" href="/visualization">Raporlar</a>
+                </nav>
+                <div class="w-px h-6 bg-border-subtle mx-2"></div>
+                <div class="flex items-center gap-3">
+                    <button class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container" title="Bildirimler">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <button class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container" title="Profil">
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </button>
+                    <button class="ml-2 font-data-table text-primary hover:text-primary-container font-medium px-3 py-1.5 rounded border border-primary/30 hover:bg-primary/5 transition-colors">
+                        Dışa Aktar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Canvas -->
+        <main class="flex-1 overflow-y-auto p-gutter max-w-container-max w-full mx-auto custom-scrollbar">
+            
+            <!-- Loading State -->
+            <div id="loadingView" class="py-16 flex flex-col items-center justify-center">
+                <div class="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+                <p class="font-headline-md text-headline-md text-on-surface">Görselleştirme Analizleri Hazırlanıyor...</p>
+                <p class="font-body-md text-body-md text-slate-gray mt-1">İstatistiksel dağılımlar, korelasyonlar ve grafik önerileri hesaplanıyor.</p>
+            </div>
+
+            <!-- Empty State (409) -->
+            <div id="emptyStateView" class="hidden bg-surface border border-border-subtle rounded-xl p-12 flex flex-col items-center justify-center text-center shadow-sm max-w-2xl mx-auto my-12">
+                <div class="h-20 w-20 bg-secondary-container rounded-full flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-primary text-4xl">insights</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-3">Henüz görselleştirilecek veri yok</h3>
+                <p class="text-on-surface-variant font-body-lg text-body-lg mb-8 max-w-md">
+                    Otomatik grafik önerilerini, dağılım analizlerini ve korelasyon matrisini keşfetmek için lütfen önce Ana Sayfa'dan bir CSV veri seti yükleyin.
+                </p>
+                <a href="/" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined">upload_file</span>
+                    Veri Yükle
+                </a>
+            </div>
+
+            <!-- Visualization Content View -->
+            <div id="visualizationContentView" class="hidden flex flex-col gap-8 pb-12">
+                
+                <!-- Page Header & Focus Column Selector -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-border-subtle pb-4">
+                    <div>
+                        <h2 class="font-headline-md text-headline-md text-on-surface mb-1">Görselleştirme ve Keşif</h2>
+                        <p class="text-on-surface-variant font-body-md">Veri setindeki desenleri, dağılımları ve değişkenler arası ilişkileri analiz edin.</p>
+                    </div>
+                    <div class="flex items-center gap-3 bg-surface border border-border-subtle rounded-lg p-2 shadow-sm self-stretch sm:self-auto">
+                        <span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider ml-1">Odak Değişkeni:</span>
+                        <select id="focusColumnSelect" class="bg-surface-container-lowest border border-border-subtle text-on-surface text-sm rounded focus:ring-primary focus:border-primary py-1 pl-3 pr-8 font-mono">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 1. OTOMATİK ÖNERİLER GALERİSİ -->
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">auto_awesome</span>
+                            <h3 class="font-headline-md text-[18px] font-bold text-on-surface">Otomatik Önerilen Grafikler</h3>
+                        </div>
+                        <span class="text-xs text-slate-gray font-label-mono">YAPAY ZEKA KEŞİF MOTORU</span>
+                    </div>
+                    <div id="suggestionsGalleryGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- 2. TEK DEĞİŞKEN KEŞFİ -->
+                <div class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6 border-b border-border-subtle pb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">query_stats</span>
+                            <h3 class="font-headline-md text-[18px] font-bold text-on-surface">Tek Değişken Keşfi (Univariate Analysis)</h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-slate-gray">Seçili Kolon:</span>
+                            <select id="univariateSelect" class="bg-surface-container-lowest border border-border-subtle text-on-surface text-sm rounded focus:ring-primary focus:border-primary py-1.5 pl-3 pr-8 font-mono">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Single Variable Layout -->
+                    <div id="univariateContentWrapper">
+                        <!-- Populated dynamically (Numeric vs Categorical) -->
+                    </div>
+                </div>
+
+                <!-- 3. İKİ DEĞİŞKEN KARŞILAŞTIRMA (BIVARIATE) -->
+                <div class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-border-subtle pb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">compare_arrows</span>
+                            <h3 class="font-headline-md text-[18px] font-bold text-on-surface">İki Değişken Karşılaştırma (Bivariate Analysis)</h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-slate-gray font-mono">X:</span>
+                                <select id="bivariateXSelect" class="bg-surface-container-lowest border border-border-subtle text-on-surface text-xs rounded py-1.5 pl-2 pr-7 font-mono"></select>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-slate-gray font-mono">Y:</span>
+                                <select id="bivariateYSelect" class="bg-surface-container-lowest border border-border-subtle text-on-surface text-xs rounded py-1.5 pl-2 pr-7 font-mono"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bivariate Chart Canvas -->
+                    <div id="bivariateChartWrapper" class="min-h-[380px] w-full rounded-lg bg-surface-container-lowest border border-border-subtle p-4 relative">
+                        <div id="bivariateChartContainer" class="w-full h-[360px]"></div>
+                    </div>
+                </div>
+
+                <!-- 4. KORELASYON ANALİZİ -->
+                <div class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4 border-b border-border-subtle pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">grid_on</span>
+                            <h3 class="font-headline-md text-[18px] font-bold text-on-surface">Korelasyon Matrisi (Correlation Heatmap)</h3>
+                        </div>
+                        <!-- Alert Banner -->
+                        <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container rounded-full text-xs text-slate-gray border border-border-subtle">
+                            <span class="material-symbols-outlined text-primary text-sm">info</span>
+                            <span class="font-medium">Korelasyon nedensellik göstermez.</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-6">
+                        <!-- Heatmap Chart (8 cols) -->
+                        <div class="col-span-12 xl:col-span-8 bg-surface-container-lowest border border-border-subtle rounded-lg p-4">
+                            <div id="correlationHeatmapContainer" class="w-full h-[400px]"></div>
+                        </div>
+
+                        <!-- Top Correlations Table (4 cols) -->
+                        <div class="col-span-12 xl:col-span-4 bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-label-mono text-label-mono text-slate-gray uppercase mb-3 font-semibold">En Güçlü Korelasyonlar</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-xs">
+                                        <thead class="bg-surface-faint border-b border-border-subtle font-label-mono text-slate-gray uppercase">
+                                            <tr>
+                                                <th class="p-2">Değişken 1</th>
+                                                <th class="p-2">Değişken 2</th>
+                                                <th class="p-2 text-right">Katsayı (r)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="strongestCorrTableBody" class="divide-y divide-border-subtle font-mono">
+                                            <!-- Populated dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-border-subtle text-[11px] text-slate-gray">
+                                Pearson korelasyon katsayısı -1.0 ile +1.0 arasında değer alır.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Frontend Script -->
+    <script>
+        // Global variables
+        let overviewData = null;
+        let chartInstances = {};
+
+        // DOM elements
+        const loadingView = document.getElementById('loadingView');
+        const emptyStateView = document.getElementById('emptyStateView');
+        const visualizationContentView = document.getElementById('visualizationContentView');
+
+        const focusColumnSelect = document.getElementById('focusColumnSelect');
+        const univariateSelect = document.getElementById('univariateSelect');
+        const univariateContentWrapper = document.getElementById('univariateContentWrapper');
+
+        const bivariateXSelect = document.getElementById('bivariateXSelect');
+        const bivariateYSelect = document.getElementById('bivariateYSelect');
+        const bivariateChartContainer = document.getElementById('bivariateChartContainer');
+
+        const correlationHeatmapContainer = document.getElementById('correlationHeatmapContainer');
+        const strongestCorrTableBody = document.getElementById('strongestCorrTableBody');
+        const suggestionsGalleryGrid = document.getElementById('suggestionsGalleryGrid');
+
+        // Number formatter
+        function formatNumber(num, decimals = 2) {
+            if (num === null || num === undefined || isNaN(num)) return '0';
+            return Number(num).toLocaleString('tr-TR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Initialize ECharts instance safely
+        function getOrCreateChart(domElement, idKey) {
+            if (chartInstances[idKey]) {
+                chartInstances[idKey].dispose();
+            }
+            const chart = echarts.init(domElement);
+            chartInstances[idKey] = chart;
+            return chart;
+        }
+
+        // Load Visualization Overview
+        async function loadVisualizationOverview() {
+            loadingView.classList.remove('hidden');
+            emptyStateView.classList.add('hidden');
+            visualizationContentView.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/visualization/overview');
+                if (res.status === 409) {
+                    loadingView.classList.add('hidden');
+                    emptyStateView.classList.remove('hidden');
+                    return;
+                }
+                if (!res.ok) throw new Error(`Hata (${res.status})`);
+
+                overviewData = await res.json();
+                renderVisualizationPage(overviewData);
+
+                loadingView.classList.add('hidden');
+                visualizationContentView.classList.remove('hidden');
+            } catch (err) {
+                console.error(err);
+                loadingView.classList.add('hidden');
+                emptyStateView.classList.remove('hidden');
+            }
+        }
+
+        // Render entire page
+        function renderVisualizationPage(data) {
+            populateSelectors(data);
+            renderSuggestionsGallery(data.suggestions || []);
+            renderCorrelationHeatmap(data.correlation || {});
+            
+            // Render initial univariate chart
+            const allCols = [...(data.numeric_columns || []), ...(data.categorical_columns || [])];
+            if (allCols.length > 0) {
+                renderUnivariate(allCols[0]);
+            }
+
+            // Render initial bivariate chart
+            if (data.numeric_columns && data.numeric_columns.length >= 2) {
+                bivariateXSelect.value = data.numeric_columns[0];
+                bivariateYSelect.value = data.numeric_columns[1];
+                renderBivariate(data.numeric_columns[0], data.numeric_columns[1]);
+            } else if (data.numeric_columns && data.categorical_columns && data.numeric_columns.length > 0 && data.categorical_columns.length > 0) {
+                bivariateXSelect.value = data.categorical_columns[0];
+                bivariateYSelect.value = data.numeric_columns[0];
+                renderBivariate(data.categorical_columns[0], data.numeric_columns[0]);
+            }
+        }
+
+        // Populate column dropdowns
+        function populateSelectors(data) {
+            const numCols = data.numeric_columns || [];
+            const catCols = data.categorical_columns || [];
+            const allCols = [...numCols, ...catCols];
+
+            let optionsHtml = '';
+            numCols.forEach(c => {
+                optionsHtml += `<option value="${escapeHtml(c)}"># ${escapeHtml(c)} (Sayısal)</option>`;
+            });
+            catCols.forEach(c => {
+                optionsHtml += `<option value="${escapeHtml(c)}">🔤 ${escapeHtml(c)} (Kategorik)</option>`;
+            });
+
+            focusColumnSelect.innerHTML = optionsHtml;
+            univariateSelect.innerHTML = optionsHtml;
+            bivariateXSelect.innerHTML = optionsHtml;
+            bivariateYSelect.innerHTML = optionsHtml;
+
+            // Sync focus column with univariate
+            focusColumnSelect.addEventListener('change', (e) => {
+                univariateSelect.value = e.target.value;
+                renderUnivariate(e.target.value);
+            });
+
+            univariateSelect.addEventListener('change', (e) => {
+                focusColumnSelect.value = e.target.value;
+                renderUnivariate(e.target.value);
+            });
+
+            bivariateXSelect.addEventListener('change', () => {
+                renderBivariate(bivariateXSelect.value, bivariateYSelect.value);
+            });
+
+            bivariateYSelect.addEventListener('change', () => {
+                renderBivariate(bivariateXSelect.value, bivariateYSelect.value);
+            });
+        }
+
+        // 1. Auto Suggestions Gallery
+        async function renderSuggestionsGallery(suggestions) {
+            suggestionsGalleryGrid.innerHTML = '';
+
+            if (suggestions.length === 0) {
+                suggestionsGalleryGrid.innerHTML = `<div class="col-span-full p-6 text-center text-slate-gray">Öneri için yeterli veri sütunu bulunamadı.</div>`;
+                return;
+            }
+
+            for (let i = 0; i < suggestions.length; i++) {
+                const item = suggestions[i];
+                const cardId = `suggestionCard_${i}`;
+                const chartId = `suggestionChart_${i}`;
+
+                const cardHtml = `
+                    <div id="${cardId}" class="bg-surface border border-border-subtle rounded-xl p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start mb-3">
+                            <h4 class="font-headline-md text-sm font-bold text-on-surface truncate" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</h4>
+                            <span class="text-[11px] font-label-mono px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container shrink-0 font-medium">${escapeHtml(item.reason)}</span>
+                        </div>
+                        <div id="${chartId}" class="w-full h-[220px] rounded bg-surface-container-lowest"></div>
+                    </div>
+                `;
+                suggestionsGalleryGrid.insertAdjacentHTML('beforeend', cardHtml);
+
+                // Fetch chart data and render
+                loadAndRenderSuggestionChart(item, chartId);
+            }
+        }
+
+        async function loadAndRenderSuggestionChart(item, chartDomId) {
+            const chartDom = document.getElementById(chartDomId);
+            if (!chartDom) return;
+
+            let queryUrl = '';
+            if (item.type === 'histogram' || item.type === 'boxplot') {
+                queryUrl = `/api/visualization/chart?type=${item.type}&column=${encodeURIComponent(item.column)}`;
+            } else if (item.type === 'bar') {
+                queryUrl = `/api/visualization/chart?type=bar&column=${encodeURIComponent(item.column)}`;
+            } else if (item.type === 'scatter') {
+                queryUrl = `/api/visualization/chart?type=scatter&x=${encodeURIComponent(item.x)}&y=${encodeURIComponent(item.y)}`;
+            } else if (item.type === 'grouped_boxplot') {
+                queryUrl = `/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(item.cat)}&num=${encodeURIComponent(item.num)}`;
+            }
+
+            try {
+                const res = await fetch(queryUrl);
+                if (!res.ok) return;
+                const cData = await res.json();
+                const myChart = getOrCreateChart(chartDom, chartDomId);
+
+                let option = {};
+                if (item.type === 'histogram') {
+                    option = {
+                        grid: { top: 20, right: 15, bottom: 25, left: 35 },
+                        tooltip: { trigger: 'axis', formatter: (params) => `${params[0].name}<br/>Frekans: <b>${params[0].value}</b>` },
+                        xAxis: { type: 'category', data: cData.bin_labels, axisLabel: { show: false } },
+                        yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ data: cData.counts, type: 'bar', itemStyle: { color: '#006b33', borderRadius: [2, 2, 0, 0] } }]
+                    };
+                } else if (item.type === 'bar') {
+                    const names = cData.items.map(x => x.value);
+                    const vals = cData.items.map(x => x.count);
+                    option = {
+                        grid: { top: 20, right: 15, bottom: 35, left: 35 },
+                        tooltip: { trigger: 'axis' },
+                        xAxis: { type: 'category', data: names, axisLabel: { interval: 0, rotate: 20, fontSize: 10 } },
+                        yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ data: vals, type: 'bar', itemStyle: { color: '#19924B', borderRadius: [2, 2, 0, 0] } }]
+                    };
+                } else if (item.type === 'scatter') {
+                    const scatterPairs = cData.x.map((vx, idx) => [vx, cData.y[idx]]);
+                    option = {
+                        grid: { top: 20, right: 15, bottom: 25, left: 40 },
+                        tooltip: { formatter: (p) => `${cData.x_name}: ${p.value[0]}<br/>${cData.y_name}: ${p.value[1]}` },
+                        xAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ data: scatterPairs, type: 'scatter', symbolSize: 5, itemStyle: { color: '#006b33' } }]
+                    };
+                } else if (item.type === 'grouped_boxplot') {
+                    const gNames = cData.groups.map(g => g.name);
+                    const gBoxes = cData.groups.map(g => g.box);
+                    option = {
+                        grid: { top: 20, right: 15, bottom: 30, left: 35 },
+                        tooltip: { trigger: 'item' },
+                        xAxis: { type: 'category', data: gNames, axisLabel: { fontSize: 10 } },
+                        yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ name: 'Kutu', type: 'boxplot', data: gBoxes, itemStyle: { color: '#bfeac7', borderColor: '#006b33' } }]
+                    };
+                } else if (item.type === 'boxplot') {
+                    option = {
+                        grid: { top: 20, right: 15, bottom: 25, left: 40 },
+                        tooltip: { trigger: 'item' },
+                        xAxis: { type: 'category', data: [cData.column] },
+                        yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ type: 'boxplot', data: [cData.box], itemStyle: { color: '#bfeac7', borderColor: '#006b33' } }]
+                    };
+                }
+
+                myChart.setOption(option);
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        // 2. Univariate Discovery Render
+        async function renderUnivariate(columnName) {
+            const isNumeric = overviewData.numeric_columns.includes(columnName);
+
+            if (isNumeric) {
+                // Numeric Layout: Histogram + Boxplot + Stats Card
+                const stats = overviewData.stats[columnName] || {};
+                univariateContentWrapper.innerHTML = `
+                    <div class="grid grid-cols-12 gap-6">
+                        <!-- Histogram (5 cols) -->
+                        <div class="col-span-12 lg:col-span-5 bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-label-mono text-xs font-semibold text-slate-gray uppercase">Dağılım (Histogram)</h4>
+                                <span class="text-xs text-primary font-mono">${escapeHtml(columnName)}</span>
+                            </div>
+                            <div id="univariateHistChart" class="w-full h-[280px]"></div>
+                        </div>
+
+                        <!-- Boxplot (4 cols) -->
+                        <div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-label-mono text-xs font-semibold text-slate-gray uppercase">Kutu Grafiği (Boxplot)</h4>
+                                <span class="text-xs text-slate-gray font-mono">IQR Sınırları</span>
+                            </div>
+                            <div id="univariateBoxChart" class="w-full h-[280px]"></div>
+                        </div>
+
+                        <!-- Statistical Summary Card (3 cols) -->
+                        <div class="col-span-12 lg:col-span-3 bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-label-mono text-xs font-semibold text-slate-gray uppercase mb-3 border-b border-border-subtle pb-2">İstatistiksel Özet</h4>
+                                <div class="space-y-3 font-body-md text-sm">
+                                    <div class="flex justify-between items-center border-b border-border-subtle/50 pb-1.5">
+                                        <span class="text-slate-gray">Kayıt Sayısı</span>
+                                        <span class="font-mono font-bold text-on-surface">${formatNumber(stats.count, 0)}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b border-border-subtle/50 pb-1.5">
+                                        <span class="text-slate-gray">Ortalama (Mean)</span>
+                                        <span class="font-mono font-bold text-primary">${formatNumber(stats.mean)}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b border-border-subtle/50 pb-1.5">
+                                        <span class="text-slate-gray">Medyan (Median)</span>
+                                        <span class="font-mono font-bold text-on-surface">${formatNumber(stats.median)}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b border-border-subtle/50 pb-1.5">
+                                        <span class="text-slate-gray">Std. Sapma</span>
+                                        <span class="font-mono font-bold text-on-surface">${formatNumber(stats.std)}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b border-border-subtle/50 pb-1.5">
+                                        <span class="text-slate-gray">Minimum</span>
+                                        <span class="font-mono font-bold text-on-surface">${formatNumber(stats.min)}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-slate-gray">Maksimum</span>
+                                        <span class="font-mono font-bold text-on-surface">${formatNumber(stats.max)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Fetch and render Histogram
+                try {
+                    const hRes = await fetch(`/api/visualization/chart?type=histogram&column=${encodeURIComponent(columnName)}`);
+                    const hData = await hRes.json();
+                    const hChart = getOrCreateChart(document.getElementById('univariateHistChart'), 'univariateHistChart');
+                    hChart.setOption({
+                        grid: { top: 20, right: 15, bottom: 45, left: 45 },
+                        tooltip: { trigger: 'axis', formatter: (p) => `${p[0].name}<br/>Gözlem: <b>${p[0].value}</b>` },
+                        xAxis: { type: 'category', data: hData.bin_labels, axisLabel: { rotate: 25, fontSize: 10 } },
+                        yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ data: hData.counts, type: 'bar', itemStyle: { color: '#006b33', borderRadius: [3, 3, 0, 0] } }]
+                    });
+                } catch(e) {}
+
+                // Fetch and render Boxplot
+                try {
+                    const bRes = await fetch(`/api/visualization/chart?type=boxplot&column=${encodeURIComponent(columnName)}`);
+                    const bData = await bRes.json();
+                    const bChart = getOrCreateChart(document.getElementById('univariateBoxChart'), 'univariateBoxChart');
+                    
+                    const outlierPoints = (bData.outliers || []).map(val => [0, val]);
+
+                    bChart.setOption({
+                        grid: { top: 20, right: 15, bottom: 30, left: 45 },
+                        tooltip: { trigger: 'item' },
+                        xAxis: { type: 'category', data: [columnName] },
+                        yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [
+                            {
+                                name: 'Box',
+                                type: 'boxplot',
+                                data: [bData.box],
+                                itemStyle: { color: '#bfeac7', borderColor: '#006b33', borderWidth: 1.5 }
+                            },
+                            {
+                                name: 'Aykırı Değer',
+                                type: 'scatter',
+                                data: outlierPoints,
+                                itemStyle: { color: '#ba1a1a' }
+                            }
+                        ]
+                    });
+                } catch(e) {}
+
+            } else {
+                // Categorical Layout: Bar Chart + Summary Table
+                const catItems = overviewData.categorical_summary[columnName] || [];
+                univariateContentWrapper.innerHTML = `
+                    <div class="grid grid-cols-12 gap-6">
+                        <!-- Bar Chart (8 cols) -->
+                        <div class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-label-mono text-xs font-semibold text-slate-gray uppercase">Kategori Frekansları (Bar Chart)</h4>
+                                <span class="text-xs text-primary font-mono">${escapeHtml(columnName)}</span>
+                            </div>
+                            <div id="univariateCatChart" class="w-full h-[300px]"></div>
+                        </div>
+
+                        <!-- Summary Table (4 cols) -->
+                        <div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-border-subtle rounded-lg p-4 flex flex-col">
+                            <h4 class="font-label-mono text-xs font-semibold text-slate-gray uppercase mb-3 border-b border-border-subtle pb-2">Kategori Dağılım Tablosu</h4>
+                            <div class="overflow-y-auto max-h-[250px] custom-scrollbar">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-surface-faint font-label-mono text-slate-gray uppercase border-b border-border-subtle">
+                                        <tr>
+                                            <th class="p-2">Değer</th>
+                                            <th class="p-2 text-right">Adet</th>
+                                            <th class="p-2 text-right">Oran</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="univariateCatTableBody" class="divide-y divide-border-subtle font-mono">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Populate category table
+                const tbody = document.getElementById('univariateCatTableBody');
+                let tbodyHtml = '';
+                catItems.forEach(it => {
+                    tbodyHtml += `
+                        <tr class="hover:bg-surface-faint">
+                            <td class="p-2 font-medium text-on-surface truncate max-w-[120px]" title="${escapeHtml(it.value)}">${escapeHtml(it.value)}</td>
+                            <td class="p-2 text-right">${formatNumber(it.count, 0)}</td>
+                            <td class="p-2 text-right text-primary font-semibold">%${it.ratio.toFixed(1)}</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = tbodyHtml;
+
+                // Render Bar Chart
+                try {
+                    const cChart = getOrCreateChart(document.getElementById('univariateCatChart'), 'univariateCatChart');
+                    const xVals = catItems.map(c => c.value);
+                    const yVals = catItems.map(c => c.count);
+
+                    cChart.setOption({
+                        grid: { top: 20, right: 20, bottom: 40, left: 45 },
+                        tooltip: { trigger: 'axis', formatter: (p) => `${p[0].name}<br/>Adet: <b>${p[0].value}</b>` },
+                        xAxis: { type: 'category', data: xVals, axisLabel: { interval: 0, rotate: xVals.length > 5 ? 20 : 0, fontSize: 11 } },
+                        yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ data: yVals, type: 'bar', itemStyle: { color: '#006b33', borderRadius: [3, 3, 0, 0] } }]
+                    });
+                } catch(e) {}
+            }
+        }
+
+        // 3. Bivariate Discovery Render
+        async function renderBivariate(xCol, yCol) {
+            const isXNum = overviewData.numeric_columns.includes(xCol);
+            const isYNum = overviewData.numeric_columns.includes(yCol);
+
+            const bChart = getOrCreateChart(bivariateChartContainer, 'bivariateChart');
+
+            if (isXNum && isYNum) {
+                // Scatter Plot
+                try {
+                    const res = await fetch(`/api/visualization/chart?type=scatter&x=${encodeURIComponent(xCol)}&y=${encodeURIComponent(yCol)}`);
+                    const data = await res.json();
+                    const pairs = data.x.map((vx, i) => [vx, data.y[i]]);
+
+                    bChart.setOption({
+                        title: { text: `${xCol} vs ${yCol} Dağılımı (Scatter Plot)`, textStyle: { fontSize: 13, fontWeight: 'bold' } },
+                        grid: { top: 40, right: 30, bottom: 45, left: 55 },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: (p) => `<b>${xCol}:</b> ${p.value[0]}<br/><b>${yCol}:</b> ${p.value[1]}`
+                        },
+                        xAxis: { name: xCol, nameLocation: 'middle', nameGap: 25, type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        yAxis: { name: yCol, type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ data: pairs, type: 'scatter', symbolSize: 6, itemStyle: { color: '#006b33', opacity: 0.8 } }]
+                    });
+                } catch(e) {}
+
+            } else if (!isXNum && isYNum) {
+                // Grouped Boxplot (X = cat, Y = num)
+                try {
+                    const res = await fetch(`/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(xCol)}&num=${encodeURIComponent(yCol)}`);
+                    const data = await res.json();
+                    const gNames = data.groups.map(g => g.name);
+                    const gBoxes = data.groups.map(g => g.box);
+
+                    bChart.setOption({
+                        title: { text: `${xCol} Kategorilerine Göre ${yCol} (Gruplu Boxplot)`, textStyle: { fontSize: 13, fontWeight: 'bold' } },
+                        grid: { top: 40, right: 20, bottom: 35, left: 55 },
+                        tooltip: { trigger: 'item' },
+                        xAxis: { type: 'category', data: gNames, axisLabel: { fontSize: 11 } },
+                        yAxis: { name: yCol, type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ type: 'boxplot', data: gBoxes, itemStyle: { color: '#bfeac7', borderColor: '#006b33' } }]
+                    });
+                } catch(e) {}
+
+            } else if (isXNum && !isYNum) {
+                // Grouped Boxplot (Y = cat, X = num)
+                try {
+                    const res = await fetch(`/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(yCol)}&num=${encodeURIComponent(xCol)}`);
+                    const data = await res.json();
+                    const gNames = data.groups.map(g => g.name);
+                    const gBoxes = data.groups.map(g => g.box);
+
+                    bChart.setOption({
+                        title: { text: `${yCol} Kategorilerine Göre ${xCol} (Gruplu Boxplot)`, textStyle: { fontSize: 13, fontWeight: 'bold' } },
+                        grid: { top: 40, right: 20, bottom: 35, left: 55 },
+                        tooltip: { trigger: 'item' },
+                        xAxis: { type: 'category', data: gNames, axisLabel: { fontSize: 11 } },
+                        yAxis: { name: xCol, type: 'value', splitLine: { lineStyle: { type: 'dashed' } } },
+                        series: [{ type: 'boxplot', data: gBoxes, itemStyle: { color: '#bfeac7', borderColor: '#006b33' } }]
+                    });
+                } catch(e) {}
+
+            } else {
+                // Categorical + Categorical
+                bChart.clear();
+                bChart.setOption({
+                    title: {
+                        text: 'İki kategorik sütun için dağılım tablosu veya çapraz frekans yakında eklenecektir.',
+                        left: 'center',
+                        top: 'middle',
+                        textStyle: { color: '#4A5568', fontSize: 13 }
+                    }
+                });
+            }
+        }
+
+        // 4. Correlation Heatmap & Table Render
+        function renderCorrelationHeatmap(corrData) {
+            const cols = corrData.columns || [];
+            const matrix = corrData.matrix || [];
+            const strongest = corrData.strongest || [];
+
+            // Strongest correlation table
+            if (strongest.length === 0) {
+                strongestCorrTableBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-gray">Yeterli sayısal sütun bulunamadı.</td></tr>`;
+            } else {
+                let sHtml = '';
+                strongest.forEach(p => {
+                    const corrVal = p.corr;
+                    const isPos = corrVal >= 0;
+                    const badgeColor = Math.abs(corrVal) >= 0.7 ? 'text-primary font-bold' : (Math.abs(corrVal) >= 0.4 ? 'text-warning-orange' : 'text-slate-gray');
+
+                    sHtml += `
+                        <tr class="hover:bg-surface-faint">
+                            <td class="p-2 font-medium text-on-surface truncate max-w-[100px]" title="${escapeHtml(p.a)}">${escapeHtml(p.a)}</td>
+                            <td class="p-2 font-medium text-on-surface truncate max-w-[100px]" title="${escapeHtml(p.b)}">${escapeHtml(p.b)}</td>
+                            <td class="p-2 text-right ${badgeColor}">${corrVal.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+                strongestCorrTableBody.innerHTML = sHtml;
+            }
+
+            if (cols.length < 2 || matrix.length < 2) {
+                const chart = getOrCreateChart(correlationHeatmapContainer, 'heatmap');
+                chart.setOption({
+                    title: { text: 'Korelasyon hesaplamak için en az 2 sayısal sütun gereklidir.', left: 'center', top: 'middle', textStyle: { color: '#4A5568', fontSize: 13 } }
+                });
+                return;
+            }
+
+            const chartData = [];
+            for (let r = 0; r < cols.length; r++) {
+                for (let c = 0; c < cols.length; c++) {
+                    chartData.push([c, r, matrix[r][c]]);
+                }
+            }
+
+            const hChart = getOrCreateChart(correlationHeatmapContainer, 'heatmap');
+            hChart.setOption({
+                tooltip: {
+                    position: 'top',
+                    formatter: (p) => `${cols[p.value[1]]} × ${cols[p.value[0]]}<br/>Korelasyon: <b>${p.value[2].toFixed(2)}</b>`
+                },
+                grid: { top: 25, right: 35, bottom: 65, left: 75 },
+                xAxis: {
+                    type: 'category',
+                    data: cols,
+                    splitArea: { show: true },
+                    axisLabel: { rotate: 30, fontSize: 10, interval: 0 }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: cols,
+                    splitArea: { show: true },
+                    axisLabel: { fontSize: 10, interval: 0 }
+                },
+                visualMap: {
+                    min: -1,
+                    max: 1,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: '0%',
+                    inRange: {
+                        color: ['#ba1a1a', '#fcf9f8', '#006b33']
+                    }
+                },
+                series: [{
+                    name: 'Correlation',
+                    type: 'heatmap',
+                    data: chartData,
+                    label: {
+                        show: cols.length <= 10,
+                        formatter: (p) => p.value[2].toFixed(2),
+                        fontSize: 10
+                    },
+                    emphasis: {
+                        itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0, 0, 0, 0.4)' }
+                    }
+                }]
+            });
+        }
+
+        // Global Window Resize Listener for ECharts
+        window.addEventListener('resize', () => {
+            Object.values(chartInstances).forEach(chart => {
+                if (chart && typeof chart.resize === 'function') {
+                    chart.resize();
+                }
+            });
+        });
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', loadVisualizationOverview);
+    </script>
+</body>
+</html>

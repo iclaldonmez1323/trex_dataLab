@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>trex DataLab - Portfolio</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(74, 85, 104, 0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-surface-faint text-on-surface font-body-md text-body-md h-screen overflow-hidden flex">
+
+    <!-- SideNavBar (260px) -->
+    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant flex flex-col py-6 px-4 z-20">
+        <!-- Brand -->
+        <div class="mb-8 flex items-center gap-3 px-2">
+            <div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-on-primary-container">
+                <span class="material-symbols-outlined fill" data-icon="dataset">dataset</span>
+            </div>
+            <div>
+                <h1 class="font-headline-md text-[20px] font-bold text-white leading-tight">trex DataLab</h1>
+                <p class="font-label-mono text-[10px] text-white/60">Precision Data Platform</p>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <a href="/" class="mb-8 w-full py-2.5 px-4 bg-primary text-on-primary rounded-lg font-data-table flex items-center justify-center gap-2 hover:bg-primary-container transition-all text-center">
+            <span class="material-symbols-outlined text-sm">upload</span>
+            Yeni Veri Yükle
+        </a>
+
+        <!-- Navigation Tabs -->
+        <div class="flex-1 space-y-1">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-body-md">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/data-quality">
+                <span class="material-symbols-outlined">analytics</span>
+                <span class="font-body-md">Data Quality</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/preprocessing">
+                <span class="material-symbols-outlined">construction</span>
+                <span class="font-body-md">Preprocessing</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/visualization">
+                <span class="material-symbols-outlined">insights</span>
+                <span class="font-body-md">Visualization</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 shadow-sm" href="/portfolio">
+                <span class="material-symbols-outlined fill" data-icon="folder_shared">folder_shared</span>
+                <span class="font-body-md font-medium">Portfolio</span>
+            </a>
+        </div>
+
+        <!-- Footer Tabs -->
+        <div class="mt-auto space-y-1 pt-4 border-t border-white/10">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="font-body-md">Settings</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined">help</span>
+                <span class="font-body-md">Support</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="ml-sidebar-width w-[calc(100%-260px)] flex flex-col h-screen">
+        
+        <!-- TopAppBar -->
+        <header class="h-16 border-b border-border-subtle bg-surface flex justify-between items-center px-gutter w-full shrink-0 z-10">
+            <div class="flex items-center gap-6">
+                <div class="relative hidden lg:block w-64">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                    <input class="w-full pl-9 pr-4 py-1.5 bg-surface-container text-sm rounded border-none focus:ring-1 focus:ring-primary text-on-surface placeholder:text-on-surface-variant/70" placeholder="Ara..." type="text">
+                </div>
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Hızlı İşlemler</a>
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Raporlar</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="font-data-table text-primary hover:text-primary-container font-medium px-3 py-1.5 rounded border border-primary/30 hover:bg-primary/5 transition-colors flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">download</span>
+                    Dışa Aktar
+                </button>
+                <div class="w-px h-6 bg-border-subtle mx-2"></div>
+                <button class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container" title="Bildirimler">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container" title="Profil">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Canvas -->
+        <main class="flex-1 overflow-y-auto p-gutter max-w-container-max w-full mx-auto custom-scrollbar">
+            
+            <!-- 1. Page Header Section -->
+            <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-border-subtle pb-4">
+                <div>
+                    <p class="font-label-mono text-xs text-primary uppercase font-bold tracking-wider mb-1">PORTFOLIO › PROJECT DETAILS</p>
+                    <h2 class="font-headline-md text-headline-md text-on-surface font-bold">Predictive Maintenance Project</h2>
+                    <p class="text-on-surface-variant font-body-md mt-1 max-w-3xl">
+                        <strong class="font-semibold text-on-surface">AI4I 2020 Predictive Maintenance Dataset:</strong> Endüstriyel sensör verilerini kullanarak makine arızalarını önceden tahmin etmeyi amaçlar. Sınıf dengesizliği (class imbalance) problemi SMOTE tekniği ile çözülmüş ve çeşitli ağaç tabanlı modeller karşılaştırılmıştır.
+                    </p>
+                </div>
+                <div class="shrink-0">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-success-green/10 text-success-green border border-success-green/30">
+                        <span class="w-2 h-2 rounded-full bg-success-green mr-1.5 animate-pulse"></span>
+                        Tamamlandı
+                    </span>
+                </div>
+            </div>
+
+            <!-- 2. Proje Süreci — Dikey Timeline (9 Adım) -->
+            <section class="mb-stack-lg bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">route</span>
+                        <h3 class="font-headline-md text-[18px] font-bold text-on-surface">Proje Süreci (Workflow Timeline)</h3>
+                    </div>
+                    <span class="font-label-mono text-xs text-slate-gray">9 AŞAMALI VERİ BİLİMİ HATTI</span>
+                </div>
+
+                <div class="relative pl-6 sm:pl-8 before:absolute before:left-3 sm:before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-primary/30">
+                    <div class="space-y-6">
+                        
+                        <!-- Step 1: Data Understanding -->
+                        <div class="relative flex items-start gap-4">
+                            <div class="absolute -left-6 sm:-left-8 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm text-xs sm:text-sm font-bold ring-4 ring-surface">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">database</span>
+                            </div>
+                            <div class="bg-surface-container-low border border-border-subtle rounded-lg p-3.5 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-data-table text-data-table font-bold text-on-surface">1. Data Understanding (Veriyi Anlama)</h4>
+                                    <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">GİRİŞ</span>
+                                </div>
+                                <p class="text-xs text-slate-gray mt-1">Veri yapısı, öznitelik türleri, sensör değişkenleri ve iş alanının incelenmesi.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Data Cleaning -->
+                        <div class="relative flex items-start gap-4">
+                            <div class="absolute -left-6 sm:-left-8 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm text-xs sm:text-sm font-bold ring-4 ring-surface">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">mop</span>
+                            </div>
+                            <div class="bg-surface-container-low border border-border-subtle rounded-lg p-3.5 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-data-table text-data-table font-bold text-on-surface">2. Data Cleaning (Veri Temizleme)</h4>
+                                    <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">TEMİZLİK</span>
+                                </div>
+                                <p class="text-xs text-slate-gray mt-1">Kayıp değer analizi, tip uyumsuzluklarının giderilmesi ve yinelenen kayıtların tespiti.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: EDA -->
+                        <div class="relative flex items-start gap-4">
+                            <div class="absolute -left-6 sm:-left-8 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm text-xs sm:text-sm font-bold ring-4 ring-surface">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">troubleshoot</span>
+                            </div>
+                            <div class="bg-surface-container-low border border-border-subtle rounded-lg p-3.5 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-data-table text-data-table font-bold text-on-surface">3. EDA (Keşifsel Veri Analizi)</h4>
+                                    <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">KEŞİF</span>
+                                </div>
+                                <p class="text-xs text-slate-gray mt-1">Tek ve çok değişkenli dağılımlar, histogramlar, kutu grafikleri ve aykırı değer taraması.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Statistical Analysis -->
+                        <div class="relative flex items-start gap-4">
+                            <div class="absolute -left-6 sm:-left-8 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm text-xs sm:text-sm font-bold ring-4 ring-surface">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">monitoring</span>
+                            </div>
+                            <div class="bg-surface-container-low border border-border-subtle rounded-lg p-3.5 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-data-table text-data-table font-bold text-on-surface">4. Statistical Analysis (İstatistiksel Analiz)</h4>
+                                    <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">İSTATİSTİK</span>
+                                </div>
+                                <p class="text-xs text-slate-gray mt-1">Hipotez testleri, güven aralıkları ve Pearson korelasyon matrisi incelemeleri.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Logistic Regression -->
+                        <div class="relative flex items-start gap-4">
+                            <div class="absolute -left-6 sm:-left-8 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm text-xs sm:text-sm font-bold ring-4 ring-surface">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">linear_scale</span>
+                            </div>
+                            <div class="bg-surface-container-low border border-border-subtle rounded-lg p-3.5 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-data-table text-data-table font-bold text-on-surface">5. Logistic Regression (Temel Sınıflandırıcı)</h4>
+                                    <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">BASELINE</span>
+                                </div>
+                                <p class="text-xs text-slate-gray mt-1">Doğrusal temel sınıflandırma modeli kurulumu ve başlangıç metriklerinin ölçülmesi.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 6: Decision Tree -->
+                        <div class="relative flex items-start gap-4">
+                            <div class="absolute -left-6 sm:-left-8 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm text-xs sm:text-sm font-bold ring-4 ring-surface">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">account_tree</span>
+                            </div>
+                            <div class="bg-surface-container-low border border-border-subtle rounded-lg p-3.5 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-data-table text-data-table font-bold text-on-surface">6. Decision Tree (Karar Ağacı)</h4>
+                                    <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">AĞAÇ MODELİ</span>
+                                </div>
+                                <p class="text-xs text-slate-gray mt-1">Kural tabanlı karar ağacı yapısı ile öznitelik sınırlarının ve dallanmaların tespiti.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 7: Random Forest -->
+                        <div class="relative flex items-start gap-4">
+                            <div class="absolute -left-6 sm:-left-8 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm text-xs sm:text-sm font-bold ring-4 ring-surface">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">park</span>
+                            </div>
+                            <div class="bg-surface-container-low border border-border-subtle rounded-lg p-3.5 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-data-table text-data-table font-bold text-on-surface">7. Random Forest (Rastgele Orman)</h4>
+                                    <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">ENSEMBLE</span>
+                                </div>
+                                <p class="text-xs text-slate-gray mt-1">Topluluk (ensemble) bagging yöntemiyle varyansın düşürülmesi ve genelleştirme.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 8: Cross Validation -->
+                        <div class="relative flex items-start gap-4">
+                            <div class="absolute -left-6 sm:-left-8 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm text-xs sm:text-sm font-bold ring-4 ring-surface">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">fact_check</span>
+                            </div>
+                            <div class="bg-surface-container-low border border-border-subtle rounded-lg p-3.5 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-data-table text-data-table font-bold text-on-surface">8. Cross Validation (Çapraz Doğrulama)</h4>
+                                    <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">5-FOLD</span>
+                                </div>
+                                <p class="text-xs text-slate-gray mt-1">5-katlı çapraz doğrulama ile aşırı öğrenmenin (overfitting) önlenmesi ve kararlılık kontrolü.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 9: Model Optimization -->
+                        <div class="relative flex items-start gap-4">
+                            <div class="absolute -left-6 sm:-left-8 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-sm text-xs sm:text-sm font-bold ring-4 ring-surface">
+                                <span class="material-symbols-outlined text-[16px] sm:text-[18px]">tune</span>
+                            </div>
+                            <div class="bg-surface-container-low border border-border-subtle rounded-lg p-3.5 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-data-table text-data-table font-bold text-on-surface">9. Model Optimization (Hiperparametre Ayarı)</h4>
+                                    <span class="text-[10px] font-mono bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">GRIDSEARCH</span>
+                                </div>
+                                <p class="text-xs text-slate-gray mt-1">GridSearchCV ile hiperparametre optimizasyonu, PR-AUC ve F1 skoru maksimizasyonu.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Kullanılan Yöntemler (3 Kart) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-stack-lg">
+                <!-- Card 1: Data Analysis -->
+                <div class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2.5 mb-3 border-b border-border-subtle pb-3">
+                            <div class="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[18px]">insights</span>
+                            </div>
+                            <h4 class="font-data-table text-data-table font-bold text-on-surface">Data Analysis</h4>
+                        </div>
+                        <p class="text-xs text-slate-gray mb-4">Veri manipülasyonu, temizleme ve keşifsel görselleştirme kütüphaneleri.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Pandas</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">NumPy</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Matplotlib</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Seaborn</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Statistics -->
+                <div class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2.5 mb-3 border-b border-border-subtle pb-3">
+                            <div class="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[18px]">monitoring</span>
+                            </div>
+                            <h4 class="font-data-table text-data-table font-bold text-on-surface">Statistics</h4>
+                        </div>
+                        <p class="text-xs text-slate-gray mb-4">İstatistiksel çıkarım, dağılım testleri ve hipotez doğrulama adımları.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Confidence Interval</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Hypothesis Testing</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Correlation</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Regression</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: Machine Learning -->
+                <div class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2.5 mb-3 border-b border-border-subtle pb-3">
+                            <div class="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+                            </div>
+                            <h4 class="font-data-table text-data-table font-bold text-on-surface">Machine Learning</h4>
+                        </div>
+                        <p class="text-xs text-slate-gray mb-4">Sınıflandırma algoritmaları, model seçimi ve optimizasyon araçları.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Logistic Regression</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Decision Tree</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Random Forest</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">Cross Validation</span>
+                        <span class="px-2.5 py-1 bg-surface-container-low border border-border-subtle rounded font-label-mono text-xs text-on-surface">GridSearchCV</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Model Sonuçları Tablosu -->
+            <!-- TODO: Model sonuçları notebook'lardaki GERÇEK değerlerle değiştirilmelidir (model_sonuclari.ipynb) -->
+            <section class="mb-stack-lg bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm">
+                <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-[20px]">table_chart</span>
+                        <h3 class="font-headline-md text-[16px] font-bold text-on-surface">Model Performans Sonuçları (Model Results)</h3>
+                    </div>
+                    <button class="text-primary hover:text-primary-container p-1 rounded transition-colors text-xs font-mono flex items-center gap-1" title="Tabloyu İndir">
+                        <span class="material-symbols-outlined text-[16px]">download</span>
+                        CSV
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-faint border-b border-border-subtle font-label-mono text-[11px] uppercase tracking-wider text-slate-gray">
+                                <th class="py-3 px-6">Model</th>
+                                <th class="py-3 px-6 text-right">Precision</th>
+                                <th class="py-3 px-6 text-right">Recall</th>
+                                <th class="py-3 px-6 text-right">F1-Score</th>
+                                <th class="py-3 px-6 text-right">PR-AUC</th>
+                            </tr>
+                        </thead>
+                        <tbody class="font-data-table text-data-table divide-y divide-border-subtle">
+                            <!-- Logistic Regression -->
+                            <tr class="hover:bg-surface-faint transition-colors">
+                                <td class="py-3 px-6 text-on-surface font-semibold">Logistic Regression</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.78</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.82</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.80</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.75</td>
+                            </tr>
+                            <!-- Decision Tree -->
+                            <tr class="hover:bg-surface-faint transition-colors">
+                                <td class="py-3 px-6 text-on-surface font-semibold">Decision Tree</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.85</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.83</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.84</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.88</td>
+                            </tr>
+                            <!-- Random Forest -->
+                            <tr class="hover:bg-surface-faint transition-colors">
+                                <td class="py-3 px-6 text-on-surface font-semibold">Random Forest</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.89</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.85</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.87</td>
+                                <td class="py-3 px-6 font-mono text-right text-slate-gray">0.91</td>
+                            </tr>
+                            <!-- XGBoost (En İyi Model) -->
+                            <tr class="bg-primary/5 hover:bg-primary/10 transition-colors border-l-4 border-l-primary">
+                                <td class="py-3 px-6 text-primary font-bold flex items-center gap-2">
+                                    XGBoost
+                                    <span class="material-symbols-outlined text-[16px] text-warning-orange fill" title="En Yüksek Performans">star</span>
+                                    <span class="text-[10px] font-mono bg-primary text-white px-1.5 py-0.2 rounded font-medium">BEST</span>
+                                </td>
+                                <td class="py-3 px-6 font-mono text-right text-primary font-bold">0.92</td>
+                                <td class="py-3 px-6 font-mono text-right text-primary font-bold">0.89</td>
+                                <td class="py-3 px-6 font-mono text-right text-primary font-bold">0.90</td>
+                                <td class="py-3 px-6 font-mono text-right text-primary font-bold">0.94</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 5. Grafik Galerisi (6 Kart Inline SVG/CSS Mockup) -->
+            <section class="mb-stack-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">gallery_thumbnail</span>
+                        <h3 class="font-headline-md text-[18px] font-bold text-on-surface">Görselleştirme Galerisi (Visualization Gallery)</h3>
+                    </div>
+                    <span class="text-xs text-slate-gray font-label-mono">ANALİZ &amp; MODEL GÖRSELLERİ</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    
+                    <!-- Chart Card 1: Confusion Matrix (XGBoost) -->
+                    <!-- TODO: gerçek grafik PNG'siyle değiştir -->
+                    <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                        <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                            <span class="font-label-mono text-xs font-bold text-on-surface">Confusion Matrix (XGBoost)</span>
+                            <button onclick="openLightbox('Confusion Matrix (XGBoost)', 'matrixChart')" class="text-on-surface-variant hover:text-primary p-1 cursor-pointer" title="Büyüt">
+                                <span class="material-symbols-outlined text-[16px]">open_in_full</span>
+                            </button>
+                        </div>
+                        <div class="h-48 bg-surface-faint relative p-4 flex items-center justify-center">
+                            <div class="grid grid-cols-2 gap-1.5 w-40 h-36 relative">
+                                <div class="bg-primary/20 flex flex-col items-center justify-center font-mono text-xs text-primary border border-primary/30 rounded p-1">
+                                    <span class="text-[10px] text-slate-gray">TN</span>
+                                    <strong class="text-sm font-bold">9.240</strong>
+                                </div>
+                                <div class="bg-error/20 flex flex-col items-center justify-center font-mono text-xs text-error border border-error/30 rounded p-1">
+                                    <span class="text-[10px] text-slate-gray">FP</span>
+                                    <strong class="text-sm font-bold">42</strong>
+                                </div>
+                                <div class="bg-warning-orange/20 flex flex-col items-center justify-center font-mono text-xs text-[#a1680d] border border-warning-orange/30 rounded p-1">
+                                    <span class="text-[10px] text-slate-gray">FN</span>
+                                    <strong class="text-sm font-bold">38</strong>
+                                </div>
+                                <div class="bg-primary flex flex-col items-center justify-center font-mono text-xs text-white border border-primary rounded p-1 shadow-sm">
+                                    <span class="text-[10px] text-white/80">TP</span>
+                                    <strong class="text-sm font-bold">310</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Card 2: Feature Importance -->
+                    <!-- TODO: gerçek grafik PNG'siyle değiştir -->
+                    <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                        <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                            <span class="font-label-mono text-xs font-bold text-on-surface">Feature Importance</span>
+                            <button onclick="openLightbox('Feature Importance', 'featureChart')" class="text-on-surface-variant hover:text-primary p-1 cursor-pointer" title="Büyüt">
+                                <span class="material-symbols-outlined text-[16px]">open_in_full</span>
+                            </button>
+                        </div>
+                        <div class="h-48 bg-surface-faint relative p-4 flex flex-col justify-around">
+                            <!-- Bar 1: Torque -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[10px] font-mono">
+                                    <span class="font-bold text-on-surface">Torque [Nm]</span>
+                                    <span class="text-primary font-bold">0.42</span>
+                                </div>
+                                <div class="w-full bg-border-subtle h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-primary h-full rounded-full" style="width: 84%;"></div>
+                                </div>
+                            </div>
+                            <!-- Bar 2: Rotational Speed -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[10px] font-mono">
+                                    <span class="font-bold text-on-surface">Rotational Speed [rpm]</span>
+                                    <span class="text-primary font-bold">0.28</span>
+                                </div>
+                                <div class="w-full bg-border-subtle h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-primary/80 h-full rounded-full" style="width: 56%;"></div>
+                                </div>
+                            </div>
+                            <!-- Bar 3: Tool Wear -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[10px] font-mono">
+                                    <span class="font-bold text-on-surface">Tool Wear [min]</span>
+                                    <span class="text-primary font-bold">0.18</span>
+                                </div>
+                                <div class="w-full bg-border-subtle h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-primary/60 h-full rounded-full" style="width: 36%;"></div>
+                                </div>
+                            </div>
+                            <!-- Bar 4: Air Temp -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[10px] font-mono">
+                                    <span class="font-bold text-on-surface">Air Temperature [K]</span>
+                                    <span class="text-primary font-bold">0.12</span>
+                                </div>
+                                <div class="w-full bg-border-subtle h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-primary/40 h-full rounded-full" style="width: 24%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Card 3: Model Comparison -->
+                    <!-- TODO: gerçek grafik PNG'siyle değiştir -->
+                    <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                        <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                            <span class="font-label-mono text-xs font-bold text-on-surface">Model Comparison (F1 vs PR-AUC)</span>
+                            <button onclick="openLightbox('Model Comparison', 'compareChart')" class="text-on-surface-variant hover:text-primary p-1 cursor-pointer" title="Büyüt">
+                                <span class="material-symbols-outlined text-[16px]">open_in_full</span>
+                            </button>
+                        </div>
+                        <div class="h-48 bg-surface-faint relative p-4 flex items-end justify-around gap-4 pb-6 border-b border-border-subtle">
+                            <!-- Logistic Reg -->
+                            <div class="flex flex-col items-center gap-1.5 flex-1">
+                                <div class="w-full flex items-end justify-center gap-1 h-28">
+                                    <div class="w-3 bg-slate-gray/50 h-[80%] rounded-t" title="F1: 0.80"></div>
+                                    <div class="w-3 bg-slate-gray/80 h-[75%] rounded-t" title="PR-AUC: 0.75"></div>
+                                </div>
+                                <span class="font-mono text-[9px] text-slate-gray">LogReg</span>
+                            </div>
+                            <!-- Random Forest -->
+                            <div class="flex flex-col items-center gap-1.5 flex-1">
+                                <div class="w-full flex items-end justify-center gap-1 h-28">
+                                    <div class="w-3 bg-warning-orange/70 h-[87%] rounded-t" title="F1: 0.87"></div>
+                                    <div class="w-3 bg-warning-orange h-[91%] rounded-t" title="PR-AUC: 0.91"></div>
+                                </div>
+                                <span class="font-mono text-[9px] text-slate-gray">RandForest</span>
+                            </div>
+                            <!-- XGBoost -->
+                            <div class="flex flex-col items-center gap-1.5 flex-1">
+                                <div class="w-full flex items-end justify-center gap-1 h-28">
+                                    <div class="w-3 bg-primary/70 h-[90%] rounded-t" title="F1: 0.90"></div>
+                                    <div class="w-3 bg-primary h-[94%] rounded-t shadow" title="PR-AUC: 0.94"></div>
+                                </div>
+                                <span class="font-mono text-[9px] text-primary font-bold">XGBoost</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Card 4: ROC Curve -->
+                    <!-- TODO: gerçek grafik PNG'siyle değiştir -->
+                    <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                        <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                            <span class="font-label-mono text-xs font-bold text-on-surface">ROC Curve</span>
+                            <button onclick="openLightbox('ROC Curve', 'rocChart')" class="text-on-surface-variant hover:text-primary p-1 cursor-pointer" title="Büyüt">
+                                <span class="material-symbols-outlined text-[16px]">open_in_full</span>
+                            </button>
+                        </div>
+                        <div class="h-48 bg-surface-faint relative p-4 flex items-center justify-center">
+                            <div class="relative w-full h-full border-l-2 border-b-2 border-border-subtle flex items-end">
+                                <!-- Diagonal Random Guess Line -->
+                                <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                                    <line stroke="#cbd5e1" stroke-dasharray="4" stroke-width="1.5" x1="0" x2="100%" y1="100%" y2="0"></line>
+                                </svg>
+                                <!-- ROC Curve Path -->
+                                <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                                    <path d="M 0,100 C 5,30 25,5 100,0" fill="none" stroke="#006b33" stroke-width="3"></path>
+                                </svg>
+                                <div class="absolute bottom-3 right-3 bg-surface border border-primary/30 p-1.5 px-2.5 rounded font-mono text-[10px] text-primary font-bold shadow-sm">
+                                    AUC: 0.94
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Card 5: Veri Dağılımı (Data Distribution) -->
+                    <!-- TODO: gerçek grafik PNG'siyle değiştir -->
+                    <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                        <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                            <span class="font-label-mono text-xs font-bold text-on-surface">Veri Dağılımı (Histogram Mockup)</span>
+                            <button onclick="openLightbox('Veri Dağılımı', 'distChart')" class="text-on-surface-variant hover:text-primary p-1 cursor-pointer" title="Büyüt">
+                                <span class="material-symbols-outlined text-[16px]">open_in_full</span>
+                            </button>
+                        </div>
+                        <div class="h-48 bg-surface-faint relative p-4 flex items-end justify-between gap-1 pb-6 border-b border-border-subtle">
+                            <div class="w-full bg-primary/20 h-[15%] rounded-t"></div>
+                            <div class="w-full bg-primary/30 h-[35%] rounded-t"></div>
+                            <div class="w-full bg-primary/50 h-[65%] rounded-t"></div>
+                            <div class="w-full bg-primary/80 h-[92%] rounded-t"></div>
+                            <div class="w-full bg-primary h-[100%] rounded-t relative">
+                                <span class="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold text-primary">Tepe</span>
+                            </div>
+                            <div class="w-full bg-primary/80 h-[78%] rounded-t"></div>
+                            <div class="w-full bg-primary/50 h-[45%] rounded-t"></div>
+                            <div class="w-full bg-primary/30 h-[20%] rounded-t"></div>
+                            <div class="w-full bg-primary/10 h-[8%] rounded-t"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Card 6: Korelasyon Heatmap Mockup -->
+                    <!-- TODO: gerçek grafik PNG'siyle değiştir -->
+                    <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                        <div class="p-3.5 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                            <span class="font-label-mono text-xs font-bold text-on-surface">Korelasyon Isı Haritası</span>
+                            <button onclick="openLightbox('Korelasyon Isı Haritası', 'heatChart')" class="text-on-surface-variant hover:text-primary p-1 cursor-pointer" title="Büyüt">
+                                <span class="material-symbols-outlined text-[16px]">open_in_full</span>
+                            </button>
+                        </div>
+                        <div class="h-48 bg-surface-faint relative p-4 flex items-center justify-center">
+                            <div class="grid grid-cols-4 gap-1 w-44 h-36 font-mono text-[10px]">
+                                <div class="bg-[#006b33] text-white flex items-center justify-center rounded font-bold">1.0</div>
+                                <div class="bg-primary/40 text-on-surface flex items-center justify-center rounded">0.45</div>
+                                <div class="bg-error/30 text-error flex items-center justify-center rounded">-0.72</div>
+                                <div class="bg-surface-container flex items-center justify-center rounded">0.05</div>
+
+                                <div class="bg-primary/40 text-on-surface flex items-center justify-center rounded">0.45</div>
+                                <div class="bg-[#006b33] text-white flex items-center justify-center rounded font-bold">1.0</div>
+                                <div class="bg-primary/20 text-on-surface flex items-center justify-center rounded">0.22</div>
+                                <div class="bg-error/20 text-error flex items-center justify-center rounded">-0.31</div>
+
+                                <div class="bg-error/30 text-error flex items-center justify-center rounded">-0.72</div>
+                                <div class="bg-primary/20 text-on-surface flex items-center justify-center rounded">0.22</div>
+                                <div class="bg-[#006b33] text-white flex items-center justify-center rounded font-bold">1.0</div>
+                                <div class="bg-primary/60 text-white flex items-center justify-center rounded">0.68</div>
+
+                                <div class="bg-surface-container flex items-center justify-center rounded">0.05</div>
+                                <div class="bg-error/20 text-error flex items-center justify-center rounded">-0.31</div>
+                                <div class="bg-primary/60 text-white flex items-center justify-center rounded">0.68</div>
+                                <div class="bg-[#006b33] text-white flex items-center justify-center rounded font-bold">1.0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 6. Öğrenilenler / Proje Kapsamı (Footer Alanı) -->
+            <section class="border-t border-border-subtle pt-6 pb-12 flex flex-wrap items-center gap-2.5">
+                <span class="font-label-mono text-xs font-bold text-slate-gray uppercase mr-2">Kapsam:</span>
+                <span class="px-3 py-1 bg-surface border border-border-subtle rounded-full font-label-mono text-xs text-on-surface shadow-xs">Data Cleaning</span>
+                <span class="px-3 py-1 bg-surface border border-border-subtle rounded-full font-label-mono text-xs text-on-surface shadow-xs">Exploratory Data Analysis</span>
+                <span class="px-3 py-1 bg-surface border border-border-subtle rounded-full font-label-mono text-xs text-on-surface shadow-xs">Statistical Testing</span>
+                <span class="px-3 py-1 bg-surface border border-border-subtle rounded-full font-label-mono text-xs text-on-surface shadow-xs">Regression</span>
+                <span class="px-3 py-1 bg-surface border border-border-subtle rounded-full font-label-mono text-xs text-on-surface shadow-xs">Classification</span>
+                <span class="px-3 py-1 bg-surface border border-border-subtle rounded-full font-label-mono text-xs text-on-surface shadow-xs">Model Evaluation</span>
+                <span class="px-3 py-1 bg-surface border border-border-subtle rounded-full font-label-mono text-xs text-on-surface shadow-xs">Cross Validation</span>
+                <span class="px-3 py-1 bg-surface border border-border-subtle rounded-full font-label-mono text-xs text-on-surface shadow-xs">Hyperparameter Optimization</span>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Lightbox Modal Dialog -->
+    <dialog id="lightboxModal" class="rounded-xl border border-border-subtle bg-surface p-0 shadow-2xl backdrop:bg-black/50 max-w-2xl w-full">
+        <div class="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-container-lowest">
+            <h3 id="modalTitle" class="font-headline-md text-base font-bold text-on-surface">Grafik Önizleme</h3>
+            <button onclick="closeLightbox()" class="text-slate-gray hover:text-on-surface p-1 cursor-pointer">
+                <span class="material-symbols-outlined text-base">close</span>
+            </button>
+        </div>
+        <div id="modalBody" class="p-8 flex items-center justify-center bg-surface-faint min-h-[300px]">
+            <!-- Content clone injected here -->
+        </div>
+    </dialog>
+
+    <script>
+        const modal = document.getElementById('lightboxModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        function openLightbox(title, chartType) {
+            modalTitle.textContent = title;
+            modalBody.innerHTML = `
+                <div class="text-center">
+                    <p class="font-body-md text-sm text-slate-gray mb-2 font-medium">${title} Detaylı Görünüm</p>
+                    <p class="font-label-mono text-xs text-primary font-bold">trex DataLab — Portfolio Gallery</p>
+                </div>
+            `;
+            modal.showModal();
+        }
+
+        function closeLightbox() {
+            modal.close();
+        }
+
+        modal.addEventListener('click', (e) => {
+            const rect = modal.getBoundingClientRect();
+            if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+                modal.close();
+            }
+        });
+    </script>
+</body>
+</html>
