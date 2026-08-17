@@ -1,0 +1,477 @@
+<!DOCTYPE html><html class="light" lang="tr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>T-REX DataLab - Veri Kalitesi</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-mono": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-faint text-on-surface font-body-md antialiased min-h-screen">
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant z-20 flex flex-col py-6 px-4">
+<!-- Header -->
+<div class="mb-stack-lg px-2">
+<h1 class="font-headline-lg text-headline-lg font-bold text-white tracking-tight">trex DataLab</h1>
+<p class="font-label-mono text-label-mono text-white/70 mt-1 uppercase">Precision Data Platform</p>
+</div>
+<!-- Main Navigation -->
+<nav class="flex-1 space-y-2"><!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<!-- Data Quality (Active) -->
+<a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="#">
+<span class="material-symbols-outlined" data-icon="analytics" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-body-md text-body-md font-medium">Data Quality</span>
+</a>
+<!-- Preprocessing -->
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="construction">construction</span>
+<span class="font-body-md text-body-md">Preprocessing</span>
+</a>
+<!-- Visualization -->
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-body-md text-body-md">Visualization</span>
+</a>
+<!-- Portfolio -->
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-body-md text-body-md">Portfolio</span>
+</a></nav>
+<!-- CTA Action -->
+<div class="mt-auto mb-stack-md">
+<button class="w-full flex items-center justify-center gap-2 py-3 bg-secondary-container text-on-secondary-container font-body-md text-body-md rounded-lg hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+                Yeni Veri Yükle
+            </button>
+</div>
+<!-- Footer Navigation -->
+<div class="border-t border-white/20 pt-stack-sm space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Top App Bar -->
+<header class="fixed top-0 right-0 w-[calc(100%-260px)] z-10 flex justify-between items-center h-16 px-gutter bg-surface border-b border-border-subtle">
+<!-- Left Section: Search or Context -->
+<div class="flex items-center flex-1">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 bg-surface-container-low border-none rounded-DEFAULT font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:ring-1 focus:ring-primary focus:bg-surface" placeholder="Veri setinde ara..." type="text">
+</div>
+</div>
+<!-- Center Nav (Optional Context) -->
+<div class="hidden lg:flex items-center justify-center space-x-6 flex-1">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Hızlı İşlemler</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Raporlar</a>
+</div>
+<!-- Right Section: Actions -->
+<div class="flex items-center justify-end space-x-4 flex-1">
+<button class="px-4 py-1.5 text-primary border border-primary rounded-DEFAULT font-body-md text-body-md hover:bg-primary-container hover:text-on-primary-container transition-colors">
+                Dışa Aktar
+            </button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar-width pt-20 px-gutter pb-12 max-w-container-max mx-auto">
+<!-- Page Header -->
+<div class="mb-stack-lg flex items-end justify-between">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Veri Kalitesi Raporu</h2>
+<p class="font-body-md text-body-md text-slate-gray mt-1">Veri setinizin genel sağlık durumunu ve yapısal bütünlüğünü analiz edin.</p>
+</div>
+<div class="flex items-center gap-2 text-sm text-slate-gray bg-white px-3 py-1.5 rounded-DEFAULT border border-border-subtle shadow-sm">
+<span class="material-symbols-outlined text-sm">update</span>
+<span class="">Son Analiz: 2 saat önce</span>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Overall Score Card -->
+<div class="col-span-12 lg:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col items-center justify-center relative overflow-hidden group">
+<h3 class="font-label-mono text-label-mono text-slate-gray uppercase w-full text-left mb-6">Genel Kalite Skoru</h3>
+<!-- Circular Gauge -->
+<div class="relative w-40 h-40 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#f0edec" stroke-width="8"></circle>
+<circle class="transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="45" stroke="#F5B054" stroke-dasharray="282.7" stroke-dashoffset="62.2" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-headline-lg text-headline-lg text-on-surface">78</span>
+<span class="font-label-mono text-label-mono text-slate-gray">/ 100</span>
+</div>
+</div>
+<div class="mt-6 text-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-DEFAULT bg-warning-orange/10 text-warning-orange text-xs font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-warning-orange"></span>
+                        İyileştirme Gerekli
+                    </span>
+</div>
+</div>
+<!-- Key Metrics List -->
+<div class="col-span-12 lg:col-span-8 bg-white rounded-lg border border-border-subtle p-6">
+<h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-4">Temel Metrikler</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Metric 1 -->
+<div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded-DEFAULT hover:shadow-sm transition-shadow">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error">visibility_off</span>
+<span class="font-body-md text-body-md text-on-surface">Kayıp Veri Oranı</span>
+</div>
+<span class="font-data-table text-data-table text-on-surface font-semibold">%12.4</span>
+</div>
+<!-- Metric 2 -->
+<div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded-DEFAULT hover:shadow-sm transition-shadow">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-warning-orange">content_copy</span>
+<span class="font-body-md text-body-md text-on-surface">Tekrarlanan Kayıt</span>
+</div>
+<span class="font-data-table text-data-table text-on-surface font-semibold">%0.42</span>
+</div>
+<!-- Metric 3 -->
+<div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded-DEFAULT hover:shadow-sm transition-shadow">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-warning-orange">data_object</span>
+<span class="font-body-md text-body-md text-on-surface">Veri Tipi Sorunları</span>
+</div>
+<span class="font-data-table text-data-table text-on-surface font-semibold">3 Kolon</span>
+</div>
+<!-- Metric 4 -->
+<div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded-DEFAULT hover:shadow-sm transition-shadow">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-success-green">horizontal_rule</span>
+<span class="font-body-md text-body-md text-on-surface">Sabit Kolonlar</span>
+</div>
+<span class="font-data-table text-data-table text-on-surface font-semibold">0</span>
+</div>
+<!-- Metric 5 -->
+<div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded-DEFAULT hover:shadow-sm transition-shadow">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">dynamic_form</span>
+<span class="font-body-md text-body-md text-on-surface">Yüksek Kardinalite</span>
+</div>
+<span class="font-data-table text-data-table text-on-surface font-semibold">2 Kolon</span>
+</div>
+<!-- Metric 6 -->
+<div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded-DEFAULT hover:shadow-sm transition-shadow">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error">trending_up</span>
+<span class="font-body-md text-body-md text-on-surface">Aykırı Değerler</span>
+</div>
+<span class="font-data-table text-data-table text-on-surface font-semibold">Belirgin</span>
+</div>
+</div>
+</div>
+<!-- Missing Values Analysis -->
+<div class="col-span-12 lg:col-span-6 bg-white rounded-lg border border-border-subtle flex flex-col">
+<div class="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-container-lowest">
+<h3 class="font-label-mono text-label-mono text-slate-gray uppercase">Kayıp Veri Analizi</h3>
+<span class="material-symbols-outlined text-slate-gray text-sm cursor-help" title="Kolon bazında eksik değerlerin toplam kayda oranı.">info</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-faint border-b border-border-subtle">
+<tr>
+<th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-3">Kolon Adı</th>
+<th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-3">Kayıp Sayısı</th>
+<th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-3">Oran</th>
+<th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-3 w-32">Durum</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle font-data-table text-data-table">
+<tr class="hover:bg-surface-faint transition-colors">
+<td class="px-4 py-3 font-mono text-xs">Musteri_Yas</td>
+<td class="px-4 py-3">1,245</td>
+<td class="px-4 py-3">%12.4</td>
+<td class="px-4 py-3">
+<div class="w-full bg-surface-container-high rounded-full h-1.5">
+<div class="bg-warning-orange h-1.5 rounded-full" style="width: 12.4%"></div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-faint transition-colors">
+<td class="px-4 py-3 font-mono text-xs">Gelir_Grubu</td>
+<td class="px-4 py-3">890</td>
+<td class="px-4 py-3">%8.9</td>
+<td class="px-4 py-3">
+<div class="w-full bg-surface-container-high rounded-full h-1.5">
+<div class="bg-warning-orange h-1.5 rounded-full" style="width: 8.9%"></div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-faint transition-colors">
+<td class="px-4 py-3 font-mono text-xs">Son_Giris_Tarihi</td>
+<td class="px-4 py-3">45</td>
+<td class="px-4 py-3">%0.4</td>
+<td class="px-4 py-3">
+<div class="w-full bg-surface-container-high rounded-full h-1.5">
+<div class="bg-success-green h-1.5 rounded-full" style="width: 0.4%"></div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-faint transition-colors">
+<td class="px-4 py-3 font-mono text-xs">Urun_Kategorisi</td>
+<td class="px-4 py-3">0</td>
+<td class="px-4 py-3">%0.0</td>
+<td class="px-4 py-3">
+<div class="w-full bg-surface-container-high rounded-full h-1.5">
+<div class="bg-surface-container-high h-1.5 rounded-full" style="width: 0%"></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Visualization: Missing Values Bar Chart (Placeholder Structure) -->
+<div class="col-span-12 lg:col-span-6 bg-white rounded-lg border border-border-subtle p-4 flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-label-mono text-label-mono text-slate-gray uppercase">Kayıp Veri Dağılımı</h3>
+<div class="flex gap-2">
+<span class="w-2 h-2 rounded-full bg-warning-orange mt-1"></span>
+<span class="text-xs text-slate-gray">Eksik Değerler</span>
+</div>
+</div>
+<!-- Abstract Bar Chart Representation -->
+<div class="flex-1 flex items-end justify-between px-2 pb-6 pt-4 border-b border-l border-border-subtle relative h-48">
+<!-- Grid lines -->
+<div class="absolute w-full border-t border-border-subtle border-dashed bottom-12 left-0 z-0"></div>
+<div class="absolute w-full border-t border-border-subtle border-dashed bottom-24 left-0 z-0"></div>
+<div class="absolute w-full border-t border-border-subtle border-dashed bottom-36 left-0 z-0"></div>
+<!-- Bars -->
+<div class="w-12 bg-warning-orange/80 rounded-t-sm h-[60%] z-10 relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs bg-inverse-surface text-on-tertiary px-1 rounded transition-opacity">12.4%</div>
+<div class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-slate-gray font-mono truncate w-16 text-center">Yas</div>
+</div>
+<div class="w-12 bg-warning-orange/60 rounded-t-sm h-[45%] z-10 relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs bg-inverse-surface text-on-tertiary px-1 rounded transition-opacity">8.9%</div>
+<div class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-slate-gray font-mono truncate w-16 text-center">Gelir</div>
+</div>
+<div class="w-12 bg-success-green/40 rounded-t-sm h-[5%] z-10 relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs bg-inverse-surface text-on-tertiary px-1 rounded transition-opacity">0.4%</div>
+<div class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-slate-gray font-mono truncate w-16 text-center">Giris</div>
+</div>
+<div class="w-12 bg-surface-container-high rounded-t-sm h-[2%] z-10 relative group">
+<div class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-slate-gray font-mono truncate w-16 text-center">Kategori</div>
+</div>
+</div>
+</div>
+<!-- Duplicate Analysis -->
+<div class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex items-start gap-4">
+<div class="p-3 bg-surface-container rounded-DEFAULT">
+<span class="material-symbols-outlined text-on-surface-variant">content_copy</span>
+</div>
+<div>
+<h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-1">Tekrarlanan Kayıtlar</h3>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="font-headline-md text-headline-md text-on-surface">42</span>
+<span class="font-body-md text-body-md text-slate-gray">Satır</span>
+</div>
+<p class="font-body-md text-sm text-warning-orange mt-1 font-medium">Toplam verinin %0.42'si</p>
+<button class="mt-4 text-xs font-semibold text-primary uppercase hover:underline">Detayları Gör &amp; Temizle</button>
+</div>
+</div>
+<!-- Cardinality Analysis -->
+<div class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex items-start gap-4">
+<div class="p-3 bg-surface-container rounded-DEFAULT">
+<span class="material-symbols-outlined text-on-surface-variant">dynamic_form</span>
+</div>
+<div>
+<h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-1">Kardinalite (Benzersizlik)</h3>
+<div class="flex flex-col gap-1 mt-3">
+<div class="flex justify-between items-center text-sm border-b border-border-subtle pb-1">
+<span class="font-mono text-xs text-on-surface">Musteri_ID</span>
+<span class="text-xs text-slate-gray">Yüksek (10k)</span>
+</div>
+<div class="flex justify-between items-center text-sm pb-1">
+<span class="font-mono text-xs text-on-surface">Cinsiyet</span>
+<span class="text-xs text-slate-gray">Düşük (3)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Outlier Analysis -->
+<div class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex items-start gap-4">
+<div class="p-3 bg-error-container rounded-DEFAULT">
+<span class="material-symbols-outlined text-error">trending_up</span>
+</div>
+<div>
+<h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-1">Aykırı Değerler</h3>
+<p class="font-body-md text-sm text-on-surface mt-2">
+<span class="font-mono text-xs bg-surface-container px-1 py-0.5 rounded mr-1">Musteri_Yas</span> kolonunda <strong>3 standard sapma</strong> dışında 12 kayıt tespit edildi.
+                    </p>
+<button class="mt-3 text-xs font-semibold text-primary uppercase hover:underline">Dağılımı İncele</button>
+</div>
+</div>
+<!-- Data Type Check Table -->
+<div class="col-span-12 bg-white rounded-lg border border-border-subtle flex flex-col">
+<div class="p-4 border-b border-border-subtle bg-surface-container-lowest">
+<h3 class="font-label-mono text-label-mono text-slate-gray uppercase">Veri Tipi Kontrolü ve Öneriler</h3>
+</div>
+<div class="overflow-x-auto p-4">
+<table class="w-full text-left">
+<thead class="bg-surface-faint">
+<tr>
+<th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2 border-b border-border-subtle">Kolon Adı</th>
+<th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2 border-b border-border-subtle">Mevcut Tip</th>
+<th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2 border-b border-border-subtle">Tespit Edilen Örnek</th>
+<th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2 border-b border-border-subtle">Sistem Önerisi</th>
+<th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2 border-b border-border-subtle">Aksiyon</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle font-data-table text-data-table">
+<!-- Row 1 (Warning) -->
+<tr class="hover:bg-surface-faint transition-colors bg-warning-orange/5">
+<td class="px-4 py-3 font-mono text-xs">Musteri_Yas</td>
+<td class="px-4 py-3 text-slate-gray">object (string)</td>
+<td class="px-4 py-3 text-slate-gray">"34", "45"</td>
+<td class="px-4 py-3 font-medium text-warning-orange flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">warning</span> Sayısal (int64) olabilir
+                                </td>
+<td class="px-4 py-3">
+<button class="px-3 py-1 bg-white border border-border-subtle text-xs font-semibold rounded hover:bg-surface-container transition-colors">Dönüştür</button>
+</td>
+</tr>
+<!-- Row 2 (Warning) -->
+<tr class="hover:bg-surface-faint transition-colors bg-warning-orange/5">
+<td class="px-4 py-3 font-mono text-xs">Kayit_Tarihi</td>
+<td class="px-4 py-3 text-slate-gray">object (string)</td>
+<td class="px-4 py-3 text-slate-gray">"2023-10-12"</td>
+<td class="px-4 py-3 font-medium text-warning-orange flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">warning</span> Tarih (datetime) olabilir
+                                </td>
+<td class="px-4 py-3">
+<button class="px-3 py-1 bg-white border border-border-subtle text-xs font-semibold rounded hover:bg-surface-container transition-colors">Dönüştür</button>
+</td>
+</tr>
+<!-- Row 3 (OK) -->
+<tr class="hover:bg-surface-faint transition-colors">
+<td class="px-4 py-3 font-mono text-xs">Gelir</td>
+<td class="px-4 py-3 text-slate-gray">float64</td>
+<td class="px-4 py-3 text-slate-gray">15000.50</td>
+<td class="px-4 py-3 text-success-green flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span> Uygun görünüyor
+                                </td>
+<td class="px-4 py-3 text-slate-gray text-xs">-</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

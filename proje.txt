@@ -1,0 +1,256 @@
+1. Ana Sayfa — Veri Yükleme
+Uygulamanın başlangıç ekranı.
+Kullanıcıdan tek beklenen şey veri dosyasını yüklemek.
+Özellikler:
+CSV yükleme
+Sürükle-bırak alanı
+Dosya adı ve boyutu
+Satır sayısı
+Sütun sayısı
+Veri setinin ilk 10 satırının ön izlemesi
+Sayısal sütun sayısı
+Kategorik sütun sayısı
+Eksik değer bulunan sütun sayısı
+Duplicate kayıt sayısı
+Dosya yüklendikten sonra üst bölümde basit bir veri özeti oluşsun:
+BilgiÖrnekSatır10.000Sütun14Eksik değer327Duplicate42Sayısal sütun9Kategorik sütun5
+Altında büyük bir buton:
+“Veriyi Analiz Et”
+Bu butondan sonra Data Quality sayfasına geçilir.
+İlk versiyonda yalnızca CSV desteklemek bence yeterli. Excel desteğini sonradan ekleyebiliriz.
+2. Veri Kalitesi — Data Quality
+Bence uygulamanın esas değer üreten ekranı burası.
+Kullanıcı hiçbir Python kodu yazmadan verisindeki problemleri görebilmeli.
+Üst tarafta bir Veri Kalite Skoru bulunabilir:
+Veri Kalitesi
+78 / 100
+Ama skorun nasıl hesaplandığı açık olmalı; rastgele bir puan olmamalı.
+Örneğin şu kontrollerden oluşturulabilir:
+Eksik değer oranı
+Duplicate oranı
+Veri tipi problemleri
+Sabit sütunlar
+Çok yüksek cardinality
+Olası uç değerler
+Eksik değer analizi
+Her sütun için:
+SütunEksikOranAge125%4.3Torque40%1.4City162%5.6
+Ayrıca görsel olarak:
+Missing Values Bar Chart
+olmalı.
+Duplicate analizi
+Gösterilecek:
+Toplam tekrar eden kayıt: 42
+Duplicate oranı: %0.42
+İstenirse duplicate kayıtların birkaç örneği gösterilebilir.
+Veri tipi kontrolü
+Örneğin:
+Age          object       ⚠ Sayısal olabilir
+Torque       float64      ✓
+Date         object       ⚠ Tarih olabilir
+Type         object       ✓
+Sistem otomatik tahminde bulunabilir ama:
+“Bu sütunu kesinlikle integer yap”
+demek yerine:
+“Sayısal veri içeriyor olabilir.”
+şeklinde öneri vermeli.
+Sabit / düşük bilgi taşıyan sütunlar
+Örneğin:
+Country = Turkey (%100)
+gibi tek değer taşıyan sütunlar gösterilmeli.
+Cardinality
+Kategorik sütun için:
+City
+Unique değer: 762
+gibi olağan dışı yüksek unique değerler gösterilebilir.
+Uç değer analizi
+Sayısal sütunlarda IQR yöntemiyle:
+SütunOlası uç değerTorque32RPM51Age11
+Burada özellikle:
+“Uç değer otomatik olarak hata değildir.”
+uyarısı bulunmalı.
+Bu eğitim açısından da çok değerli.
+3. Veri Hazırlama — Preprocessing
+Bu ekran kullanıcının tespit edilen sorunlara müdahale ettiği yer.
+Ama uygulama orijinal dosyayı değiştirmemeli.
+Üstte:
+Orijinal Veri
+10.000 satır × 14 sütun
+İşlenmiş Veri
+9.958 satır × 13 sütun
+gibi karşılaştırma olsun.
+Eksik değer işlemleri
+Kullanıcı sütun bazında seçebilsin:
+Torque
+○ Değiştirme
+○ Eksik satırları kaldır
+○ Ortalama ile doldur
+○ Medyan ile doldur
+Kategorik sütunlarda:
+○ Mod ile doldur
+○ "Unknown" ile doldur
+Duplicate işlemleri
+42 duplicate kayıt bulundu.
+[Duplicate kayıtları kaldır]
+Sütun işlemleri
+Her sütunun yanında:
+Sütunu tut
+Sütunu kaldır
+Veri tipini değiştir
+gibi basit seçenekler olabilir.
+Veri tipi dönüşümü
+Örneğin:
+Date
+Mevcut: object
+Önerilen: datetime
+[Datetime'a dönüştür]
+Önizleme
+Her değişiklikten sonra:
+Before / After
+gösterilsin.
+Örneğin:
+Eksik değer
+Önce: 327
+Sonra: 0
+İşlem geçmişi
+Sağ tarafta:
+Yapılan İşlemler
+1. 42 duplicate kaldırıldı
+2. Torque → median ile dolduruldu
+3. Date → datetime
+4. ID sütunu kaldırıldı
+Bu bence uygulamanın güzel özelliklerinden biri olur.
+Sonuç
+Kullanıcı:
+“Temizlenmiş CSV'yi İndir”
+diyebilsin.
+Böylece uygulamanın gerçek problemi çözülmüş olur.
+4. Görselleştirme — Data Visualization
+Temizlenen verinin otomatik keşif ekranı.
+Bunu mümkün olduğunca otomatik yapalım.
+Sayısal değişkenler
+Bir sütun seçilir:
+Torque ▼
+Sistem otomatik olarak:
+Histogram
+Boxplot
+Temel istatistikler
+gösterir.
+Örneğin:
+Mean      39.98
+Median    40.10
+Std        9.96
+Min        3.80
+Max       76.60
+Kategorik değişkenler
+Örneğin:
+Type ▼
+Sistem:
+Bar chart
+Kategori sayıları
+Kategori oranları
+gösterir.
+İki değişken karşılaştırma
+Kullanıcı:
+X = Torque
+Y = Rotational Speed
+seçtiğinde scatter plot oluşur.
+Kategorik + sayısal seçildiğinde:
+Type + Torque
+boxplot gösterilebilir.
+Korelasyon
+Sayısal sütunlardan otomatik:
+Correlation Heatmap
+oluşturulsun.
+Kullanıcı ayrıca:
+En güçlü korelasyonlar
+tablosunu görebilir.
+Örneğin:
+Değişken 1Değişken 2KorelasyonAir TempProcess Temp0.88TorqueRPM-0.72
+Burada:
+Korelasyon nedensellik göstermez.
+uyarısı bulunmalı.
+Otomatik Grafik Önerisi
+Bence güzel ve basit bir özellik:
+Sistem veri tiplerine göre uygun grafikleri otomatik oluştursun.
+Kullanıcı grafik türlerini bilmek zorunda kalmasın.
+5. Portfolio — Yapılan Çalışmalar
+Bu ekran uygulamanın işlevinden bağımsız olsun.
+Ama şimdiye kadar yapılan çalışmaları göstermek için çok iyi olur.
+Üstte:
+Predictive Maintenance Project
+altında:
+AI4I 2020 Predictive Maintenance Dataset
+Proje süreci
+Timeline şeklinde:
+Data Understanding
+        ↓
+Data Cleaning
+        ↓
+EDA
+        ↓
+Statistical Analysis
+        ↓
+Logistic Regression
+        ↓
+Decision Tree
+        ↓
+Random Forest
+        ↓
+Cross Validation
+        ↓
+Model Optimization
+Kullanılan yöntemler
+Kartlar:
+Data Analysis
+Pandas
+NumPy
+Matplotlib
+Seaborn
+Statistics
+Confidence Interval
+Hypothesis Testing
+Correlation
+Regression
+Machine Learning
+Logistic Regression
+Decision Tree
+Random Forest
+Cross Validation
+GridSearchCV
+Model sonuçları
+Burada “başarı oranı” yerine gerçek metrikleri kullanalım.
+Örneğin:
+ModelPrecisionRecallF1PR-AUCLogistic Regression............Decision Tree............Random Forest............
+Değerler notebook'lardaki gerçek sonuçlardan alınmalı.
+Grafikler
+Daha önce oluşturduğunuz:
+Confusion Matrix
+Feature Importance
+Model Comparison
+ROC/PR Curve
+Veri dağılımı
+Korelasyon heatmap
+gibi en iyi 5–6 grafik gösterilebilir.
+Öğrenilenler
+En altta çok kısa:
+Data Cleaning
+Exploratory Data Analysis
+Statistical Testing
+Regression
+Classification
+Model Evaluation
+Cross Validation
+Hyperparameter Optimization
+şeklinde proje kapsamı gösterilebilir.
+Menü
+Uygulamanın sol tarafında sadece:
+TREX DataLab
+Dashboard
+Data Quality
+Preprocessing
+Visualization
+──────────
+Portfolio
+
+

@@ -1,0 +1,410 @@
+<!DOCTYPE html><html class="light" lang="tr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>T-REX DataLab - Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-mono": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom Scrollbar for tables/galleries */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fcf9f8; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E2E8F0; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1; 
+        }
+    </style>
+</head>
+<body class="bg-surface-faint text-on-surface font-body-md min-h-screen flex overflow-x-hidden">
+<!-- SideNavBar (Shared Component) -->
+<!-- Active: Portfolio -->
+<nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant flex flex-col py-6 px-4 z-50">
+<!-- Brand / Header -->
+<div class="flex items-center gap-3 mb-10 px-2">
+<img class="w-8 h-8 object-contain" data-alt="A minimalist, highly stylized dinosaur silhouette logo specifically designed for an industrial data platform. The logo is rendered in crisp white against a dark background, exuding technical precision and modern corporate software aesthetics. It should feel robust, clean, and highly professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5sN1s4lUNJid2HX3X_d0drS1XGFCPuAUAlQHSAQGOK2yJIPCBCLDfC2fp_KSeE2edegKP_rVFdYPa16fDshpLKhm8yIA1MgriJXeng7huilDzVGPEyR3yUw58PjuRDB07bwZfYPSxMpp7DuyO2xlUarnVARopSTHnE2GWIy42XeQiN2_DZ4sB9rK3_IscguQwLRIVu2fhmYO8ZqbEh3GQb_ha7L7j_pDtue5-ovcu_qj4-5gFmn_m">
+<div>
+<h1 class="font-headline-lg text-[20px] font-bold text-white leading-tight">trex DataLab</h1>
+<p class="font-body-md text-body-md text-white/70 text-[12px]">Precision Data Platform</p>
+</div>
+</div>
+<!-- CTA -->
+<button class="w-full bg-primary hover:bg-primary/90 text-on-primary font-body-md py-2 px-4 rounded-lg mb-8 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add</span>
+            Yeni Veri Yükle
+        </button>
+<!-- Navigation Links -->
+<div class="flex-1 space-y-1"><a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg group" href="#"><span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span><span class="font-body-md text-body-md">Dashboard</span></a><a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg group" href="#"><span class="material-symbols-outlined group-hover:scale-110 transition-transform">analytics</span><span class="font-body-md text-body-md">Data Quality</span></a><a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg group" href="#"><span class="material-symbols-outlined group-hover:scale-110 transition-transform">construction</span><span class="font-body-md text-body-md">Preprocessing</span></a><a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg group" href="#"><span class="material-symbols-outlined group-hover:scale-110 transition-transform">insights</span><span class="font-body-md text-body-md">Visualization</span></a><a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 shadow-sm pointer-events-none" href="#"><span class="material-symbols-outlined filled">folder_shared</span><span class="font-body-md text-body-md font-medium">Portfolio</span></a></div>
+<!-- Footer Links -->
+<div class="mt-auto space-y-1 pt-6 border-t border-white/10">
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">help</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</div>
+</nav>
+<!-- TopAppBar (Shared Component) -->
+<header class="fixed top-0 right-0 w-[calc(100%-260px)] h-16 bg-surface border-b border-border-subtle flex justify-between items-center px-gutter z-40">
+<!-- Left: Search & Nav -->
+<div class="flex items-center gap-8">
+<!-- Search Bar Placeholder -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container-low border border-border-subtle rounded-md text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Ara..." type="text">
+</div>
+<nav class="hidden md:flex gap-6">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Hızlı İşlemler</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Raporlar</a>
+</nav>
+</div>
+<!-- Right: Actions & Profile -->
+<div class="flex items-center gap-4">
+<button class="font-body-md text-body-md text-primary hover:text-primary-container font-medium transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                Dışa Aktar
+            </button>
+<div class="w-px h-6 bg-border-subtle mx-2"></div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors ml-2">
+<span class="material-symbols-outlined text-[28px]">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width mt-16 p-gutter w-full max-w-container-max mx-auto">
+<!-- Page Header -->
+<div class="mb-8 flex justify-between items-end border-b border-border-subtle pb-4">
+<div>
+<p class="font-label-mono text-label-mono text-primary uppercase mb-1">Portfolio &gt; Project Details</p>
+<h2 class="font-headline-md text-headline-md text-on-surface">Predictive Maintenance Project</h2>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-green/10 text-success-green border border-success-green/20">
+<span class="w-1.5 h-1.5 rounded-full bg-success-green mr-1.5"></span>
+                    Tamamlandı
+                </span>
+</div>
+</div>
+<!-- Process Timeline -->
+<section class="mb-stack-lg bg-surface border border-border-subtle rounded-lg p-6">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant uppercase mb-6 tracking-wider">Process Workflow</h3>
+<div class="flex items-center justify-between relative">
+<!-- Connecting Line -->
+<div class="absolute left-[5%] right-[5%] top-1/2 -translate-y-1/2 h-[2px] bg-border-subtle z-0"></div>
+<div class="absolute left-[5%] right-[20%] top-1/2 -translate-y-1/2 h-[2px] bg-primary z-0"></div> <!-- Progress -->
+<!-- Steps -->
+<div class="relative z-10 flex flex-col items-center gap-2 group">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">database</span>
+</div>
+<span class="font-label-mono text-[10px] text-on-surface text-center font-bold">Data<br>Understanding</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">mop</span>
+</div>
+<span class="font-label-mono text-[10px] text-on-surface text-center font-bold">Cleaning</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">troubleshoot</span>
+</div>
+<span class="font-label-mono text-[10px] text-on-surface text-center font-bold">EDA</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+</div>
+<span class="font-label-mono text-[10px] text-on-surface text-center font-bold">Analysis</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface border-2 border-primary text-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+</div>
+<span class="font-label-mono text-[10px] text-primary text-center font-bold">Modeling</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2 opacity-50">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-border-subtle text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</div>
+<span class="font-label-mono text-[10px] text-on-surface-variant text-center font-bold">Optimization</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout for Details -->
+<div class="grid grid-cols-12 gap-6 mb-stack-lg">
+<!-- Tech Stack (Left Column, Span 4) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<section class="bg-surface border border-border-subtle rounded-lg p-5 flex-1">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant uppercase mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">terminal</span> Tech Stack
+                    </h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 bg-surface-container-low border border-border-subtle rounded font-label-mono text-data-table text-on-surface hover:bg-surface-container transition-colors cursor-default">Pandas</span>
+<span class="px-3 py-1.5 bg-surface-container-low border border-border-subtle rounded font-label-mono text-data-table text-on-surface hover:bg-surface-container transition-colors cursor-default">NumPy</span>
+<span class="px-3 py-1.5 bg-surface-container-low border border-border-subtle rounded font-label-mono text-data-table text-on-surface hover:bg-surface-container transition-colors cursor-default">Scikit-learn</span>
+<span class="px-3 py-1.5 bg-surface-container-low border border-border-subtle rounded font-label-mono text-data-table text-on-surface hover:bg-surface-container transition-colors cursor-default">XGBoost</span>
+<span class="px-3 py-1.5 bg-surface-container-low border border-border-subtle rounded font-label-mono text-data-table text-on-surface hover:bg-surface-container transition-colors cursor-default">Matplotlib</span>
+<span class="px-3 py-1.5 bg-surface-container-low border border-border-subtle rounded font-label-mono text-data-table text-on-surface hover:bg-surface-container transition-colors cursor-default">Seaborn</span>
+</div>
+</section>
+<section class="bg-surface border border-border-subtle rounded-lg p-5">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant uppercase mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">info</span> Project Summary
+                    </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">
+                        Bu proje, endüstriyel sensör verilerini kullanarak makine arızalarını önceden tahmin etmeyi amaçlamaktadır. Sınıf dengesizliği (class imbalance) problemi SMOTE tekniği ile çözülmüş ve çeşitli ağaç tabanlı modeller karşılaştırılmıştır.
+                    </p>
+</section>
+</div>
+<!-- Model Results & Visuals (Right Column, Span 8) -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+<!-- Model Results Table -->
+<section class="bg-surface border border-border-subtle rounded-lg overflow-hidden">
+<div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">table_chart</span> Model Results
+                        </h3>
+<button class="text-primary hover:text-primary-container p-1 rounded transition-colors" title="Export Table">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-faint border-b border-border-subtle">
+<th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant">Model</th>
+<th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant text-right">Precision</th>
+<th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant text-right">Recall</th>
+<th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant text-right">F1-Score</th>
+<th class="py-3 px-4 font-label-mono text-[11px] uppercase tracking-wider text-on-surface-variant text-right">PR-AUC</th>
+</tr>
+</thead>
+<tbody class="font-data-table text-data-table divide-y divide-border-subtle">
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-2.5 px-4 text-on-surface font-medium">Logistic Regression</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.78</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.82</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.80</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.75</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-2.5 px-4 text-on-surface font-medium">Random Forest</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.89</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.85</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.87</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.91</td>
+</tr>
+<!-- Highlighted Best Model -->
+<tr class="bg-primary/5 hover:bg-primary/10 transition-colors border-l-2 border-l-primary group">
+<td class="py-2.5 px-4 text-primary font-bold flex items-center gap-2">
+                                        XGBoost <span class="material-symbols-outlined text-[14px] text-warning-orange" title="Best Performing">star</span>
+</td>
+<td class="py-2.5 px-4 text-on-surface font-medium text-right">0.92</td>
+<td class="py-2.5 px-4 text-on-surface font-medium text-right">0.89</td>
+<td class="py-2.5 px-4 text-on-surface font-medium text-right">0.90</td>
+<td class="py-2.5 px-4 text-on-surface font-medium text-right">0.94</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-2.5 px-4 text-on-surface font-medium">SVM (Linear)</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.81</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.77</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.79</td>
+<td class="py-2.5 px-4 text-on-surface-variant text-right">0.80</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</div>
+<!-- Visualization Gallery -->
+<section class="mb-stack-lg">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">gallery_thumbnail</span> Visualization Gallery
+                </h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Chart Card 1 -->
+<div class="bg-surface border border-border-subtle rounded-lg overflow-hidden flex flex-col group hover:shadow-sm transition-shadow">
+<div class="p-3 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+<span class="font-label-mono text-[11px] font-bold text-on-surface">Confusion Matrix (XGBoost)</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[16px]">open_in_full</span></button>
+</div>
+<div class="h-48 bg-surface-faint relative p-4 flex items-center justify-center">
+<!-- Simulated Chart Graphic -->
+<div class="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30"></div>
+<div class="grid grid-cols-2 gap-1 w-32 h-32 z-10 relative">
+<div class="bg-primary/20 flex items-center justify-center font-label-mono text-xs text-primary border border-primary/30">TN</div>
+<div class="bg-error/20 flex items-center justify-center font-label-mono text-xs text-error border border-error/30">FP</div>
+<div class="bg-warning-orange/20 flex items-center justify-center font-label-mono text-xs text-warning-orange border border-warning-orange/30">FN</div>
+<div class="bg-primary/80 flex items-center justify-center font-label-mono text-xs text-white border border-primary font-bold">TP</div>
+</div>
+</div>
+</div>
+<!-- Chart Card 2 -->
+<div class="bg-surface border border-border-subtle rounded-lg overflow-hidden flex flex-col group hover:shadow-sm transition-shadow">
+<div class="p-3 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+<span class="font-label-mono text-[11px] font-bold text-on-surface">Feature Importance</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[16px]">open_in_full</span></button>
+</div>
+<div class="h-48 bg-surface-faint relative p-4 flex items-end justify-around gap-2 pb-6">
+<!-- Simulated Bar Chart -->
+<div class="w-8 bg-slate-gray/30 h-[20%] rounded-t-sm relative group-hover:bg-slate-gray/50 transition-colors"><span class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] font-label-mono text-on-surface-variant">F4</span></div>
+<div class="w-8 bg-slate-gray/40 h-[45%] rounded-t-sm relative group-hover:bg-slate-gray/60 transition-colors"><span class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] font-label-mono text-on-surface-variant">F1</span></div>
+<div class="w-8 bg-primary/60 h-[70%] rounded-t-sm relative group-hover:bg-primary/80 transition-colors"><span class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] font-label-mono text-on-surface-variant">F3</span></div>
+<div class="w-8 bg-primary h-[90%] rounded-t-sm relative shadow-[0_0_10px_rgba(0,107,51,0.2)]"><span class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] font-label-mono font-bold text-primary">F2</span></div>
+</div>
+</div>
+<!-- Chart Card 3 -->
+<div class="bg-surface border border-border-subtle rounded-lg overflow-hidden flex flex-col group hover:shadow-sm transition-shadow">
+<div class="p-3 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+<span class="font-label-mono text-[11px] font-bold text-on-surface">ROC Curve</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[16px]">open_in_full</span></button>
+</div>
+<div class="h-48 bg-surface-faint relative p-4 flex items-center justify-center">
+<div class="absolute inset-4 border-l border-b border-border-subtle flex items-end">
+<!-- Diagonal Random Guess Line -->
+<svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+<line stroke="#cbd5e1" stroke-dasharray="4" stroke-width="1" x1="0" x2="100%" y1="100%" y2="0"></line>
+</svg>
+<!-- ROC Curve Path -->
+<svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+<path d="M0,100 C10,40 30,10 100,0" fill="none" stroke="#006b33" stroke-width="2"></path>
+</svg>
+<div class="absolute bottom-4 right-4 bg-surface/80 border border-border-subtle p-1 px-2 rounded text-[9px] font-label-mono text-primary backdrop-blur-sm">AUC: 0.94</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Scope Tags (Footer Area) -->
+<section class="border-t border-border-subtle pt-6 pb-12 flex flex-wrap items-center gap-3">
+<span class="font-label-mono text-label-mono text-on-surface-variant mr-2">Scope:</span>
+<span class="px-2.5 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-[11px] text-on-surface-variant">Data Cleaning</span>
+<span class="px-2.5 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-[11px] text-on-surface-variant">EDA</span>
+<span class="px-2.5 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-[11px] text-on-surface-variant">Feature Engineering</span>
+<span class="px-2.5 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-[11px] text-on-surface-variant">Classification</span>
+<span class="px-2.5 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-[11px] text-on-surface-variant">Imbalanced Data Handling</span>
+</section>
+</main>
+
+
+</body></html>

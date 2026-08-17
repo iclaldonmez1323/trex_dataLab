@@ -1,0 +1,303 @@
+<!DOCTYPE html><html class="light" lang="tr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>T-REX DataLab - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-mono": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-faint min-h-screen text-on-surface font-body-md text-body-md overflow-x-hidden flex">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant flat no shadows flex flex-col py-6 px-4 z-20">
+<div class="flex items-center gap-3 mb-10 px-2">
+<span aria-label="T-REX Logo" class="material-symbols-outlined font-headline-lg text-headline-lg font-bold text-white" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<div>
+<h1 class="font-headline-md text-headline-md text-white m-0 leading-tight">trex DataLab</h1>
+<p class="font-label-mono text-label-mono text-white/70 uppercase">Precision Data Platform</p>
+</div>
+</div>
+<button class="w-full mb-8 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined">upload</span>
+            Yeni Veri Yükle
+        </button>
+<ul class="flex flex-col gap-2 flex-grow"><li class=""><a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="#"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span><span class="font-body-md text-body-md font-medium">Dashboard</span></a></li><li class=""><a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="#"><span class="material-symbols-outlined">analytics</span><span class="font-body-md text-body-md">Data Quality</span></a></li><li class=""><a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="#"><span class="material-symbols-outlined">construction</span><span class="font-body-md text-body-md">Preprocessing</span></a></li><li class=""><a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="#"><span class="material-symbols-outlined">insights</span><span class="font-body-md text-body-md">Visualization</span></a></li><li class=""><a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="#"><span class="material-symbols-outlined">folder_shared</span><span class="font-body-md text-body-md">Portfolio</span></a></li></ul>
+<div class="mt-auto pt-6 border-t border-white/10">
+<ul class="flex flex-col gap-2">
+<li class="">
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-sidebar-width flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-260px)] z-10 border-b border-border-subtle bg-surface flat no shadows flex justify-between items-center h-16 px-gutter">
+<div class="flex items-center gap-8">
+<!-- Search -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full pl-9 pr-4 py-1.5 bg-surface-container-low border border-border-subtle rounded text-sm focus:outline-none focus:border-primary transition-colors font-body-md text-body-md" placeholder="Arama..." type="text">
+</div>
+<!-- Nav Links -->
+<nav class="hidden lg:flex gap-6">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="#">Hızlı İşlemler</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="#">Raporlar</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm">
+                    Dışa Aktar
+                </button>
+<button class="text-on-surface-variant hover:text-primary transition-colors ml-2">
+<span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 pt-24 px-gutter pb-12 max-w-container-max mx-auto w-full">
+<!-- Header Section -->
+<div class="mb-8">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Yükleme ve Analiz</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Sistem analizi için CSV veri setinizi yükleyin veya mevcut veriyi inceleyin.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+<!-- Upload Zone (Takes 1 column) -->
+<div class="col-span-1 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-center items-center h-64 border-dashed border-2 border-slate-gray/30 hover:border-primary/50 transition-colors cursor-pointer group bg-surface-container-lowest">
+<div class="h-16 w-16 bg-secondary-container rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">upload_file</span>
+</div>
+<h3 class="font-body-lg text-body-lg font-medium text-on-surface mb-1">Dosyayı buraya sürükleyin</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-center mb-4">veya bilgisayarınızdan seçin (CSV, max 50MB)</p>
+<button class="px-4 py-2 bg-surface-container border border-border-subtle rounded text-on-surface hover:bg-surface-container-highest transition-colors font-body-md text-body-md">
+                        Göz At
+                    </button>
+</div>
+<!-- Summary Metrics (Takes 2 columns) -->
+<div class="col-span-1 xl:col-span-2 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-6">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-success-green text-sm">check_circle</span>
+<h3 class="font-body-lg text-body-lg font-medium text-on-surface">Müşteri_Verisi_2023_Q4.csv</h3>
+</div>
+<p class="font-label-mono text-label-mono text-on-surface-variant">YÜKLENDI • 14.2 MB</p>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors p-1">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+<div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+<p class="font-label-mono text-label-mono text-slate-gray mb-1">SATIR (ROW)</p>
+<p class="font-headline-md text-headline-md text-on-surface">10,000</p>
+</div>
+<div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+<p class="font-label-mono text-label-mono text-slate-gray mb-1">SÜTUN (COLUMN)</p>
+<p class="font-headline-md text-headline-md text-on-surface">14</p>
+</div>
+<div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg border-l-4 border-l-warning-orange">
+<p class="font-label-mono text-label-mono text-slate-gray mb-1">EKSİK (MISSING)</p>
+<p class="font-headline-md text-headline-md text-warning-orange">327</p>
+</div>
+<div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+<p class="font-label-mono text-label-mono text-slate-gray mb-1">YİNELENEN (DUP)</p>
+<p class="font-headline-md text-headline-md text-on-surface">42</p>
+</div>
+<div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+<p class="font-label-mono text-label-mono text-slate-gray mb-1">SAYISAL (NUM)</p>
+<p class="font-headline-md text-headline-md text-primary">9</p>
+</div>
+<div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+<p class="font-label-mono text-label-mono text-slate-gray mb-1">KATEGORİK (CAT)</p>
+<p class="font-headline-md text-headline-md text-tertiary">5</p>
+</div>
+</div>
+</div>
+</div>
+<!-- CTA -->
+<div class="flex justify-end mb-8">
+<button class="bg-primary hover:bg-primary-container text-on-primary font-body-lg text-body-lg font-medium py-3 px-8 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">troubleshoot</span>
+                    Veriyi Analiz Et
+                </button>
+</div>
+<!-- Data Table Preview -->
+<div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+<h3 class="font-body-lg text-body-lg font-medium text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">table</span>
+                        Veri Önizleme
+                    </h3>
+<span class="font-label-mono text-label-mono text-slate-gray bg-surface-container-low px-2 py-1 rounded">İLK 10 SATIR</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-max">
+<thead>
+<tr class="bg-surface-container-low border-b border-border-subtle">
+<th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">ID</th>
+<th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">AGE</th>
+<th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">INCOME</th>
+<th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">SCORE</th>
+<th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">CATEGORY</th>
+<th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">STATUS</th>
+</tr>
+</thead>
+<tbody class="font-data-table text-data-table text-on-surface">
+<tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+<td class="py-2 px-4 font-label-mono text-slate-gray">1001</td>
+<td class="py-2 px-4 text-right">34</td>
+<td class="py-2 px-4 text-right">65,000</td>
+<td class="py-2 px-4 text-right">88.5</td>
+<td class="py-2 px-4">Premium</td>
+<td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container">Active</span></td>
+</tr>
+<tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+<td class="py-2 px-4 font-label-mono text-slate-gray">1002</td>
+<td class="py-2 px-4 text-right">45</td>
+<td class="py-2 px-4 text-right">82,500</td>
+<td class="py-2 px-4 text-right">92.0</td>
+<td class="py-2 px-4">Standard</td>
+<td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container">Active</span></td>
+</tr>
+<tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+<td class="py-2 px-4 font-label-mono text-slate-gray">1003</td>
+<td class="py-2 px-4 text-right">28</td>
+<td class="py-2 px-4 text-right">NaN <span class="material-symbols-outlined text-warning-orange text-[12px] ml-1" title="Missing Value">warning</span></td>
+<td class="py-2 px-4 text-right">76.2</td>
+<td class="py-2 px-4">Standard</td>
+<td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-error-container text-on-error-container">Inactive</span></td>
+</tr>
+<tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+<td class="py-2 px-4 font-label-mono text-slate-gray">1004</td>
+<td class="py-2 px-4 text-right">52</td>
+<td class="py-2 px-4 text-right">120,000</td>
+<td class="py-2 px-4 text-right">95.8</td>
+<td class="py-2 px-4">Premium</td>
+<td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container">Active</span></td>
+</tr>
+<tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+<td class="py-2 px-4 font-label-mono text-slate-gray">1005</td>
+<td class="py-2 px-4 text-right">31</td>
+<td class="py-2 px-4 text-right">45,000</td>
+<td class="py-2 px-4 text-right">62.1</td>
+<td class="py-2 px-4">Basic</td>
+<td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container">Active</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+
+
+</body></html>
