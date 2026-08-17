@@ -158,6 +158,16 @@ async def upload_csv(file: UploadFile = File(...)):
     return JSONResponse(content=result_data)
 
 
+@app.get("/api/session")
+async def get_session():
+    if not active_dataset:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Aktif veri seti bulunamadı."
+        )
+    return JSONResponse(content=active_dataset)
+
+
 @app.get("/api/active-dataset")
 async def get_active_dataset():
     if not active_dataset:
@@ -165,6 +175,7 @@ async def get_active_dataset():
     return JSONResponse(content={"active": True, "data": active_dataset})
 
 
+@app.post("/api/reset")
 @app.delete("/api/reset")
 async def reset_dataset():
     global active_dataset
