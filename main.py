@@ -218,6 +218,70 @@ async def get_active_dataset():
     return JSONResponse(content={"active": True, "data": active_dataset})
 
 
+@app.get("/api/search")
+async def search_dataset(q: Optional[str] = None, limit: int = 10):
+    global active_dataset, active_df_cache
+    if active_df_cache is None or not active_dataset:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Aktif veri seti bulunamadı."
+        )
+
+    df = active_df_cache
+    total_rows = int(len(df))
+    total_cols = int(len(df.columns))
+    cols_list = [str(c) for c in df.columns]
+
+    query_str = (q or "").strip()
+
+    if not query_str:
+        preview_df = df.head(limit)
+        results = []
+        for _, row in preview_df.iterrows():
+            row_dict = {}
+            for col in df.columns:
+                row_dict[col] = clean_val_for_json(row[col])
+            results.append(row_dict)
+
+        return JSONResponse(content={
+            "q": "",
+            "total_matches": total_rows,
+            "limit": limit,
+            "rows": total_rows,
+            "columns": total_cols,
+            "results": results,
+            "columns_list": cols_list
+        })
+
+    # Case-insensitive search across all columns
+    query_lower = query_str.lower()
+    mask = pd.Series(False, index=df.index)
+    for col in df.columns:
+        col_str = df[col].fillna("").astype(str).str.lower()
+        mask = mask | col_str.str.contains(query_lower, regex=False, na=False)
+
+    matched_df = df[mask]
+    total_matches = int(len(matched_df))
+
+    limited_df = matched_df.head(limit)
+    results = []
+    for _, row in limited_df.iterrows():
+        row_dict = {}
+        for col in df.columns:
+            row_dict[col] = clean_val_for_json(row[col])
+        results.append(row_dict)
+
+    return JSONResponse(content={
+        "q": query_str,
+        "total_matches": total_matches,
+        "limit": limit,
+        "rows": total_rows,
+        "columns": total_cols,
+        "results": results,
+        "columns_list": cols_list
+    })
+
+
 @app.get("/api/quality")
 async def get_quality_report():
     global active_dataset, active_df_cache

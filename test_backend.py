@@ -46,6 +46,31 @@ def test_api():
     assert r.json()["filename"] == "test_data.csv"
     print("[OK] GET /api/session OK")
 
+    print("Testing GET /api/search ...")
+    # Empty query (returns preview 10 rows)
+    r_search_empty = client.get("/api/search")
+    assert r_search_empty.status_code == 200
+    s_data = r_search_empty.json()
+    assert s_data["total_matches"] == 12
+    assert len(s_data["results"]) == 10
+
+    # Query with match (case-insensitive)
+    r_search_ankara = client.get("/api/search?q=ankara")
+    assert r_search_ankara.status_code == 200
+    assert r_search_ankara.json()["total_matches"] == 2
+
+    # Query with numeric match
+    r_search_num = client.get("/api/search?q=82500")
+    assert r_search_num.status_code == 200
+    assert r_search_num.json()["total_matches"] == 1
+
+    # Query with no match
+    r_search_none = client.get("/api/search?q=nonexistent_xyz")
+    assert r_search_none.status_code == 200
+    assert r_search_none.json()["total_matches"] == 0
+    assert len(r_search_none.json()["results"]) == 0
+    print("[OK] GET /api/search tests passed")
+
     print("Testing GET /api/quality ...")
     r = client.get("/api/quality")
     assert r.status_code == 200

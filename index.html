@@ -192,7 +192,7 @@
                 <!-- Search -->
                 <div class="relative w-64">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-                    <input class="w-full pl-9 pr-4 py-1.5 bg-surface-container-low border border-border-subtle rounded text-sm focus:outline-none focus:border-primary transition-colors font-body-md text-body-md" placeholder="Arama..." type="text">
+                    <input id="searchInput" class="w-full pl-9 pr-4 py-1.5 bg-surface-container-low border border-border-subtle rounded text-sm focus:outline-none focus:border-primary transition-colors font-body-md text-body-md" placeholder="Arama..." type="text">
                 </div>
                 <!-- Nav Links -->
                 <nav class="hidden lg:flex gap-6">
@@ -321,7 +321,7 @@
                         <span class="material-symbols-outlined text-primary text-lg">table</span>
                         Veri Önizleme
                     </h3>
-                    <span class="font-label-mono text-label-mono text-slate-gray bg-surface-container-low px-2 py-1 rounded">İLK 10 SATIR</span>
+                    <span id="tableHeaderBadge" class="font-label-mono text-label-mono text-slate-gray bg-surface-container-low px-2 py-1 rounded">İLK 10 SATIR</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse min-w-max">
@@ -351,6 +351,7 @@
             : '';
 
         // DOM Elements
+        const searchInput = document.getElementById('searchInput');
         const csvFileInput = document.getElementById('csvFileInput');
         const dropZone = document.getElementById('dropZone');
         const sidebarUploadBtn = document.getElementById('sidebarUploadBtn');
@@ -370,11 +371,13 @@
         const metricCategorical = document.getElementById('metricCategorical');
         const deleteDatasetBtn = document.getElementById('deleteDatasetBtn');
         const analyzeCtaBtn = document.getElementById('analyzeCtaBtn');
+        const tableHeaderBadge = document.getElementById('tableHeaderBadge');
         const previewTableHead = document.getElementById('previewTableHead');
         const previewTableBody = document.getElementById('previewTableBody');
 
         // State
         let currentDataset = null;
+        let searchTimeout = null;
 
         // Utilities
         function formatBytes(bytes) {
@@ -414,6 +417,7 @@
         function renderDataset(data) {
             currentDataset = data;
             hideError();
+            if (searchInput) searchInput.value = '';
 
             // Status Indicator & File Info
             statusIndicatorIcon.textContent = 'check_circle';
@@ -441,6 +445,8 @@
         // Render Empty State
         function renderEmptyState() {
             currentDataset = null;
+            if (searchInput) searchInput.value = '';
+            if (tableHeaderBadge) tableHeaderBadge.textContent = 'İLK 10 SATIR';
 
             // Status Indicator & File Info
             statusIndicatorIcon.textContent = 'radio_button_unchecked';
@@ -479,10 +485,36 @@
             `;
         }
 
+        // Search in Dataset
+        function performSearch(query) {
+            const qStr = (query || '').trim();
+            fetch(API_BASE + '/api/search?q=' + encodeURIComponent(qStr) + '&limit=10')
+                .then(res => {
+                    if (res.status === 409) {
+                        renderEmptyState();
+                        return null;
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data) renderPreviewTable(data);
+                })
+                .catch(err => console.error('Arama hatası:', err));
+        }
+
         // Render Dynamic Preview Table
         function renderPreviewTable(data) {
-            const columns = data.columns_list || (data.preview && data.preview.length > 0 ? Object.keys(data.preview[0]) : []);
-            const rows = data.preview || [];
+            const rows = data.results || data.preview || [];
+            const columns = data.columns_list || (rows.length > 0 ? Object.keys(rows[0]) : []);
+
+            if (tableHeaderBadge) {
+                if (data.q && data.q.trim() !== '') {
+                    const totalMatches = data.total_matches !== undefined ? data.total_matches : rows.length;
+                    tableHeaderBadge.textContent = `${formatNumber(totalMatches)} EŞLEŞME (${data.q})`;
+                } else {
+                    tableHeaderBadge.textContent = 'İLK 10 SATIR';
+                }
+            }
 
             if (!columns || columns.length === 0) {
                 previewTableHead.innerHTML = `
@@ -500,9 +532,8 @@
 
             // Generate Table Headers
             let headerHtml = '<tr class="bg-surface-container-low border-b border-border-subtle">';
-            columns.forEach((col, index) => {
-                const isFirst = index === 0;
-                headerHtml += `<th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase tracking-wider ${isFirst ? '' : ''}">${escapeHtml(col)}</th>`;
+            columns.forEach((col) => {
+                headerHtml += `<th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase tracking-wider">${escapeHtml(col)}</th>`;
             });
             headerHtml += '</tr>';
             previewTableHead.innerHTML = headerHtml;
@@ -511,7 +542,12 @@
             if (rows.length === 0) {
                 previewTableBody.innerHTML = `
                     <tr>
-                        <td colspan="${columns.length}" class="py-6 px-4 text-center text-on-surface-variant">Kayıt bulunamadı.</td>
+                        <td colspan="${columns.length}" class="py-8 px-4 text-center text-on-surface-variant">
+                            <div class="flex flex-col items-center justify-center gap-1.5">
+                                <span class="material-symbols-outlined text-2xl text-slate-gray">search_off</span>
+                                <span>Eşleşen kayıt bulunamadı.</span>
+                            </div>
+                        </td>
                     </tr>
                 `;
                 return;
@@ -729,6 +765,15 @@
                     window.location.href = 'data-quality.html';
                 }
             });
+
+            // Search Input Listener
+            if (searchInput) {
+                searchInput.addEventListener('input', function (e) {
+                    const q = e.target.value.trim();
+                    if (searchTimeout) clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => performSearch(q), 300);
+                });
+            }
         });
     </script>
     <script src="/static/components/export-pdf.js"></script>

@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>trex DataLab - Görselleştirme (Visualization)</title>
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -321,6 +322,7 @@
                                     </button>
                                 </div>
                             </div>
+                            <div id="univariateError" class="hidden mb-2 p-2 rounded bg-error-container text-on-error-container text-xs"></div>
                             <div id="univariateChartContainer" class="w-full h-[280px] sm:h-[300px]"></div>
                         </div>
 
@@ -470,6 +472,7 @@
         const univariateChartContainer = document.getElementById('univariateChartContainer');
         const univariateStatsTitle = document.getElementById('univariateStatsTitle');
         const univariateStatsContainer = document.getElementById('univariateStatsContainer');
+        const univariateError = document.getElementById('univariateError');
         const bivariateXSelect = document.getElementById('bivariateXSelect');
         const bivariateYSelect = document.getElementById('bivariateYSelect');
         const updateBivariateBtn = document.getElementById('updateBivariateBtn');
@@ -726,87 +729,107 @@
         // 2. Univariate Analysis
         // ==========================================
         async function loadUnivariateAnalysis(colName) {
+            console.log('Odak değişkeni seçildi:', colName);
             if (!colName || !overviewData) return;
-            const isNumeric = (overviewData.numeric_columns || []).includes(colName);
-            univariateColumnBadge.textContent = `Sütun: ${colName}`;
 
-            if (isNumeric) {
-                univariateChartTitle.textContent = `Histogram Dağılımı (${colName})`;
-                univariateStatsTitle.textContent = `İstatistiksel Özet (${colName})`;
+            if (univariateError) univariateError.classList.add('hidden');
 
-                // Render Numeric Stats
-                const stats = (overviewData.stats && overviewData.stats[colName]) || {};
-                univariateStatsContainer.innerHTML = `
-                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                        <span class="font-body-md text-on-surface-variant text-sm">Gözlem Sayısı</span>
-                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatNumber(stats.count)}</span>
-                    </div>
-                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                        <span class="font-body-md text-on-surface-variant text-sm">Ortalama (Mean)</span>
-                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.mean)}</span>
-                    </div>
-                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                        <span class="font-body-md text-on-surface-variant text-sm">Medyan (Median)</span>
-                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.median)}</span>
-                    </div>
-                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                        <span class="font-body-md text-on-surface-variant text-sm">Standart Sapma</span>
-                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.std)}</span>
-                    </div>
-                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                        <span class="font-body-md text-on-surface-variant text-sm">Minimum</span>
-                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.min)}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="font-body-md text-on-surface-variant text-sm">Maksimum</span>
-                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.max)}</span>
-                    </div>
-                `;
+            try {
+                const isNumeric = (overviewData.numeric_columns || []).includes(colName);
+                if (univariateColumnBadge) univariateColumnBadge.textContent = `Sütun: ${colName}`;
 
-                // Fetch & Render Histogram
-                try {
-                    const res = await fetch(API_BASE + `/api/visualization/chart?type=histogram&column=${encodeURIComponent(colName)}`);
-                    if (res.ok) {
-                        const chartData = await res.json();
-                        const chart = getOrCreateChart('univariateChartContainer');
-                        renderHistogramChart(chart, chartData, colName);
-                    }
-                } catch (e) {
-                    console.error('Histogram fetch error:', e);
-                }
+                if (isNumeric) {
+                    if (univariateChartTitle) univariateChartTitle.textContent = `Histogram Dağılımı (${colName})`;
+                    if (univariateStatsTitle) univariateStatsTitle.textContent = `İstatistiksel Özet (${colName})`;
 
-            } else {
-                // Categorical
-                univariateChartTitle.textContent = `Kategori Dağılımı (${colName})`;
-                univariateStatsTitle.textContent = `Kategori Oranları (${colName})`;
-
-                // Render Categorical Breakdown
-                const catSummary = (overviewData.categorical_summary && overviewData.categorical_summary[colName]) || [];
-                let catListHtml = '<div class="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">';
-                catSummary.forEach(item => {
-                    catListHtml += `
-                        <div class="flex justify-between items-center border-b border-surface-container pb-1.5 text-xs">
-                            <span class="font-medium text-on-surface truncate max-w-[140px]" title="${escapeHtml(item.value)}">${escapeHtml(item.value)}</span>
-                            <div class="flex items-center gap-2 font-label-mono">
-                                <span class="text-slate-gray font-semibold">${formatNumber(item.count)}</span>
-                                <span class="bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">%${formatDecimal(item.ratio, 1)}</span>
+                    // Render Numeric Stats
+                    const stats = (overviewData.stats || {})[colName] || {};
+                    if (univariateStatsContainer) {
+                        univariateStatsContainer.innerHTML = `
+                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                                <span class="font-body-md text-on-surface-variant text-sm">Gözlem Sayısı</span>
+                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatNumber(stats.count)}</span>
                             </div>
-                        </div>
-                    `;
-                });
-                catListHtml += '</div>';
-                univariateStatsContainer.innerHTML = catListHtml;
-
-                // Fetch & Render Bar
-                try {
-                    const res = await fetch(API_BASE + `/api/visualization/chart?type=bar&column=${encodeURIComponent(colName)}`);
-                    if (res.ok) {
-                        const chartData = await res.json();
-                        const chart = getOrCreateChart('univariateChartContainer');
-                        renderBarChart(chart, chartData, colName);
+                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                                <span class="font-body-md text-on-surface-variant text-sm">Ortalama (Mean)</span>
+                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.mean)}</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                                <span class="font-body-md text-on-surface-variant text-sm">Medyan (Median)</span>
+                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.median)}</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                                <span class="font-body-md text-on-surface-variant text-sm">Standart Sapma</span>
+                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.std)}</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                                <span class="font-body-md text-on-surface-variant text-sm">Minimum</span>
+                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.min)}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-body-md text-on-surface-variant text-sm">Maksimum</span>
+                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.max)}</span>
+                            </div>
+                        `;
                     }
-                } catch (e) {
-                    console.error('Bar fetch error:', e);
+
+                    // Fetch & Render Histogram
+                    const res = await fetch(API_BASE + `/api/visualization/chart?type=histogram&column=${encodeURIComponent(colName)}`);
+                    if (!res.ok) {
+                        throw new Error(`Histogram verisi alınamadı (HTTP ${res.status})`);
+                    }
+                    const chartData = await res.json();
+                    const chart = getOrCreateChart('univariateChartContainer');
+                    if (chart) {
+                        renderHistogramChart(chart, chartData, colName);
+                        console.log('Histogram çizildi:', colName, (chartData.bin_labels || []).length, 'bin');
+                    }
+
+                } else {
+                    // Categorical
+                    if (univariateChartTitle) univariateChartTitle.textContent = `Kategori Dağılımı (${colName})`;
+                    if (univariateStatsTitle) univariateStatsTitle.textContent = `Kategori Oranları (${colName})`;
+
+                    // Render Categorical Breakdown
+                    const catSummary = (overviewData.categorical_summary || {})[colName] || [];
+                    if (univariateStatsContainer) {
+                        let catListHtml = '<div class="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">';
+                        if (catSummary.length === 0) {
+                            catListHtml += '<div class="text-xs text-slate-gray py-4 text-center">Özet veri bulunamadı.</div>';
+                        } else {
+                            catSummary.forEach(item => {
+                                catListHtml += `
+                                    <div class="flex justify-between items-center border-b border-surface-container pb-1.5 text-xs">
+                                        <span class="font-medium text-on-surface truncate max-w-[140px]" title="${escapeHtml(item.value)}">${escapeHtml(item.value)}</span>
+                                        <div class="flex items-center gap-2 font-label-mono">
+                                            <span class="text-slate-gray font-semibold">${formatNumber(item.count)}</span>
+                                            <span class="bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">%${formatDecimal(item.ratio, 1)}</span>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        }
+                        catListHtml += '</div>';
+                        univariateStatsContainer.innerHTML = catListHtml;
+                    }
+
+                    // Fetch & Render Bar
+                    const res = await fetch(API_BASE + `/api/visualization/chart?type=bar&column=${encodeURIComponent(colName)}`);
+                    if (!res.ok) {
+                        throw new Error(`Kategori grafiği verisi alınamadı (HTTP ${res.status})`);
+                    }
+                    const chartData = await res.json();
+                    const chart = getOrCreateChart('univariateChartContainer');
+                    if (chart) {
+                        renderBarChart(chart, chartData, colName);
+                        console.log('Bar grafik çizildi:', colName, (chartData.items || []).length, 'kategori');
+                    }
+                }
+            } catch (err) {
+                console.error('loadUnivariateAnalysis hatası:', err);
+                if (univariateError) {
+                    univariateError.textContent = `Grafik yüklenemedi: ${err.message || err}`;
+                    univariateError.classList.remove('hidden');
                 }
             }
         }
@@ -968,7 +991,8 @@
                         }
                     }]
                 };
-                chart.setOption(option);
+                chart.setOption(option, { notMerge: true });
+                chart.resize();
             }
 
             // 2. Strongest Correlations Table
@@ -1064,7 +1088,8 @@
                     }
                 }]
             };
-            chart.setOption(option);
+            chart.setOption(option, { notMerge: true });
+            chart.resize();
         }
 
         function renderBarChart(chart, chartData, colName) {
@@ -1125,7 +1150,8 @@
                     }
                 }]
             };
-            chart.setOption(option);
+            chart.setOption(option, { notMerge: true });
+            chart.resize();
         }
 
         function renderScatterChart(chart, chartData, xName, yName) {
@@ -1178,7 +1204,8 @@
                     }
                 }]
             };
-            chart.setOption(option);
+            chart.setOption(option, { notMerge: true });
+            chart.resize();
         }
 
         function renderGroupedBoxplotChart(chart, chartData, catName, numName) {
@@ -1251,7 +1278,8 @@
                     }
                 ]
             };
-            chart.setOption(option);
+            chart.setOption(option, { notMerge: true });
+            chart.resize();
         }
 
         function renderBoxplotChart(chart, chartData, colName) {
@@ -1301,7 +1329,8 @@
                     }
                 ]
             };
-            chart.setOption(option);
+            chart.setOption(option, { notMerge: true });
+            chart.resize();
         }
 
         // ==========================================
@@ -1347,10 +1376,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchVisualizationOverview();
 
-            // Focus Column Select Change
-            focusColumnSelect.addEventListener('change', (e) => {
-                loadUnivariateAnalysis(e.target.value);
-            });
+            // Focus Column Select Handlers (change + input)
+            function onFocusColumnChanged() {
+                const col = focusColumnSelect.value;
+                if (col) loadUnivariateAnalysis(col);
+            }
+            focusColumnSelect.addEventListener('change', onFocusColumnChanged);
+            focusColumnSelect.addEventListener('input', onFocusColumnChanged);
 
             // Update Bivariate Chart Button
             updateBivariateBtn.addEventListener('click', () => {
