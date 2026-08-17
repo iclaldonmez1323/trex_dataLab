@@ -96,15 +96,52 @@ def test_api():
     assert "text/csv" in r.headers.get("content-type", "")
     print("[OK] GET /api/preprocessing/download OK")
 
+    print("Testing GET /visualization ...")
+    r = client.get("/visualization")
+    assert r.status_code == 200
+    assert "Görselleştirme" in r.text
+    print("[OK] GET /visualization OK")
+
+    print("Testing GET /api/visualization/overview ...")
+    with open("test_data.csv", "rb") as f:
+        client.post("/api/upload", files={"file": ("test_data.csv", f, "text/csv")})
+    r = client.get("/api/visualization/overview")
+    assert r.status_code == 200
+    viz_data = r.json()
+    assert "numeric_columns" in viz_data
+    assert "categorical_columns" in viz_data
+    assert "stats" in viz_data
+    assert "correlation" in viz_data
+    assert "suggestions" in viz_data
+    print(f"[OK] GET /api/visualization/overview OK ({len(viz_data['suggestions'])} suggestions)")
+
+    print("Testing GET /api/visualization/chart (all chart types) ...")
+    r_hist = client.get(f"/api/visualization/chart?type=histogram&column={viz_data['numeric_columns'][0]}")
+    assert r_hist.status_code == 200
+    assert "bins" in r_hist.json()
+
+    r_bar = client.get(f"/api/visualization/chart?type=bar&column={viz_data['categorical_columns'][0]}")
+    assert r_bar.status_code == 200
+    assert "items" in r_bar.json()
+
+    r_scat = client.get(f"/api/visualization/chart?type=scatter&x={viz_data['numeric_columns'][0]}&y={viz_data['numeric_columns'][1]}")
+    assert r_scat.status_code == 200
+    assert "x" in r_scat.json()
+
+    r_box = client.get(f"/api/visualization/chart?type=grouped_boxplot&cat={viz_data['categorical_columns'][0]}&num={viz_data['numeric_columns'][0]}")
+    assert r_box.status_code == 200
+    assert "groups" in r_box.json()
+    print("[OK] GET /api/visualization/chart types OK")
+
     print("Testing DELETE /api/reset ...")
     r = client.delete("/api/reset")
     assert r.status_code == 200
     r = client.get("/api/active-dataset")
     assert r.json()["active"] is False
 
-    r_empty_prep = client.get("/api/preprocessing")
-    assert r_empty_prep.status_code == 409
-    print("[OK] DELETE /api/reset OK and /api/preprocessing returns 409 on empty")
+    r_empty_viz = client.get("/api/visualization/overview")
+    assert r_empty_viz.status_code == 409
+    print("[OK] DELETE /api/reset OK and /api/visualization/overview returns 409 on empty")
 
     print("\nALL BACKEND TESTS PASSED SUCCESSFULLY!")
 

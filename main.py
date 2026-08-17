@@ -93,6 +93,11 @@ async def serve_preprocessing():
     return FileResponse("static/preprocessing.html")
 
 
+@app.get("/visualization")
+async def serve_visualization():
+    return FileResponse("static/visualization.html")
+
+
 @app.post("/api/upload")
 async def upload_csv(file: UploadFile = File(...)):
     global active_dataset, active_df_cache
@@ -758,6 +763,303 @@ async def download_cleaned_csv():
         media_type="text/csv",
         headers={"Content-Disposition": f'attachment; filename="{cleaned_name}"'}
     )
+
+
+@app.get("/api/visualization/overview")
+async def get_visualization_overview():
+    global processed_df_cache, active_df_cache, original_df_cache, active_dataset, dropped_columns
+    df = processed_df_cache if processed_df_cache is not None else (active_df_cache if active_df_cache is not None else original_df_cache)
+    if df is None or not active_dataset:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Veri seti bulunamadı. Lütfen önce bir CSV dosyası yükleyin."
+        )
+
+    active_cols = [c for c in df.columns if c not in dropped_columns]
+    curr_df = df[active_cols]
+
+    numeric_cols = [c for c in active_cols if pd.api.types.is_numeric_dtype(curr_df[c])]
+    categorical_cols = [c for c in active_cols if c not in numeric_cols]
+
+    # Numeric stats
+    stats_dict = {}
+    for col in numeric_cols:
+        series = curr_df[col].dropna()
+        if len(series) > 0:
+            stats_dict[str(col)] = {
+                "count": int(len(series)),
+                "mean": round(float(series.mean()), 2),
+                "median": round(float(series.median()), 2),
+                "std": round(float(series.std()), 2) if len(series) > 1 else 0.0,
+                "min": round(float(series.min()), 2),
+                "max": round(float(series.max()), 2)
+            }
+        else:
+            stats_dict[str(col)] = {
+                "count": 0, "mean": 0.0, "median": 0.0, "std": 0.0, "min": 0.0, "max": 0.0
+            }
+
+    # Categorical summary
+    cat_summary = {}
+    for col in categorical_cols:
+        series = curr_df[col].dropna()
+        total_non_na = max(1, len(series))
+        val_counts = series.value_counts().head(10)
+        items = []
+        for val, cnt in val_counts.items():
+            items.append({
+                "value": str(val),
+                "count": int(cnt),
+                "ratio": round((cnt / total_non_na) * 100, 1)
+            })
+        cat_summary[str(col)] = items
+
+    # Correlation
+    corr_columns = [str(c) for c in numeric_cols]
+    corr_matrix = []
+    strongest_pairs = []
+
+    if len(numeric_cols) > 0:
+        corr_df = curr_df[numeric_cols].corr().fillna(0.0)
+        for i, row_col in enumerate(numeric_cols):
+            row_vals = []
+            for j, col_col in enumerate(numeric_cols):
+                val = round(float(corr_df.iloc[i, j]), 2)
+                row_vals.append(val)
+                if i < j:
+                    strongest_pairs.append({
+                        "a": str(row_col),
+                        "b": str(col_col),
+                        "corr": val,
+                        "abs_corr": abs(val)
+                    })
+            corr_matrix.append(row_vals)
+        strongest_pairs.sort(key=lambda x: x["abs_corr"], reverse=True)
+        strongest_pairs = strongest_pairs[:5]
+
+    # Suggestions
+    suggestions = []
+    # 1. Histogram for first numeric col
+    if len(numeric_cols) > 0:
+        col0 = numeric_cols[0]
+        suggestions.append({
+            "type": "histogram",
+            "column": str(col0),
+            "title": f"{col0} Dağılımı",
+            "reason": "Sayısal Dağılım"
+        })
+
+    # 2. Bar for first categorical col
+    if len(categorical_cols) > 0:
+        cat0 = categorical_cols[0]
+        suggestions.append({
+            "type": "bar",
+            "column": str(cat0),
+            "title": f"{cat0} Kategorileri",
+            "reason": "Kategori Sayıları"
+        })
+
+    # 3. Scatter for strongest correlation pair or 2 numeric cols
+    if len(strongest_pairs) > 0:
+        p0 = strongest_pairs[0]
+        suggestions.append({
+            "type": "scatter",
+            "x": p0["a"],
+            "y": p0["b"],
+            "title": f"{p0['a']} × {p0['b']}",
+            "reason": f"En Güçlü Korelasyon (r = {p0['corr']})"
+        })
+    elif len(numeric_cols) >= 2:
+        suggestions.append({
+            "type": "scatter",
+            "x": str(numeric_cols[0]),
+            "y": str(numeric_cols[1]),
+            "title": f"{numeric_cols[0]} × {numeric_cols[1]}",
+            "reason": "İki Değişkenli İlişki"
+        })
+
+    # 4. Grouped boxplot if we have cat and num
+    if len(categorical_cols) > 0 and len(numeric_cols) > 0:
+        suggestions.append({
+            "type": "grouped_boxplot",
+            "cat": str(categorical_cols[0]),
+            "num": str(numeric_cols[0]),
+            "title": f"{categorical_cols[0]}'a Göre {numeric_cols[0]}",
+            "reason": "Kategori Bazlı Dağılım"
+        })
+
+    # 5. Boxplot for second or first numeric col
+    if len(numeric_cols) > 1:
+        col1 = numeric_cols[1]
+        suggestions.append({
+            "type": "boxplot",
+            "column": str(col1),
+            "title": f"{col1} Kutu Grafiği",
+            "reason": "Uç Değer ve Çeyreklikler"
+        })
+    elif len(numeric_cols) == 1:
+        suggestions.append({
+            "type": "boxplot",
+            "column": str(numeric_cols[0]),
+            "title": f"{numeric_cols[0]} Kutu Grafiği",
+            "reason": "Uç Değer ve Çeyreklikler"
+        })
+
+    return JSONResponse(content={
+        "numeric_columns": [str(c) for c in numeric_cols],
+        "categorical_columns": [str(c) for c in categorical_cols],
+        "stats": stats_dict,
+        "categorical_summary": cat_summary,
+        "correlation": {
+            "columns": corr_columns,
+            "matrix": corr_matrix,
+            "strongest": strongest_pairs
+        },
+        "suggestions": suggestions
+    })
+
+
+@app.get("/api/visualization/chart")
+async def get_visualization_chart(
+    type: str,
+    column: Optional[str] = None,
+    x: Optional[str] = None,
+    y: Optional[str] = None,
+    cat: Optional[str] = None,
+    num: Optional[str] = None
+):
+    global processed_df_cache, active_df_cache, original_df_cache, active_dataset, dropped_columns
+    df = processed_df_cache if processed_df_cache is not None else (active_df_cache if active_df_cache is not None else original_df_cache)
+    if df is None or not active_dataset:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Veri seti bulunamadı."
+        )
+
+    active_cols = [c for c in df.columns if c not in dropped_columns]
+    curr_df = df[active_cols]
+
+    if type == "histogram":
+        col_name = column or x or num
+        if not col_name or col_name not in curr_df.columns:
+            raise HTTPException(status_code=400, detail="Geçersiz histogram kolonu.")
+        
+        series = pd.to_numeric(curr_df[col_name], errors="coerce").dropna()
+        if len(series) == 0:
+            return JSONResponse(content={"bins": [0, 1], "bin_labels": ["0 - 1"], "counts": [0]})
+
+        counts, bin_edges = np.histogram(series, bins=min(15, max(5, int(np.sqrt(len(series))))))
+        bin_labels = [f"{bin_edges[i]:.1f} - {bin_edges[i+1]:.1f}" for i in range(len(counts))]
+        return JSONResponse(content={
+            "bins": [round(float(b), 2) for b in bin_edges],
+            "bin_labels": bin_labels,
+            "counts": [int(c) for c in counts]
+        })
+
+    elif type == "boxplot":
+        col_name = column or x or num
+        if not col_name or col_name not in curr_df.columns:
+            raise HTTPException(status_code=400, detail="Geçersiz boxplot kolonu.")
+        
+        series = pd.to_numeric(curr_df[col_name], errors="coerce").dropna()
+        if len(series) == 0:
+            return JSONResponse(content={"box": [0, 0, 0, 0, 0], "outliers": []})
+
+        q1 = float(series.quantile(0.25))
+        med = float(series.median())
+        q3 = float(series.quantile(0.75))
+        iqr = q3 - q1
+        low_bound = q1 - 1.5 * iqr
+        high_bound = q3 + 1.5 * iqr
+
+        non_outliers = series[(series >= low_bound) & (series <= high_bound)]
+        whisker_min = float(non_outliers.min()) if len(non_outliers) > 0 else float(series.min())
+        whisker_max = float(non_outliers.max()) if len(non_outliers) > 0 else float(series.max())
+        outliers = [round(float(v), 2) for v in series[(series < low_bound) | (series > high_bound)].tolist()]
+
+        return JSONResponse(content={
+            "box": [round(whisker_min, 2), round(q1, 2), round(med, 2), round(q3, 2), round(whisker_max, 2)],
+            "outliers": outliers[:100]
+        })
+
+    elif type == "bar":
+        col_name = column or x or cat
+        if not col_name or col_name not in curr_df.columns:
+            raise HTTPException(status_code=400, detail="Geçersiz bar kolonu.")
+        
+        series = curr_df[col_name].dropna()
+        total_cnt = max(1, len(series))
+        val_counts = series.value_counts().head(15)
+        items = []
+        for val, count in val_counts.items():
+            items.append({
+                "value": str(val),
+                "count": int(count),
+                "ratio": round((count / total_cnt) * 100, 1)
+            })
+        return JSONResponse(content={"items": items})
+
+    elif type == "scatter":
+        x_col = x or column
+        y_col = y
+        if not x_col or not y_col or x_col not in curr_df.columns or y_col not in curr_df.columns:
+            raise HTTPException(status_code=400, detail="Geçersiz scatter kolonları.")
+
+        scatter_df = curr_df[[x_col, y_col]].dropna()
+        if len(scatter_df) > 1000:
+            scatter_df = scatter_df.sample(1000, random_state=42)
+
+        x_vals = [round(float(v), 2) if isinstance(v, (int, float, np.number)) else str(v) for v in scatter_df[x_col].tolist()]
+        y_vals = [round(float(v), 2) if isinstance(v, (int, float, np.number)) else str(v) for v in scatter_df[y_col].tolist()]
+
+        return JSONResponse(content={
+            "x_name": str(x_col),
+            "y_name": str(y_col),
+            "x": x_vals,
+            "y": y_vals
+        })
+
+    elif type == "grouped_boxplot":
+        cat_col = cat or x
+        num_col = num or y or column
+        if not cat_col or not num_col or cat_col not in curr_df.columns or num_col not in curr_df.columns:
+            raise HTTPException(status_code=400, detail="Geçersiz grouped boxplot kolonları.")
+
+        sub_df = curr_df[[cat_col, num_col]].dropna()
+        top_cats = sub_df[cat_col].value_counts().head(6).index.tolist()
+
+        groups = []
+        for c_val in top_cats:
+            cat_series = pd.to_numeric(sub_df[sub_df[cat_col] == c_val][num_col], errors="coerce").dropna()
+            if len(cat_series) == 0:
+                continue
+
+            q1 = float(cat_series.quantile(0.25))
+            med = float(cat_series.median())
+            q3 = float(cat_series.quantile(0.75))
+            iqr = q3 - q1
+            low_b = q1 - 1.5 * iqr
+            high_b = q3 + 1.5 * iqr
+
+            non_outliers = cat_series[(cat_series >= low_b) & (cat_series <= high_b)]
+            w_min = float(non_outliers.min()) if len(non_outliers) > 0 else float(cat_series.min())
+            w_max = float(non_outliers.max()) if len(non_outliers) > 0 else float(cat_series.max())
+            outliers = [round(float(v), 2) for v in cat_series[(cat_series < low_b) | (cat_series > high_b)].tolist()]
+
+            groups.append({
+                "name": str(c_val),
+                "box": [round(w_min, 2), round(q1, 2), round(med, 2), round(q3, 2), round(w_max, 2)],
+                "outliers": outliers[:50]
+            })
+
+        return JSONResponse(content={
+            "cat": str(cat_col),
+            "num": str(num_col),
+            "groups": groups
+        })
+
+    else:
+        raise HTTPException(status_code=400, detail=f"Desteklenmeyen grafik tipi: {type}")
 
 
 @app.post("/api/reset")

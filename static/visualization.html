@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>trex DataLab - Görselleştirme (Visualization)</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Apache ECharts 5 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="bg-surface-faint text-on-surface font-body-md text-body-md h-screen overflow-hidden flex antialiased">
+    <!-- SideNavBar -->
+    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant z-20 flex flex-col py-6 px-4">
+        <!-- Brand -->
+        <div class="mb-8 flex items-center gap-3 px-2">
+            <span aria-label="T-REX Logo" class="material-symbols-outlined font-headline-lg text-headline-lg font-bold text-white" style="font-variation-settings: 'FILL' 1;">analytics</span>
+            <div>
+                <h1 class="font-headline-md text-[20px] font-bold text-white leading-tight">trex DataLab</h1>
+                <p class="font-label-mono text-[10px] text-white/60 uppercase tracking-wider">Precision Data Platform</p>
+            </div>
+        </div>
+
+        <!-- CTA Action -->
+        <div class="mb-6">
+            <a href="/" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+                <span class="material-symbols-outlined text-sm">upload</span>
+                <span>Yeni Veri Yükle</span>
+            </a>
+        </div>
+
+        <!-- Main Navigation -->
+        <div class="flex-1 space-y-2 font-body-md text-body-md">
+            <!-- Dashboard -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <!-- Data Quality -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/data-quality">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Data Quality</span>
+            </a>
+            <!-- Preprocessing -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/preprocessing">
+                <span class="material-symbols-outlined">construction</span>
+                <span>Preprocessing</span>
+            </a>
+            <!-- Visualization (Active) -->
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="/visualization">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
+                <span class="font-medium">Visualization</span>
+            </a>
+            <!-- Portfolio -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/portfolio">
+                <span class="material-symbols-outlined">folder_shared</span>
+                <span>Portfolio</span>
+            </a>
+        </div>
+
+        <!-- Footer Navigation -->
+        <div class="mt-auto space-y-1 pt-4 border-t border-white/10 font-body-md text-body-md">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined text-[20px]">settings</span>
+                <span>Settings</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined text-[20px]">help</span>
+                <span>Support</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="ml-[260px] w-[calc(100%-260px)] flex flex-col h-screen overflow-hidden">
+        <!-- TopAppBar -->
+        <header class="h-16 border-b border-border-subtle bg-surface flex justify-between items-center px-gutter w-full shrink-0 z-10">
+            <!-- Left: Search Box -->
+            <div class="flex items-center gap-6">
+                <div class="relative hidden lg:block w-64">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                    <input class="w-full pl-9 pr-4 py-1.5 bg-surface-container text-sm rounded border-none focus:ring-1 focus:ring-primary text-on-surface placeholder:text-on-surface-variant/70" placeholder="Ara..." type="text">
+                </div>
+            </div>
+
+            <!-- Center & Right Navigation -->
+            <div class="flex items-center gap-6">
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Hızlı İşlemler</a>
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Raporlar</a>
+                </nav>
+                <div class="w-px h-6 bg-border-subtle mx-2"></div>
+                <div class="flex items-center gap-3">
+                    <button class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container" title="Bildirimler">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <button class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container" title="Kullanıcı Profili">
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </button>
+                    <button id="exportAllChartsBtn" type="button" class="ml-2 font-data-table text-primary hover:text-primary-container font-medium px-3 py-1.5 rounded border border-primary/30 hover:bg-primary/5 transition-colors text-sm flex items-center gap-1 cursor-pointer">
+                        <span class="material-symbols-outlined text-sm">download</span>
+                        <span>Dışa Aktar</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Canvas -->
+        <main class="flex-1 overflow-y-auto p-gutter custom-scrollbar">
+            <!-- Loading State -->
+            <div id="loadingView" class="py-24 flex flex-col items-center justify-center text-center">
+                <div class="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-primary text-4xl animate-spin">progress_activity</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Grafikler hazırlanıyor...</h3>
+                <p class="text-on-surface-variant font-body-md">Veri dağılımları, korelasyon matrisi ve akıllı görselleştirme önerileri hesaplanıyor.</p>
+            </div>
+
+            <!-- Empty State View (409) -->
+            <div id="emptyStateView" class="hidden py-16 max-w-xl mx-auto text-center">
+                <div class="bg-surface border border-border-subtle rounded-xl p-10 flex flex-col items-center shadow-sm">
+                    <div class="h-20 w-20 bg-secondary-container rounded-full flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-primary text-4xl">query_stats</span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Aktif Veri Seti Bulunamadı</h3>
+                    <p class="text-on-surface-variant font-body-lg mb-8">
+                        Grafikleri ve istatistiksel analizleri görüntüleyebilmek için lütfen önce sisteme bir CSV veri seti yükleyin.
+                    </p>
+                    <a href="/" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined">upload_file</span>
+                        <span>Ana Sayfaya Dön &amp; Veri Yükle</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Visualization Content View -->
+            <div id="visualizationContentView" class="hidden max-w-[1440px] mx-auto space-y-8 pb-12">
+                <!-- Error Banner -->
+                <div id="errorBanner" class="hidden bg-error-container text-on-error-container p-4 rounded-xl border border-error/20 flex items-start justify-between gap-3 shadow-sm transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-error text-2xl flex-shrink-0">error</span>
+                        <p class="font-medium text-sm" id="errorMessage">Grafikler oluşturulurken bir hata meydana geldi.</p>
+                    </div>
+                    <button id="closeErrorBannerBtn" type="button" class="text-on-error-container/70 hover:text-on-error-container p-1 rounded">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+
+                <!-- 1. Page Header + Focus Column Selector -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                    <div>
+                        <h2 class="font-headline-md text-headline-md text-on-surface mb-1">Görselleştirme ve Keşif</h2>
+                        <p class="text-on-surface-variant font-body-md">Veri setindeki desenleri, dağılımları ve değişken ilişkilerini analiz edin.</p>
+                    </div>
+                    <!-- Focus Column Select -->
+                    <div class="flex items-center gap-3 bg-surface-container-low border border-border-subtle rounded-lg p-2 shadow-sm w-full sm:w-auto">
+                        <span class="font-label-mono text-xs text-on-surface-variant uppercase tracking-wider font-semibold ml-2 whitespace-nowrap">Odak Değişkeni:</span>
+                        <select id="focusColumnSelect" class="bg-surface-container-lowest border border-border-subtle text-on-surface text-sm font-medium rounded-md focus:ring-primary focus:border-primary py-1.5 pl-3 pr-8 w-full sm:w-60 cursor-pointer">
+                            <!-- Populated dynamically with optgroups -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2. Automatic Suggestions Gallery -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-headline-md text-[18px] font-semibold text-on-surface flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">auto_awesome</span>
+                                <span>Otomatik Grafik Galerisi</span>
+                            </h3>
+                            <p class="text-xs text-slate-gray">Veri setinize özel otomatik türetilen keşif grafikleri</p>
+                        </div>
+                    </div>
+                    <div id="suggestionsGalleryGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <!-- Populated dynamically with ECharts cards -->
+                    </div>
+                </div>
+
+                <!-- 3. Univariate Analysis (Odak Değişkeni) -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-headline-md text-[18px] font-semibold text-on-surface flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">analytics</span>
+                                <span>Tek Değişkenli Analiz (Odak Değişkeni)</span>
+                            </h3>
+                            <p class="text-xs text-slate-gray" id="univariateSubtitle">Seçili değişkenin dağılımı ve istatistiksel parametreleri</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-6">
+                        <!-- Chart Card -->
+                        <div class="col-span-12 lg:col-span-8 bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col">
+                            <div class="flex justify-between items-center mb-3 border-b border-border-subtle pb-3">
+                                <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold" id="univariateChartTitle">Dağılım Analizi</h4>
+                                <div class="flex items-center gap-2">
+                                    <span id="univariateColumnBadge" class="text-xs font-label-mono bg-surface-container px-2.5 py-1 rounded text-on-surface-variant font-medium">Sütun: -</span>
+                                    <button onclick="downloadChartPNG('univariateChartContainer', 'tek_degiskenli_grafik')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container" title="PNG İndir">
+                                        <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="univariateChartContainer" class="w-full h-[280px] sm:h-[300px]"></div>
+                        </div>
+
+                        <!-- Stats Card -->
+                        <div class="col-span-12 lg:col-span-4 bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col justify-between">
+                            <div class="mb-3 border-b border-border-subtle pb-3 flex justify-between items-center">
+                                <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold" id="univariateStatsTitle">İstatistiksel Özet</h4>
+                                <span class="text-[11px] font-label-mono text-slate-gray uppercase">Özet Değerler</span>
+                            </div>
+                            <div id="univariateStatsContainer" class="flex-1 flex flex-col justify-center space-y-3 py-2">
+                                <!-- Populated dynamically (Numeric metrics or Categorical breakdown) -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Bivariate Comparison (İki Değişkenli Karşılaştırma) -->
+                <div class="space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h3 class="font-headline-md text-[18px] font-semibold text-on-surface flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">scatter_plot</span>
+                                <span>İki Değişkenli Karşılaştırma</span>
+                            </h3>
+                            <p class="text-xs text-slate-gray">İki değişken arasındaki ilişki, korelasyon veya grup bazlı dağılımı inceleyin</p>
+                        </div>
+                        <!-- X and Y selectors -->
+                        <div class="flex flex-wrap items-center gap-3 bg-surface border border-border-subtle rounded-lg p-2 shadow-sm w-full sm:w-auto">
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-label-mono text-xs font-bold text-slate-gray">X:</span>
+                                <select id="bivariateXSelect" class="bg-surface-container-low border border-border-subtle text-on-surface text-xs rounded py-1 pl-2 pr-7 font-medium cursor-pointer">
+                                    <!-- Options -->
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-label-mono text-xs font-bold text-slate-gray">Y:</span>
+                                <select id="bivariateYSelect" class="bg-surface-container-low border border-border-subtle text-on-surface text-xs rounded py-1 pl-2 pr-7 font-medium cursor-pointer">
+                                    <!-- Options -->
+                                </select>
+                            </div>
+                            <button id="updateBivariateBtn" type="button" class="bg-primary text-on-primary text-xs px-2.5 py-1.5 rounded font-medium hover:bg-primary-container transition-colors flex items-center gap-1 cursor-pointer">
+                                <span class="material-symbols-outlined text-sm">refresh</span>
+                                <span>Grafiği Güncelle</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm">
+                        <div class="flex justify-between items-center mb-3 border-b border-border-subtle pb-3">
+                            <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold" id="bivariateChartTitle">X × Y Karşılaştırması</h4>
+                            <div class="flex items-center gap-2">
+                                <span id="bivariateChartBadge" class="text-xs font-label-mono bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-medium">Dağılım Grafiği</span>
+                                <button onclick="downloadChartPNG('bivariateChartContainer', 'iki_degiskenli_grafik')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container" title="PNG İndir">
+                                    <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="bivariateChartContainer" class="w-full h-[320px]"></div>
+                    </div>
+                </div>
+
+                <!-- 5. Correlation Analysis -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-headline-md text-[18px] font-semibold text-on-surface flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">grid_on</span>
+                                <span>Korelasyon Analizi</span>
+                            </h3>
+                            <p class="text-xs text-slate-gray">Sayısal değişkenler arasındaki Pearson korelasyon matrisi ve en güçlü ilişkiler</p>
+                        </div>
+                    </div>
+
+                    <!-- Mandatory Educational Notice Alert -->
+                    <div class="p-4 bg-warning-orange/10 border border-warning-orange/30 rounded-xl flex items-start gap-3 text-sm shadow-sm">
+                        <span class="material-symbols-outlined text-warning-orange text-2xl flex-shrink-0">info</span>
+                        <div>
+                            <p class="font-semibold text-on-surface">Önemli Hatırlatma: Korelasyon Nedensellik Göstermez</p>
+                            <p class="text-slate-gray text-xs mt-0.5">İki değişken arasındaki yüksek korelasyon (r değeri), bir değişkenin diğerine doğrudan sebep olduğunu kanıtlamaz. Gizli veya ortak üçüncü değişkenler ilişkide rol oynayabilir.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-6">
+                        <!-- Heatmap Card -->
+                        <div class="col-span-12 lg:col-span-7 bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col">
+                            <div class="flex justify-between items-center mb-3 border-b border-border-subtle pb-3">
+                                <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold">Korelasyon Isı Haritası (Heatmap)</h4>
+                                <button onclick="downloadChartPNG('correlationHeatmapContainer', 'korelasyon_isi_haritasi')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container" title="PNG İndir">
+                                    <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                                </button>
+                            </div>
+                            <div id="correlationHeatmapContainer" class="w-full h-[340px]"></div>
+                        </div>
+
+                        <!-- Strongest Correlations Table -->
+                        <div class="col-span-12 lg:col-span-5 bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center mb-3 border-b border-border-subtle pb-3">
+                                    <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold">En Güçlü Korelasyonlar</h4>
+                                    <span class="text-xs font-label-mono bg-surface-container px-2 py-0.5 rounded text-slate-gray">İlk 5 Çift</span>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-border-subtle">
+                                        <thead>
+                                            <tr class="text-left text-xs font-label-mono text-slate-gray uppercase">
+                                                <th class="py-2 px-3">Değişken 1</th>
+                                                <th class="py-2 px-3">Değişken 2</th>
+                                                <th class="py-2 px-3 text-right">Korelasyon (r)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="strongestCorrTableBody" class="divide-y divide-border-subtle text-xs font-data-table">
+                                            <!-- Dynamic strongest correlation rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-xs font-label-mono text-slate-gray">
+                                <span>-1.0 (Tam Negatif)</span>
+                                <span>0.0 (İlişkisiz)</span>
+                                <span>+1.0 (Tam Pozitif)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // Global Chart Instance Registry
+        const _charts = {};
+
+        // DOM Elements
+        const loadingView = document.getElementById('loadingView');
+        const emptyStateView = document.getElementById('emptyStateView');
+        const visualizationContentView = document.getElementById('visualizationContentView');
+        const focusColumnSelect = document.getElementById('focusColumnSelect');
+        const suggestionsGalleryGrid = document.getElementById('suggestionsGalleryGrid');
+        const univariateChartTitle = document.getElementById('univariateChartTitle');
+        const univariateColumnBadge = document.getElementById('univariateColumnBadge');
+        const univariateChartContainer = document.getElementById('univariateChartContainer');
+        const univariateStatsTitle = document.getElementById('univariateStatsTitle');
+        const univariateStatsContainer = document.getElementById('univariateStatsContainer');
+        const bivariateXSelect = document.getElementById('bivariateXSelect');
+        const bivariateYSelect = document.getElementById('bivariateYSelect');
+        const updateBivariateBtn = document.getElementById('updateBivariateBtn');
+        const bivariateChartTitle = document.getElementById('bivariateChartTitle');
+        const bivariateChartBadge = document.getElementById('bivariateChartBadge');
+        const bivariateChartContainer = document.getElementById('bivariateChartContainer');
+        const correlationHeatmapContainer = document.getElementById('correlationHeatmapContainer');
+        const strongestCorrTableBody = document.getElementById('strongestCorrTableBody');
+        const errorBanner = document.getElementById('errorBanner');
+        const errorMessage = document.getElementById('errorMessage');
+        const closeErrorBannerBtn = document.getElementById('closeErrorBannerBtn');
+        const exportAllChartsBtn = document.getElementById('exportAllChartsBtn');
+
+        // State
+        let overviewData = null;
+
+        // Helpers
+        function formatNumber(num) {
+            if (num === null || num === undefined || isNaN(num)) return '0';
+            return Number(num).toLocaleString('tr-TR');
+        }
+
+        function formatDecimal(num, digits = 2) {
+            if (num === null || num === undefined || isNaN(num)) return '0,00';
+            return Number(num).toLocaleString('tr-TR', {
+                minimumFractionDigits: digits,
+                maximumFractionDigits: digits
+            });
+        }
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showError(msg) {
+            errorMessage.textContent = msg || 'Bir hata oluştu.';
+            errorBanner.classList.remove('hidden');
+        }
+
+        function hideError() {
+            errorBanner.classList.add('hidden');
+        }
+
+        // Safe ECharts Instance Creator
+        function getOrCreateChart(containerId) {
+            const dom = document.getElementById(containerId);
+            if (!dom) return null;
+
+            if (_charts[containerId]) {
+                _charts[containerId].dispose();
+                delete _charts[containerId];
+            }
+            const existing = echarts.getInstanceByDom(dom);
+            if (existing) {
+                existing.dispose();
+            }
+
+            const chart = echarts.init(dom);
+            _charts[containerId] = chart;
+            return chart;
+        }
+
+        // Window Resize Observer for All Active Charts
+        window.addEventListener('resize', () => {
+            Object.values(_charts).forEach(chart => {
+                if (chart && !chart.isDisposed()) {
+                    chart.resize();
+                }
+            });
+        });
+
+        // Download Single Chart as PNG
+        window.downloadChartPNG = function(containerId, filename = 'grafik') {
+            const chart = _charts[containerId] || echarts.getInstanceByDom(document.getElementById(containerId));
+            if (!chart) return;
+            const url = chart.getDataURL({
+                type: 'png',
+                pixelRatio: 2,
+                backgroundColor: '#ffffff'
+            });
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filename}_trex_datalab.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+
+        // Render Overview & Main Layout
+        function renderVisualization(data) {
+            overviewData = data;
+            hideError();
+
+            const numCols = data.numeric_columns || [];
+            const catCols = data.categorical_columns || [];
+
+            // Populate Selects with optgroups
+            populateSelectOptions(focusColumnSelect, numCols, catCols);
+            populateSelectOptions(bivariateXSelect, numCols, catCols);
+            populateSelectOptions(bivariateYSelect, numCols, catCols);
+
+            // Set initial defaults
+            if (numCols.length > 0) {
+                focusColumnSelect.value = numCols[0];
+                bivariateXSelect.value = numCols[0];
+                if (numCols.length > 1) {
+                    bivariateYSelect.value = numCols[1];
+                } else if (catCols.length > 0) {
+                    bivariateYSelect.value = catCols[0];
+                }
+            } else if (catCols.length > 0) {
+                focusColumnSelect.value = catCols[0];
+                bivariateXSelect.value = catCols[0];
+                if (catCols.length > 1) {
+                    bivariateYSelect.value = catCols[1];
+                }
+            }
+
+            // 1. Render Automatic Suggestions Gallery
+            renderSuggestionsGallery(data.suggestions || []);
+
+            // 2. Render Univariate for Default Focus Column
+            if (focusColumnSelect.value) {
+                loadUnivariateAnalysis(focusColumnSelect.value);
+            }
+
+            // 3. Render Bivariate for Default X and Y
+            if (bivariateXSelect.value && bivariateYSelect.value) {
+                loadBivariateAnalysis(bivariateXSelect.value, bivariateYSelect.value);
+            }
+
+            // 4. Render Correlation Heatmap & Strongest Table
+            renderCorrelationSection(data.correlation || {});
+
+            // Show Content View
+            loadingView.classList.add('hidden');
+            emptyStateView.classList.add('hidden');
+            visualizationContentView.classList.remove('hidden');
+
+            // Force resize on all charts after container becomes visible
+            setTimeout(() => {
+                Object.values(_charts).forEach(c => {
+                    if (c && !c.isDisposed()) c.resize();
+                });
+            }, 100);
+        }
+
+        // Populate Selects with optgroups
+        function populateSelectOptions(selectEl, numCols, catCols) {
+            if (!selectEl) return;
+            let html = '';
+            if (numCols && numCols.length > 0) {
+                html += `<optgroup label="Sayısal Sütunlar">`;
+                numCols.forEach(col => {
+                    html += `<option value="${escapeHtml(col)}">${escapeHtml(col)}</option>`;
+                });
+                html += `</optgroup>`;
+            }
+            if (catCols && catCols.length > 0) {
+                html += `<optgroup label="Kategorik Sütunlar">`;
+                catCols.forEach(col => {
+                    html += `<option value="${escapeHtml(col)}">${escapeHtml(col)}</option>`;
+                });
+                html += `</optgroup>`;
+            }
+            selectEl.innerHTML = html;
+        }
+
+        // ==========================================
+        // 1. Suggestions Gallery
+        // ==========================================
+        function renderSuggestionsGallery(suggestions) {
+            suggestionsGalleryGrid.innerHTML = '';
+            if (!suggestions || suggestions.length === 0) {
+                suggestionsGalleryGrid.innerHTML = `
+                    <div class="col-span-full py-8 text-center text-slate-gray bg-surface border border-border-subtle rounded-xl">
+                        Öneri grafiği oluşturulacak uygun sütun bulunamadı.
+                    </div>
+                `;
+                return;
+            }
+
+            suggestions.forEach((item, index) => {
+                const cardId = `suggestion_chart_${index}`;
+                const typeLabels = {
+                    histogram: 'HİSTOGRAM',
+                    bar: 'BAR GRAFİK',
+                    scatter: 'DAĞILIM (SCATTER)',
+                    grouped_boxplot: 'KUTU GRAFİK',
+                    boxplot: 'BOXPLOT'
+                };
+                const typeBadge = typeLabels[item.type] || item.type.toUpperCase();
+
+                const cardHtml = `
+                    <div class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-start justify-between gap-2 mb-2 pb-2 border-b border-border-subtle">
+                            <div>
+                                <span class="font-label-mono text-[10px] uppercase font-bold text-primary tracking-wider bg-primary/10 px-2 py-0.5 rounded-full">${typeBadge}</span>
+                                <h4 class="font-headline-md text-sm font-semibold text-on-surface mt-1">${escapeHtml(item.title)}</h4>
+                                <p class="text-xs text-slate-gray">${escapeHtml(item.reason)}</p>
+                            </div>
+                            <button onclick="downloadChartPNG('${cardId}', '${escapeHtml(item.title)}')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container" title="PNG İndir">
+                                <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                            </button>
+                        </div>
+                        <div id="${cardId}" class="w-full h-[260px]"></div>
+                    </div>
+                `;
+                suggestionsGalleryGrid.insertAdjacentHTML('beforeend', cardHtml);
+
+                // Fetch and render suggestion chart
+                loadSuggestionChart(item, cardId);
+            });
+        }
+
+        async function loadSuggestionChart(item, containerId) {
+            try {
+                let url = `/api/visualization/chart?type=${item.type}`;
+                if (item.column) url += `&column=${encodeURIComponent(item.column)}`;
+                if (item.x) url += `&x=${encodeURIComponent(item.x)}`;
+                if (item.y) url += `&y=${encodeURIComponent(item.y)}`;
+                if (item.cat) url += `&cat=${encodeURIComponent(item.cat)}`;
+                if (item.num) url += `&num=${encodeURIComponent(item.num)}`;
+
+                const res = await fetch(url);
+                if (!res.ok) return;
+                const chartData = await res.json();
+                const chart = getOrCreateChart(containerId);
+                if (!chart) return;
+
+                if (item.type === 'histogram') {
+                    renderHistogramChart(chart, chartData, item.column);
+                } else if (item.type === 'bar') {
+                    renderBarChart(chart, chartData, item.column);
+                } else if (item.type === 'scatter') {
+                    renderScatterChart(chart, chartData, item.x, item.y);
+                } else if (item.type === 'grouped_boxplot') {
+                    renderGroupedBoxplotChart(chart, chartData, item.cat, item.num);
+                } else if (item.type === 'boxplot') {
+                    renderBoxplotChart(chart, chartData, item.column);
+                }
+            } catch (err) {
+                console.error(`Error loading suggestion chart ${containerId}:`, err);
+            }
+        }
+
+        // ==========================================
+        // 2. Univariate Analysis
+        // ==========================================
+        async function loadUnivariateAnalysis(colName) {
+            if (!colName || !overviewData) return;
+            const isNumeric = (overviewData.numeric_columns || []).includes(colName);
+            univariateColumnBadge.textContent = `Sütun: ${colName}`;
+
+            if (isNumeric) {
+                univariateChartTitle.textContent = `Histogram Dağılımı (${colName})`;
+                univariateStatsTitle.textContent = `İstatistiksel Özet (${colName})`;
+
+                // Render Numeric Stats
+                const stats = (overviewData.stats && overviewData.stats[colName]) || {};
+                univariateStatsContainer.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                        <span class="font-body-md text-on-surface-variant text-sm">Gözlem Sayısı</span>
+                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatNumber(stats.count)}</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                        <span class="font-body-md text-on-surface-variant text-sm">Ortalama (Mean)</span>
+                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.mean)}</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                        <span class="font-body-md text-on-surface-variant text-sm">Medyan (Median)</span>
+                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.median)}</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                        <span class="font-body-md text-on-surface-variant text-sm">Standart Sapma</span>
+                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.std)}</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                        <span class="font-body-md text-on-surface-variant text-sm">Minimum</span>
+                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.min)}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-body-md text-on-surface-variant text-sm">Maksimum</span>
+                        <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.max)}</span>
+                    </div>
+                `;
+
+                // Fetch & Render Histogram
+                try {
+                    const res = await fetch(`/api/visualization/chart?type=histogram&column=${encodeURIComponent(colName)}`);
+                    if (res.ok) {
+                        const chartData = await res.json();
+                        const chart = getOrCreateChart('univariateChartContainer');
+                        renderHistogramChart(chart, chartData, colName);
+                    }
+                } catch (e) {
+                    console.error('Histogram fetch error:', e);
+                }
+
+            } else {
+                // Categorical
+                univariateChartTitle.textContent = `Kategori Dağılımı (${colName})`;
+                univariateStatsTitle.textContent = `Kategori Oranları (${colName})`;
+
+                // Render Categorical Breakdown
+                const catSummary = (overviewData.categorical_summary && overviewData.categorical_summary[colName]) || [];
+                let catListHtml = '<div class="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">';
+                catSummary.forEach(item => {
+                    catListHtml += `
+                        <div class="flex justify-between items-center border-b border-surface-container pb-1.5 text-xs">
+                            <span class="font-medium text-on-surface truncate max-w-[140px]" title="${escapeHtml(item.value)}">${escapeHtml(item.value)}</span>
+                            <div class="flex items-center gap-2 font-label-mono">
+                                <span class="text-slate-gray font-semibold">${formatNumber(item.count)}</span>
+                                <span class="bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">%${formatDecimal(item.ratio, 1)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                catListHtml += '</div>';
+                univariateStatsContainer.innerHTML = catListHtml;
+
+                // Fetch & Render Bar
+                try {
+                    const res = await fetch(`/api/visualization/chart?type=bar&column=${encodeURIComponent(colName)}`);
+                    if (res.ok) {
+                        const chartData = await res.json();
+                        const chart = getOrCreateChart('univariateChartContainer');
+                        renderBarChart(chart, chartData, colName);
+                    }
+                } catch (e) {
+                    console.error('Bar fetch error:', e);
+                }
+            }
+        }
+
+        // ==========================================
+        // 3. Bivariate Analysis
+        // ==========================================
+        async function loadBivariateAnalysis(xCol, yCol) {
+            if (!xCol || !yCol || !overviewData) return;
+            const isXNum = (overviewData.numeric_columns || []).includes(xCol);
+            const isYNum = (overviewData.numeric_columns || []).includes(yCol);
+
+            bivariateChartTitle.textContent = `${xCol} × ${yCol} Karşılaştırması`;
+
+            try {
+                if (isXNum && isYNum) {
+                    // Both Numeric -> Scatter Plot
+                    bivariateChartBadge.textContent = 'Dağılım (Scatter Plot)';
+                    bivariateChartBadge.className = 'text-xs font-label-mono bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-medium';
+
+                    const res = await fetch(`/api/visualization/chart?type=scatter&x=${encodeURIComponent(xCol)}&y=${encodeURIComponent(yCol)}`);
+                    if (res.ok) {
+                        const chartData = await res.json();
+                        const chart = getOrCreateChart('bivariateChartContainer');
+                        renderScatterChart(chart, chartData, xCol, yCol);
+                    }
+
+                } else if (!isXNum && isYNum) {
+                    // X Categorical, Y Numeric -> Grouped Boxplot
+                    bivariateChartBadge.textContent = 'Grup Bazlı Kutu Grafiği (Boxplot)';
+                    bivariateChartBadge.className = 'text-xs font-label-mono bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-medium';
+
+                    const res = await fetch(`/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(xCol)}&num=${encodeURIComponent(yCol)}`);
+                    if (res.ok) {
+                        const chartData = await res.json();
+                        const chart = getOrCreateChart('bivariateChartContainer');
+                        renderGroupedBoxplotChart(chart, chartData, xCol, yCol);
+                    }
+
+                } else if (isXNum && !isYNum) {
+                    // X Numeric, Y Categorical -> Grouped Boxplot with reversed roles
+                    bivariateChartBadge.textContent = 'Grup Bazlı Kutu Grafiği (Boxplot)';
+                    bivariateChartBadge.className = 'text-xs font-label-mono bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-medium';
+
+                    const res = await fetch(`/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(yCol)}&num=${encodeURIComponent(xCol)}`);
+                    if (res.ok) {
+                        const chartData = await res.json();
+                        const chart = getOrCreateChart('bivariateChartContainer');
+                        renderGroupedBoxplotChart(chart, chartData, yCol, xCol);
+                    }
+
+                } else {
+                    // Both Categorical
+                    bivariateChartBadge.textContent = 'Kategori Karşılaştırması';
+                    bivariateChartBadge.className = 'text-xs font-label-mono bg-warning-orange/10 text-[#a1680d] px-2.5 py-0.5 rounded-full font-medium';
+
+                    const res = await fetch(`/api/visualization/chart?type=bar&column=${encodeURIComponent(xCol)}`);
+                    if (res.ok) {
+                        const chartData = await res.json();
+                        const chart = getOrCreateChart('bivariateChartContainer');
+                        renderBarChart(chart, chartData, xCol);
+                    }
+                }
+            } catch (e) {
+                console.error('Bivariate chart fetch error:', e);
+            }
+        }
+
+        // ==========================================
+        // 4. Correlation Section
+        // ==========================================
+        function renderCorrelationSection(corrData) {
+            const columns = corrData.columns || [];
+            const matrix = corrData.matrix || [];
+            const strongest = corrData.strongest || [];
+
+            // 1. Heatmap Chart
+            const chart = getOrCreateChart('correlationHeatmapContainer');
+            if (chart && columns.length > 0 && matrix.length > 0) {
+                const heatmapData = [];
+                for (let i = 0; i < matrix.length; i++) {
+                    for (let j = 0; j < matrix[i].length; j++) {
+                        heatmapData.push([j, i, matrix[i][j]]);
+                    }
+                }
+
+                const option = {
+                    tooltip: {
+                        position: 'top',
+                        formatter: function(params) {
+                            const val = params.data[2];
+                            const colX = columns[params.data[0]];
+                            const colY = columns[params.data[1]];
+                            return `<strong>${colX} × ${colY}</strong><br/>Korelasyon (r): <strong>${val}</strong>`;
+                        }
+                    },
+                    grid: {
+                        top: 20,
+                        bottom: 60,
+                        left: 80,
+                        right: 20,
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: columns,
+                        splitArea: { show: true },
+                        axisLabel: {
+                            interval: 0,
+                            rotate: columns.length > 5 ? 35 : 0,
+                            fontSize: 11,
+                            formatter: function(val) {
+                                return val.length > 12 ? val.slice(0, 10) + '...' : val;
+                            }
+                        }
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: columns,
+                        splitArea: { show: true },
+                        axisLabel: {
+                            interval: 0,
+                            fontSize: 11,
+                            formatter: function(val) {
+                                return val.length > 12 ? val.slice(0, 10) + '...' : val;
+                            }
+                        }
+                    },
+                    visualMap: {
+                        min: -1,
+                        max: 1,
+                        calculable: true,
+                        orient: 'horizontal',
+                        left: 'center',
+                        bottom: '0%',
+                        inRange: {
+                            color: ['#ba1a1a', '#ffffff', '#006b33']
+                        },
+                        textStyle: {
+                            fontSize: 10
+                        }
+                    },
+                    series: [{
+                        name: 'Korelasyon',
+                        type: 'heatmap',
+                        data: heatmapData,
+                        label: {
+                            show: columns.length <= 8,
+                            fontSize: 10,
+                            formatter: function(p) {
+                                return p.data[2].toFixed(2);
+                            }
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }]
+                };
+                chart.setOption(option);
+            }
+
+            // 2. Strongest Correlations Table
+            if (strongest && strongest.length > 0) {
+                let html = '';
+                strongest.forEach(pair => {
+                    const r = Number(pair.corr);
+                    const absR = Math.abs(r);
+                    let badgeClass = 'bg-surface-variant text-on-surface-variant';
+                    let badgeText = 'Zayıf';
+
+                    if (absR >= 0.7) {
+                        badgeClass = r > 0 ? 'bg-primary/10 text-primary font-bold' : 'bg-error-container text-on-error-container font-bold';
+                        badgeText = r > 0 ? 'Güçlü (+)' : 'Güçlü (-)';
+                    } else if (absR >= 0.4) {
+                        badgeClass = 'bg-warning-orange/10 text-[#a1680d] font-medium';
+                        badgeText = r > 0 ? 'Orta (+)' : 'Orta (-)';
+                    }
+
+                    html += `
+                        <tr class="hover:bg-surface-faint transition-colors">
+                            <td class="py-2.5 px-3 font-semibold text-on-surface truncate max-w-[120px]" title="${escapeHtml(pair.a)}">${escapeHtml(pair.a)}</td>
+                            <td class="py-2.5 px-3 text-slate-gray truncate max-w-[120px]" title="${escapeHtml(pair.b)}">${escapeHtml(pair.b)}</td>
+                            <td class="py-2.5 px-3 text-right">
+                                <span class="font-label-mono font-bold px-2 py-0.5 rounded ${badgeClass}">${formatDecimal(r, 2)} (${badgeText})</span>
+                            </td>
+                        </tr>
+                    `;
+                });
+                strongestCorrTableBody.innerHTML = html;
+            } else {
+                strongestCorrTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="py-4 text-center text-slate-gray">Yeterli sayısal değişken bulunamadı.</td>
+                    </tr>
+                `;
+            }
+        }
+
+        // ==========================================
+        // ECharts Builders
+        // ==========================================
+        function renderHistogramChart(chart, chartData, colName) {
+            const binLabels = chartData.bin_labels || [];
+            const counts = chartData.counts || [];
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    formatter: function(params) {
+                        const item = params[0];
+                        return `Aralık: <strong>${item.name}</strong><br/>Frekans: <strong>${formatNumber(item.value)}</strong>`;
+                    }
+                },
+                grid: {
+                    top: 20,
+                    bottom: 40,
+                    left: 50,
+                    right: 20,
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: binLabels,
+                    axisLabel: {
+                        interval: 0,
+                        rotate: binLabels.length > 5 ? 30 : 0,
+                        fontSize: 10,
+                        color: '#4A5568'
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        fontSize: 10,
+                        color: '#4A5568'
+                    },
+                    splitLine: {
+                        lineStyle: { color: '#E2E8F0', type: 'dashed' }
+                    }
+                },
+                series: [{
+                    name: 'Frekans',
+                    type: 'bar',
+                    data: counts,
+                    itemStyle: {
+                        color: '#006b33',
+                        borderRadius: [4, 4, 0, 0]
+                    },
+                    emphasis: {
+                        itemStyle: { color: '#008742' }
+                    }
+                }]
+            };
+            chart.setOption(option);
+        }
+
+        function renderBarChart(chart, chartData, colName) {
+            const items = chartData.items || [];
+            const categories = items.map(i => i.value);
+            const counts = items.map(i => i.count);
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    formatter: function(params) {
+                        const item = params[0];
+                        const raw = items[item.dataIndex];
+                        return `Kategori: <strong>${item.name}</strong><br/>Kayıt: <strong>${formatNumber(item.value)}</strong> (%${raw ? raw.ratio : 0})`;
+                    }
+                },
+                grid: {
+                    top: 20,
+                    bottom: 40,
+                    left: 50,
+                    right: 20,
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: categories,
+                    axisLabel: {
+                        interval: 0,
+                        rotate: categories.length > 4 ? 30 : 0,
+                        fontSize: 10,
+                        color: '#4A5568',
+                        formatter: function(val) {
+                            return val && val.length > 10 ? val.slice(0, 8) + '...' : val;
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        fontSize: 10,
+                        color: '#4A5568'
+                    },
+                    splitLine: {
+                        lineStyle: { color: '#E2E8F0', type: 'dashed' }
+                    }
+                },
+                series: [{
+                    name: 'Adet',
+                    type: 'bar',
+                    data: counts,
+                    itemStyle: {
+                        color: '#006b33',
+                        borderRadius: [4, 4, 0, 0]
+                    },
+                    emphasis: {
+                        itemStyle: { color: '#008742' }
+                    }
+                }]
+            };
+            chart.setOption(option);
+        }
+
+        function renderScatterChart(chart, chartData, xName, yName) {
+            const xVals = chartData.x || [];
+            const yVals = chartData.y || [];
+            const points = [];
+            for (let i = 0; i < xVals.length; i++) {
+                points.push([xVals[i], yVals[i]]);
+            }
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        return `${xName}: <strong>${params.value[0]}</strong><br/>${yName}: <strong>${params.value[1]}</strong>`;
+                    }
+                },
+                grid: {
+                    top: 25,
+                    bottom: 45,
+                    left: 55,
+                    right: 25,
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    name: xName,
+                    nameLocation: 'middle',
+                    nameGap: 25,
+                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: yName,
+                    nameLocation: 'middle',
+                    nameGap: 35,
+                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+                },
+                series: [{
+                    name: `${xName} × ${yName}`,
+                    type: 'scatter',
+                    symbolSize: 7,
+                    data: points,
+                    itemStyle: {
+                        color: 'rgba(0, 107, 51, 0.65)',
+                        borderColor: '#006b33',
+                        borderWidth: 1
+                    }
+                }]
+            };
+            chart.setOption(option);
+        }
+
+        function renderGroupedBoxplotChart(chart, chartData, catName, numName) {
+            const groups = chartData.groups || [];
+            const categories = groups.map(g => g.name);
+            const boxData = groups.map(g => g.box); // [min, q1, med, q3, max]
+            const outlierPoints = [];
+
+            groups.forEach((g, catIndex) => {
+                (g.outliers || []).forEach(val => {
+                    outlierPoints.push([catIndex, val]);
+                });
+            });
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    axisPointer: { type: 'shadow' }
+                },
+                grid: {
+                    top: 25,
+                    bottom: 45,
+                    left: 55,
+                    right: 25,
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: categories,
+                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    splitArea: { show: true }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: numName,
+                    nameLocation: 'middle',
+                    nameGap: 35,
+                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+                },
+                series: [
+                    {
+                        name: 'Kutu Grafiği',
+                        type: 'boxplot',
+                        data: boxData,
+                        itemStyle: {
+                            color: '#bfeac7',
+                            borderColor: '#006b33',
+                            borderWidth: 1.5
+                        },
+                        tooltip: {
+                            formatter: function(param) {
+                                return `<strong>${param.name}</strong><br/>
+                                        Maksimum: ${param.data[5]}<br/>
+                                        Üst Çeyreklik (Q3): ${param.data[4]}<br/>
+                                        Medyan: ${param.data[3]}<br/>
+                                        Alt Çeyreklik (Q1): ${param.data[2]}<br/>
+                                        Minimum: ${param.data[1]}`;
+                            }
+                        }
+                    },
+                    {
+                        name: 'Aykırı Değerler (Outliers)',
+                        type: 'scatter',
+                        data: outlierPoints,
+                        symbolSize: 6,
+                        itemStyle: {
+                            color: '#ba1a1a'
+                        }
+                    }
+                ]
+            };
+            chart.setOption(option);
+        }
+
+        function renderBoxplotChart(chart, chartData, colName) {
+            const box = chartData.box || [0, 0, 0, 0, 0];
+            const outliers = chartData.outliers || [];
+            const outlierPoints = outliers.map(v => [0, v]);
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    axisPointer: { type: 'shadow' }
+                },
+                grid: {
+                    top: 20,
+                    bottom: 30,
+                    left: 50,
+                    right: 20,
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: [colName],
+                    axisLabel: { fontSize: 10, color: '#4A5568' }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+                },
+                series: [
+                    {
+                        name: colName,
+                        type: 'boxplot',
+                        data: [box],
+                        itemStyle: {
+                            color: '#bfeac7',
+                            borderColor: '#006b33',
+                            borderWidth: 1.5
+                        }
+                    },
+                    {
+                        name: 'Aykırı Değer',
+                        type: 'scatter',
+                        data: outlierPoints,
+                        symbolSize: 6,
+                        itemStyle: { color: '#ba1a1a' }
+                    }
+                ]
+            };
+            chart.setOption(option);
+        }
+
+        // ==========================================
+        // Initial Fetch & Setup
+        // ==========================================
+        async function fetchVisualizationOverview() {
+            try {
+                const response = await fetch('/api/visualization/overview');
+                if (response.status === 200) {
+                    const data = await response.json();
+                    renderVisualization(data);
+                } else if (response.status === 409) {
+                    loadingView.classList.add('hidden');
+                    visualizationContentView.classList.add('hidden');
+                    emptyStateView.classList.remove('hidden');
+                } else {
+                    loadingView.innerHTML = `
+                        <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
+                            <span class="material-symbols-outlined text-4xl">error</span>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Yüklenemedi</h3>
+                        <p class="text-on-surface-variant font-body-md mb-6">Sunucudan görselleştirme verisi alınamadı.</p>
+                        <a href="/" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Ana Sayfaya Dön</a>
+                    `;
+                }
+            } catch (err) {
+                console.error('Visualization fetch error:', err);
+                loadingView.innerHTML = `
+                    <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
+                        <span class="material-symbols-outlined text-4xl">wifi_off</span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Bağlantı Hatası</h3>
+                    <p class="text-on-surface-variant font-body-md mb-6">Sunucuya bağlanılamadı. Lütfen FastAPI sunucusunun çalıştığından emin olun.</p>
+                    <button onclick="location.reload()" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Yeniden Dene</button>
+                `;
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchVisualizationOverview();
+
+            // Focus Column Select Change
+            focusColumnSelect.addEventListener('change', (e) => {
+                loadUnivariateAnalysis(e.target.value);
+            });
+
+            // Update Bivariate Chart Button
+            updateBivariateBtn.addEventListener('click', () => {
+                const xVal = bivariateXSelect.value;
+                const yVal = bivariateYSelect.value;
+                if (xVal && yVal) {
+                    loadBivariateAnalysis(xVal, yVal);
+                }
+            });
+
+            // Bivariate Select Changes
+            bivariateXSelect.addEventListener('change', () => {
+                const xVal = bivariateXSelect.value;
+                const yVal = bivariateYSelect.value;
+                if (xVal && yVal) loadBivariateAnalysis(xVal, yVal);
+            });
+
+            bivariateYSelect.addEventListener('change', () => {
+                const xVal = bivariateXSelect.value;
+                const yVal = bivariateYSelect.value;
+                if (xVal && yVal) loadBivariateAnalysis(xVal, yVal);
+            });
+
+            // Export All Charts Button
+            exportAllChartsBtn.addEventListener('click', () => {
+                window.print();
+            });
+
+            // Close Error Banner
+            closeErrorBannerBtn.addEventListener('click', hideError);
+        });
+    </script>
+</body>
+
+</html>
