@@ -12,6 +12,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap"
         rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -134,31 +135,31 @@
 
         <ul class="flex flex-col gap-2 flex-grow">
             <li>
-                <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="/">
+                <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="index.html">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
                     <span class="font-body-md text-body-md font-medium">Dashboard</span>
                 </a>
             </li>
             <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="/data-quality">
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="data-quality.html">
                     <span class="material-symbols-outlined">analytics</span>
                     <span class="font-body-md text-body-md">Data Quality</span>
                 </a>
             </li>
             <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="/preprocessing">
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="preprocessing.html">
                     <span class="material-symbols-outlined">construction</span>
                     <span class="font-body-md text-body-md">Preprocessing</span>
                 </a>
             </li>
             <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="/visualization">
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="visualization.html">
                     <span class="material-symbols-outlined">insights</span>
                     <span class="font-body-md text-body-md">Visualization</span>
                 </a>
             </li>
             <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="/portfolio">
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
                     <span class="material-symbols-outlined">folder_shared</span>
                     <span class="font-body-md text-body-md">Portfolio</span>
                 </a>
@@ -195,16 +196,17 @@
                 </div>
                 <!-- Nav Links -->
                 <nav class="hidden lg:flex gap-6">
-                    <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="/">Hızlı İşlemler</a>
-                    <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="/data-quality">Raporlar</a>
+                    <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="index.html">Hızlı İşlemler</a>
+                    <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="data-quality.html">Raporlar</a>
                 </nav>
             </div>
             <div class="flex items-center gap-4">
                 <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
                     <span class="material-symbols-outlined">notifications</span>
                 </button>
-                <button class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm">
-                    Dışa Aktar
+                <button id="exportPdfBtn" type="button" data-filename="veri_yukleme_ve_analiz" class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm cursor-pointer flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">download</span>
+                    <span>Dışa Aktar</span>
                 </button>
                 <button class="text-on-surface-variant hover:text-primary transition-colors ml-2" title="Kullanıcı Profili">
                     <span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
@@ -215,7 +217,7 @@
         <!-- Main Canvas -->
         <main class="flex-1 pt-24 px-gutter pb-12 max-w-container-max mx-auto w-full">
             <!-- Header Section -->
-            <div class="mb-8">
+            <div class="mb-8" data-export-section="header" data-export-title="Veri Yükleme ve Genel Bilgi">
                 <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Yükleme ve Analiz</h2>
                 <p class="text-on-surface-variant font-body-md text-body-md">Sistem analizi için CSV veri setinizi yükleyin veya mevcut veriyi inceleyin.</p>
             </div>
@@ -236,7 +238,7 @@
             <!-- Bento Grid Layout -->
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
                 <!-- Upload Zone (Takes 1 column) -->
-                <div id="dropZone" class="col-span-1 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-center items-center h-64 border-dashed border-2 border-slate-gray/30 hover:border-primary/50 transition-all cursor-pointer group bg-surface-container-lowest relative select-none">
+                <div id="dropZone" data-export-section="upload" data-export-title="Dosya Yükleme Alanı" class="col-span-1 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-center items-center h-64 border-dashed border-2 border-slate-gray/30 hover:border-primary/50 transition-all cursor-pointer group bg-surface-container-lowest relative select-none">
                     <!-- Normal State -->
                     <div id="uploadNormalState" class="flex flex-col items-center justify-center text-center w-full">
                         <div class="h-16 w-16 bg-secondary-container rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -260,7 +262,7 @@
                 </div>
 
                 <!-- Summary Metrics (Takes 2 columns) -->
-                <div class="col-span-1 xl:col-span-2 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-between">
+                <div data-export-section="metrics" data-export-title="Veri Seti Temel Metrikleri" class="col-span-1 xl:col-span-2 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-between">
                     <div class="flex justify-between items-start mb-6">
                         <div>
                             <div class="flex items-center gap-2 mb-1">
@@ -313,7 +315,7 @@
             </div>
 
             <!-- Data Table Preview -->
-            <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm">
+            <div data-export-section="preview" data-export-title="Veri Önizleme Tablosu" class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm">
                 <div class="px-6 py-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
                     <h3 class="font-body-lg text-body-lg font-medium text-on-surface flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-lg">table</span>
@@ -343,6 +345,11 @@
 
     <!-- Application Script -->
     <script>
+        // API Base Resolver
+        const API_BASE = (location.protocol === 'file:' || location.protocol === 'about:')
+            ? 'http://127.0.0.1:8000'
+            : '';
+
         // DOM Elements
         const csvFileInput = document.getElementById('csvFileInput');
         const dropZone = document.getElementById('dropZone');
@@ -581,7 +588,7 @@
             formData.append('file', file);
 
             try {
-                const response = await fetch('/api/upload', {
+                const response = await fetch(API_BASE + '/api/upload', {
                     method: 'POST',
                     body: formData
                 });
@@ -611,9 +618,9 @@
         // Reset Dataset Handler
         async function handleDatasetReset() {
             try {
-                let res = await fetch('/api/reset', { method: 'POST' });
+                let res = await fetch(API_BASE + '/api/reset', { method: 'POST' });
                 if (!res.ok && (res.status === 405 || res.status === 404)) {
-                    res = await fetch('/api/reset', { method: 'DELETE' });
+                    res = await fetch(API_BASE + '/api/reset', { method: 'DELETE' });
                 }
             } catch (err) {
                 console.warn('Reset isteği uyarısı:', err);
@@ -624,7 +631,7 @@
         // Session Check on Load
         async function checkSession() {
             try {
-                let response = await fetch('/api/session');
+                let response = await fetch(API_BASE + '/api/session');
                 if (response.status === 200) {
                     const data = await response.json();
                     renderDataset(data);
@@ -634,7 +641,7 @@
                     return;
                 } else if (response.status === 404) {
                     // Fallback to /api/active-dataset if needed
-                    const fbResponse = await fetch('/api/active-dataset');
+                    const fbResponse = await fetch(API_BASE + '/api/active-dataset');
                     if (fbResponse.ok) {
                         const fbData = await fbResponse.json();
                         if (fbData.active && fbData.data) {
@@ -719,11 +726,12 @@
             // Analyze CTA Button
             analyzeCtaBtn.addEventListener('click', () => {
                 if (!analyzeCtaBtn.disabled) {
-                    window.location.href = '/data-quality';
+                    window.location.href = 'data-quality.html';
                 }
             });
         });
     </script>
+    <script src="/static/components/export-pdf.js"></script>
 </body>
 
 </html>

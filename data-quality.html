@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -120,7 +121,7 @@
 
         <!-- CTA Action -->
         <div class="mb-6">
-            <a href="/" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+            <a href="index.html" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
                 <span class="material-symbols-outlined">upload</span>
                 Yeni Veri Yükle
             </a>
@@ -129,27 +130,27 @@
         <!-- Main Navigation -->
         <nav class="flex-1 space-y-2">
             <!-- Dashboard -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="index.html">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span class="font-body-md text-body-md">Dashboard</span>
             </a>
             <!-- Data Quality (Active) -->
-            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="/data-quality">
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="data-quality.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
                 <span class="font-body-md text-body-md font-medium">Data Quality</span>
             </a>
             <!-- Preprocessing -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/preprocessing">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="preprocessing.html">
                 <span class="material-symbols-outlined">construction</span>
                 <span class="font-body-md text-body-md">Preprocessing</span>
             </a>
             <!-- Visualization -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/visualization">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="visualization.html">
                 <span class="material-symbols-outlined">insights</span>
                 <span class="font-body-md text-body-md">Visualization</span>
             </a>
             <!-- Portfolio -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/portfolio">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="portfolio.html">
                 <span class="material-symbols-outlined">folder_shared</span>
                 <span class="font-body-md text-body-md">Portfolio</span>
             </a>
@@ -168,26 +169,27 @@
         </div>
     </aside>
 
-    <!-- Top App Bar -->
-    <header class="fixed top-0 right-0 w-[calc(100%-260px)] z-10 flex justify-between items-center h-16 px-gutter bg-surface border-b border-border-subtle">
+    <!-- Top Navigation Header -->
+    <header class="fixed top-0 right-0 w-[calc(100%-260px)] z-10 border-b border-border-subtle bg-surface flex justify-between items-center h-16 px-gutter">
         <!-- Left Section: Search -->
-        <div class="flex items-center flex-1">
+        <div class="flex items-center space-x-6 flex-1">
             <div class="relative w-64">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-                <input class="w-full pl-9 pr-3 py-1.5 bg-surface-container-low border border-border-subtle rounded font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors" placeholder="Arama..." type="text">
+                <input class="w-full pl-9 pr-3 py-1.5 bg-surface-container-low border border-border-subtle rounded font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors" placeholder="Veri setinde ara..." type="text">
             </div>
         </div>
 
         <!-- Center Nav -->
         <div class="hidden lg:flex items-center justify-center space-x-6 flex-1">
-            <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="/">Hızlı İşlemler</a>
-            <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="/data-quality">Raporlar</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="index.html">Hızlı İşlemler</a>
+            <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="data-quality.html">Raporlar</a>
         </div>
 
         <!-- Right Section: Actions -->
         <div class="flex items-center justify-end space-x-4 flex-1">
-            <button id="exportPdfBtn" type="button" class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm">
-                Dışa Aktar
+            <button id="exportPdfBtn" type="button" data-filename="veri_kalitesi_raporu" class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm cursor-pointer flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">download</span>
+                <span>Dışa Aktar</span>
             </button>
             <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
                 <span class="material-symbols-outlined">notifications</span>
@@ -205,37 +207,30 @@
             <div class="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <span class="material-symbols-outlined text-primary text-4xl animate-spin">progress_activity</span>
             </div>
-            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Kalitesi Analiz Ediliyor...</h3>
-            <p class="text-on-surface-variant font-body-md">İstatistiksel kontroller, kayıp veri ve aykırı değer hesaplamaları yürütülüyor.</p>
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Kalitesi Analiz Ediliyor</h3>
+            <p class="font-body-md text-slate-gray max-w-md">Kayıp veriler, tekrarlar, aykırı değerler ve tip uyumsuzlukları taranıyor...</p>
         </div>
 
-        <!-- Empty State View (409) -->
-        <div id="emptyStateView" class="hidden py-16 max-w-xl mx-auto text-center">
-            <div class="bg-surface border border-border-subtle rounded-xl p-10 flex flex-col items-center shadow-sm">
-                <div class="h-20 w-20 bg-secondary-container rounded-full flex items-center justify-center mb-6">
-                    <span class="material-symbols-outlined text-primary text-4xl">folder_off</span>
-                </div>
-                <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Aktif Veri Seti Bulunamadı</h3>
-                <p class="text-on-surface-variant font-body-lg mb-8">
-                    Veri kalitesi raporunu görüntüleyebilmek için lütfen önce sisteme bir CSV veri seti yükleyin.
-                </p>
-                <a href="/" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined">upload_file</span>
-                    Ana Sayfaya Dön &amp; Veri Yükle
-                </a>
+        <!-- Empty State View -->
+        <div id="emptyView" class="hidden py-20 flex flex-col items-center justify-center text-center">
+            <div class="h-20 w-20 bg-surface-container rounded-full flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-slate-gray text-4xl">folder_off</span>
             </div>
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Henüz Veri Yüklenmedi</h3>
+            <p class="font-body-md text-slate-gray max-w-md mb-6">Kalite analiz raporunu görüntülemek için lütfen bir CSV veri seti yükleyin.</p>
+            <a href="index.html" class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-body-md text-body-md font-medium hover:bg-primary-container transition-colors shadow-sm inline-flex items-center gap-2">
+                <span class="material-symbols-outlined">upload</span>
+                Veri Yükle
+            </a>
         </div>
 
-        <!-- Report Content View -->
-        <div id="qualityReportView" class="hidden">
-            <!-- Page Header -->
-            <div class="mb-stack-lg flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <!-- Quality Report Content View -->
+        <div id="reportContentView" class="hidden space-y-8">
+            <!-- Header Section -->
+            <div data-export-section="header" data-export-title="Rapor Başlığı ve Veri Seti Özeti" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-lg border border-border-subtle shadow-sm">
                 <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span id="headerFileName" class="font-label-mono text-xs text-primary bg-primary/10 px-2 py-0.5 rounded font-medium">veri.csv</span>
-                    </div>
-                    <h2 class="font-headline-md text-headline-md text-on-surface">Veri Kalitesi Raporu</h2>
-                    <p class="font-body-md text-body-md text-slate-gray mt-1">Veri setinizin genel sağlık durumunu ve yapısal bütünlüğünü analiz edin.</p>
+                    <h2 id="reportFileName" class="font-headline-md text-headline-md text-on-surface mb-1">—</h2>
+                    <p id="reportDatasetMeta" class="font-label-mono text-label-mono text-slate-gray uppercase">YÜKLENİYOR • 0 SATIR, 0 SÜTUN</p>
                 </div>
                 <div class="flex items-center gap-2 text-sm text-slate-gray bg-white px-3 py-1.5 rounded border border-border-subtle shadow-sm self-start sm:self-auto">
                     <span class="material-symbols-outlined text-sm text-slate-gray">update</span>
@@ -246,7 +241,7 @@
             <!-- Bento Grid Layout -->
             <div class="grid grid-cols-12 gap-6">
                 <!-- Overall Score Card (4/12) -->
-                <div class="col-span-12 lg:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col items-center justify-center relative overflow-hidden group shadow-sm">
+                <div data-export-section="score" data-export-title="Genel Kalite Skoru" class="col-span-12 lg:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col items-center justify-center relative overflow-hidden group shadow-sm">
                     <h3 class="font-label-mono text-label-mono text-slate-gray uppercase w-full text-left mb-6">Genel Kalite Skoru</h3>
                     <!-- Circular Gauge -->
                     <div class="relative w-40 h-40 flex items-center justify-center">
@@ -259,16 +254,20 @@
                             <span class="font-label-mono text-label-mono text-slate-gray">/ 100</span>
                         </div>
                     </div>
-                    <div class="mt-6 text-center">
+                    <div class="mt-6 text-center flex flex-col items-center gap-1.5">
                         <span id="scoreStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-success-green/10 text-success-green text-xs font-semibold">
                             <span id="scoreStatusDot" class="w-2 h-2 rounded-full bg-success-green"></span>
                             <span id="scoreStatusText">Analiz Ediliyor</span>
                         </span>
+                        <a href="#toggleScoreBreakdownBtn" id="scrollToBreakdownLink" class="text-xs text-primary hover:underline mt-1 inline-flex items-center gap-1 cursor-pointer">
+                            <span>Skor nasıl hesaplanır?</span>
+                            <span class="material-symbols-outlined text-xs">help</span>
+                        </a>
                     </div>
                 </div>
 
                 <!-- Key Metrics List (8/12) -->
-                <div class="col-span-12 lg:col-span-8 bg-white rounded-lg border border-border-subtle p-6 shadow-sm flex flex-col justify-between">
+                <div data-export-section="metrics" data-export-title="Temel Veri Kalite Metrikleri" class="col-span-12 lg:col-span-8 bg-white rounded-lg border border-border-subtle p-6 shadow-sm flex flex-col justify-between">
                     <h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-4">Temel Metrikler</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Metric 1: Missing Rate -->
@@ -328,7 +327,7 @@
                 </div>
 
                 <!-- Missing Values Table (6/12) -->
-                <div class="col-span-12 lg:col-span-6 bg-white rounded-lg border border-border-subtle flex flex-col shadow-sm">
+                <div data-export-section="missing-analysis" data-export-title="Kayıp Veri Analizi" class="col-span-12 lg:col-span-6 bg-white rounded-lg border border-border-subtle flex flex-col shadow-sm">
                     <div class="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-container-lowest">
                         <h3 class="font-label-mono text-label-mono text-slate-gray uppercase">Kayıp Veri Analizi</h3>
                         <span class="material-symbols-outlined text-slate-gray text-sm cursor-help" title="Kolon bazında eksik değerlerin toplam kayda oranı.">info</span>
@@ -343,7 +342,7 @@
                                     <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-3 w-32">Durum</th>
                                 </tr>
                             </thead>
-                            <tbody id="missingTableBody" class="divide-y divide-border-subtle font-data-table text-data-table">
+                            <tbody id="missingTableBody" class="divide-y border-border-subtle font-data-table text-data-table">
                                 <!-- Dynamic rows -->
                             </tbody>
                         </table>
@@ -351,7 +350,7 @@
                 </div>
 
                 <!-- Visualization: Missing Values Bar Chart (6/12) -->
-                <div class="col-span-12 lg:col-span-6 bg-white rounded-lg border border-border-subtle p-4 flex flex-col shadow-sm">
+                <div data-export-section="missing-dist" data-export-title="Kayıp Veri Dağılım Grafiği" class="col-span-12 lg:col-span-6 bg-white rounded-lg border border-border-subtle p-4 flex flex-col shadow-sm">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-label-mono text-label-mono text-slate-gray uppercase">Kayıp Veri Dağılımı</h3>
                         <div class="flex items-center gap-2">
@@ -371,7 +370,7 @@
                 </div>
 
                 <!-- Triple Group: Card 1 - Duplicates (4/12) -->
-                <div class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col justify-between shadow-sm">
+                <div data-export-section="duplicates" data-export-title="Tekrarlanan Kayıtlar" class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col justify-between shadow-sm">
                     <div class="flex items-start gap-4">
                         <div class="p-3 bg-surface-container rounded">
                             <span class="material-symbols-outlined text-on-surface-variant">content_copy</span>
@@ -387,7 +386,7 @@
                     </div>
                     <div class="mt-4 pt-3 border-t border-border-subtle">
                         <button id="toggleDuplicateDetailsBtn" type="button" class="text-xs font-semibold text-primary uppercase hover:underline flex items-center gap-1 cursor-pointer">
-                            <span>Detayları Gör</span>
+                            <span>Detayları Gör & Temizle</span>
                             <span class="material-symbols-outlined text-sm">expand_more</span>
                         </button>
                         <div id="duplicateDetailsContainer" class="hidden mt-3 max-h-48 overflow-y-auto border border-border-subtle rounded bg-surface-faint p-2 text-xs">
@@ -399,7 +398,7 @@
                 </div>
 
                 <!-- Triple Group: Card 2 - Cardinality (4/12) -->
-                <div class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col justify-between shadow-sm">
+                <div data-export-section="cardinality" data-export-title="Kardinalite ve Benzersiz Değerler" class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div class="flex items-start gap-4 mb-3">
                             <div class="p-3 bg-surface-container rounded">
@@ -417,7 +416,7 @@
                 </div>
 
                 <!-- Triple Group: Card 3 - Outliers (4/12) -->
-                <div class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col justify-between shadow-sm">
+                <div data-export-section="outliers" data-export-title="Aykırı Değer Analizi (IQR)" class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div class="flex items-start gap-4 mb-2">
                             <div class="p-3 bg-error-container rounded">
@@ -433,14 +432,39 @@
                         </p>
                     </div>
 
-                    <!-- Mandatory Educational Note -->
-                    <div id="outlierWarningBox" class="mt-4 p-2.5 bg-surface-container-low border border-border-subtle rounded text-[11px] text-slate-gray leading-tight">
-                        <span class="font-semibold text-on-surface">Not:</span> Uç değer otomatik olarak hata değildir; gerçek veriye bağlı olarak anlamlı olabilir.
+                    <div>
+                        <!-- Mandatory Educational Note -->
+                        <div id="outlierWarningBox" class="mt-3 p-2.5 bg-surface-container-low border border-border-subtle rounded text-[11px] text-slate-gray leading-tight">
+                            <span class="font-semibold text-on-surface">Not:</span> Aykırı değer otomatik olarak hata değildir; alan bilgisiyle yorumlanmalıdır.
+                        </div>
+                        <button type="button" class="mt-2 text-xs font-semibold text-primary uppercase hover:underline flex items-center gap-1 cursor-pointer">
+                            <span>Dağılımı İncele</span>
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sabit Kolonlar Kartı (12/12 Full Width) -->
+                <div data-export-section="constants" data-export-title="Sabit Kolonlar" class="col-span-12 bg-white rounded-lg border border-border-subtle p-6 flex flex-col shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="p-3 bg-success-green/10 rounded">
+                                <span class="material-symbols-outlined text-success-green">horizontal_rule</span>
+                            </div>
+                            <div>
+                                <h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-1">Sabit Kolonlar</h3>
+                                <p class="text-xs text-slate-gray">Yalnızca tek bir benzersiz değer taşıyan ve bilgi taşımayan kolonlar</p>
+                            </div>
+                        </div>
+                        <span id="constantColsCountBadge" class="text-xs font-mono bg-surface-container px-2 py-1 rounded text-slate-gray font-medium">0 Kolon</span>
+                    </div>
+                    <div id="constantColsList" class="mt-2 text-sm font-data-table">
+                        <p class="text-xs text-slate-gray py-2">Sabit kolon bulunmuyor.</p>
                     </div>
                 </div>
 
                 <!-- Data Type Check Table (12/12 Full Width) -->
-                <div class="col-span-12 bg-white rounded-lg border border-border-subtle flex flex-col shadow-sm">
+                <div data-export-section="types" data-export-title="Veri Tipi Kontrolü ve Öneriler" class="col-span-12 bg-white rounded-lg border border-border-subtle flex flex-col shadow-sm">
                     <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
                         <h3 class="font-label-mono text-label-mono text-slate-gray uppercase">Veri Tipi Kontrolü ve Öneriler</h3>
                         <span class="text-xs text-slate-gray">Otomatik tip çıkarımı ve anomali tespiti</span>
@@ -464,7 +488,7 @@
                 </div>
 
                 <!-- Transparency: Score Breakdown Accordion (12/12) -->
-                <div class="col-span-12 bg-white rounded-lg border border-border-subtle overflow-hidden shadow-sm">
+                <div data-export-section="breakdown" data-export-title="Kalite Skoru Hesaplama Dağılımı" class="col-span-12 bg-white rounded-lg border border-border-subtle overflow-hidden shadow-sm">
                     <button id="toggleScoreBreakdownBtn" type="button" class="w-full p-4 bg-surface-container-lowest hover:bg-surface-faint transition-colors flex justify-between items-center text-left cursor-pointer">
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">fact_check</span>
@@ -505,17 +529,24 @@
 
     <!-- Application Script -->
     <script>
+        // API Base Resolver
+        const API_BASE = (location.protocol === 'file:' || location.protocol === 'about:')
+            ? 'http://127.0.0.1:8000'
+            : '';
+
         // DOM Elements
         const loadingView = document.getElementById('loadingView');
-        const emptyStateView = document.getElementById('emptyStateView');
-        const qualityReportView = document.getElementById('qualityReportView');
-        const headerFileName = document.getElementById('headerFileName');
+        const emptyStateView = document.getElementById('emptyView');
+        const qualityReportView = document.getElementById('reportContentView');
+        const reportFileName = document.getElementById('reportFileName');
+        const reportDatasetMeta = document.getElementById('reportDatasetMeta');
         const lastAnalysisTime = document.getElementById('lastAnalysisTime');
         const scoreValue = document.getElementById('scoreValue');
         const gaugeProgressCircle = document.getElementById('gaugeProgressCircle');
         const scoreStatusBadge = document.getElementById('scoreStatusBadge');
         const scoreStatusDot = document.getElementById('scoreStatusDot');
         const scoreStatusText = document.getElementById('scoreStatusText');
+        const scrollToBreakdownLink = document.getElementById('scrollToBreakdownLink');
         const metricMissingRate = document.getElementById('metricMissingRate');
         const metricDuplicateRate = document.getElementById('metricDuplicateRate');
         const metricTypeIssues = document.getElementById('metricTypeIssues');
@@ -532,6 +563,8 @@
         const cardinalityList = document.getElementById('cardinalityList');
         const outliersDescription = document.getElementById('outliersDescription');
         const outlierWarningBox = document.getElementById('outlierWarningBox');
+        const constantColsCountBadge = document.getElementById('constantColsCountBadge');
+        const constantColsList = document.getElementById('constantColsList');
         const dtypesTableBody = document.getElementById('dtypesTableBody');
         const toggleScoreBreakdownBtn = document.getElementById('toggleScoreBreakdownBtn');
         const scoreBreakdownContainer = document.getElementById('scoreBreakdownContainer');
@@ -559,12 +592,13 @@
         // Render Quality Report
         function renderQualityReport(data) {
             // Header Info
-            headerFileName.textContent = data.filename || 'veri_seti.csv';
-            lastAnalysisTime.textContent = `Son Analiz: ${data.upload_time || 'Şimdi'}`;
+            if (reportFileName) reportFileName.textContent = data.filename || 'veri_seti.csv';
+            if (reportDatasetMeta) reportDatasetMeta.textContent = `${formatNumber(data.rows || 0)} SATIR • ${formatNumber(data.columns || 0)} SÜTUN`;
+            if (lastAnalysisTime) lastAnalysisTime.textContent = `Son Analiz: ${data.upload_time || 'Şimdi'}`;
 
             // Score & Circular Gauge
             const score = Math.max(0, Math.min(100, data.score || 0));
-            scoreValue.textContent = score;
+            if (scoreValue) scoreValue.textContent = score;
 
             // Gauge circumference is 2 * PI * 45 = 282.74
             const circumference = 282.7;
@@ -588,58 +622,62 @@
                 statusText = 'İyileştirme Gerekli';
             }
 
-            gaugeProgressCircle.setAttribute('stroke', gaugeColor);
-            setTimeout(() => {
-                gaugeProgressCircle.style.strokeDashoffset = offset;
-            }, 100);
+            if (gaugeProgressCircle) {
+                gaugeProgressCircle.setAttribute('stroke', gaugeColor);
+                setTimeout(() => {
+                    gaugeProgressCircle.style.strokeDashoffset = offset;
+                }, 100);
+            }
 
-            scoreStatusBadge.className = `inline-flex items-center gap-1.5 px-3 py-1 rounded ${badgeBg} text-xs font-semibold`;
-            scoreStatusDot.className = `w-2 h-2 rounded-full ${dotBg}`;
-            scoreStatusText.textContent = statusText;
+            if (scoreStatusBadge) scoreStatusBadge.className = `inline-flex items-center gap-1.5 px-3 py-1 rounded ${badgeBg} text-xs font-semibold`;
+            if (scoreStatusDot) scoreStatusDot.className = `w-2 h-2 rounded-full ${dotBg}`;
+            if (scoreStatusText) scoreStatusText.textContent = statusText;
 
             // Key Metrics
             const metrics = data.metrics || {};
-            metricMissingRate.textContent = `%${metrics.missing_rate !== undefined ? metrics.missing_rate : (data.missing ? data.missing.rate : 0)}`;
-            metricDuplicateRate.textContent = `%${metrics.duplicate_rate !== undefined ? metrics.duplicate_rate : (data.duplicates ? data.duplicates.rate : 0)}`;
-            metricTypeIssues.textContent = `${metrics.type_issues !== undefined ? metrics.type_issues : 0} Kolon`;
-            metricConstantCols.textContent = `${metrics.constant_cols !== undefined ? metrics.constant_cols : (data.constant_cols ? data.constant_cols.length : 0)}`;
-            metricHighCardCols.textContent = `${metrics.high_cardinality_cols !== undefined ? metrics.high_cardinality_cols : 0} Kolon`;
-            metricOutlierSummary.textContent = metrics.outlier_summary || (data.outliers && data.outliers.total_outliers > 0 ? 'Belirgin' : 'Minimal');
+            if (metricMissingRate) metricMissingRate.textContent = `%${metrics.missing_rate !== undefined ? metrics.missing_rate : (data.missing ? data.missing.rate : 0)}`;
+            if (metricDuplicateRate) metricDuplicateRate.textContent = `%${metrics.duplicate_rate !== undefined ? metrics.duplicate_rate : (data.duplicates ? data.duplicates.rate : 0)}`;
+            if (metricTypeIssues) metricTypeIssues.textContent = `${metrics.type_issues !== undefined ? metrics.type_issues : 0} Kolon`;
+            if (metricConstantCols) metricConstantCols.textContent = `${metrics.constant_cols !== undefined ? metrics.constant_cols : (data.constant_cols ? data.constant_cols.length : 0)}`;
+            if (metricHighCardCols) metricHighCardCols.textContent = `${metrics.high_cardinality_cols !== undefined ? metrics.high_cardinality_cols : 0} Kolon`;
+            if (metricOutlierSummary) metricOutlierSummary.textContent = metrics.outlier_summary || (data.outliers && data.outliers.total_outliers > 0 ? 'Belirgin' : 'Minimal');
 
             // Missing Values Table
             const missingCols = (data.missing && data.missing.columns) ? data.missing.columns : [];
             const filteredMissing = missingCols.filter(c => c.count > 0);
 
-            if (filteredMissing.length === 0) {
-                missingTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="px-4 py-6 text-center text-slate-gray">
-                            <span class="inline-flex items-center gap-1 text-success-green font-medium">
-                                <span class="material-symbols-outlined text-sm">check_circle</span>
-                                Tebrikler! Veri setinde hiç eksik değer bulunmamaktadır.
-                            </span>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                let missingHtml = '';
-                filteredMissing.forEach(col => {
-                    const ratio = col.ratio || 0;
-                    const barColor = ratio >= 5 ? 'bg-warning-orange' : (ratio > 0 ? 'bg-success-green' : 'bg-surface-container-high');
-                    missingHtml += `
-                        <tr class="hover:bg-surface-faint transition-colors">
-                            <td class="px-4 py-3 font-mono text-xs text-on-surface font-medium">${escapeHtml(col.name)}</td>
-                            <td class="px-4 py-3 font-mono">${formatNumber(col.count)}</td>
-                            <td class="px-4 py-3 font-mono font-medium">%${ratio}</td>
-                            <td class="px-4 py-3">
-                                <div class="w-full bg-surface-container-high rounded-full h-1.5">
-                                    <div class="${barColor} h-1.5 rounded-full" style="width: ${Math.min(100, Math.max(2, ratio))}%"></div>
-                                </div>
+            if (missingTableBody) {
+                if (filteredMissing.length === 0) {
+                    missingTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="px-4 py-6 text-center text-slate-gray">
+                                <span class="inline-flex items-center gap-1 text-success-green font-medium">
+                                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                                    Tebrikler! Veri setinde hiç eksik değer bulunmamaktadır.
+                                </span>
                             </td>
                         </tr>
                     `;
-                });
-                missingTableBody.innerHTML = missingHtml;
+                } else {
+                    let missingHtml = '';
+                    filteredMissing.forEach(col => {
+                        const ratio = col.ratio || 0;
+                        const barColor = ratio >= 25 ? 'bg-error' : (ratio >= 5 ? 'bg-warning-orange' : 'bg-success-green');
+                        missingHtml += `
+                            <tr class="hover:bg-surface-faint transition-colors">
+                                <td class="px-4 py-3 font-mono text-xs text-on-surface font-medium">${escapeHtml(col.name)}</td>
+                                <td class="px-4 py-3 font-mono">${formatNumber(col.count)}</td>
+                                <td class="px-4 py-3 font-mono font-medium">%${ratio}</td>
+                                <td class="px-4 py-3">
+                                    <div class="w-full bg-surface-container-high rounded-full h-1.5">
+                                        <div class="${barColor} h-1.5 rounded-full" style="width: ${Math.min(100, Math.max(2, ratio))}%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    missingTableBody.innerHTML = missingHtml;
+                }
             }
 
             // Missing Values Bar Chart (CSS/SVG pure rendering)
@@ -648,88 +686,117 @@
             // Duplicate Records Card
             const dupCount = (data.duplicates && data.duplicates.count !== undefined) ? data.duplicates.count : 0;
             const dupRate = (data.duplicates && data.duplicates.rate !== undefined) ? data.duplicates.rate : 0;
-            duplicateCountText.textContent = formatNumber(dupCount);
-            duplicateRatioText.textContent = `Toplam verinin %${dupRate}'si`;
+            if (duplicateCountText) duplicateCountText.textContent = formatNumber(dupCount);
+            if (duplicateRatioText) duplicateRatioText.textContent = `Toplam verinin %${dupRate}'si`;
 
             const dupSamples = (data.duplicates && data.duplicates.samples) ? data.duplicates.samples : [];
-            if (dupSamples.length > 0) {
-                let dupHtml = '';
-                dupSamples.forEach((sample, i) => {
-                    const sampleText = Object.entries(sample).map(([k, v]) => `${k}: ${v}`).join(' | ');
-                    dupHtml += `<tr class="border-b border-border-subtle"><td class="py-1 px-1 font-mono text-[11px] text-slate-gray truncate max-w-xs" title="${escapeHtml(sampleText)}">#${i+1}: ${escapeHtml(sampleText)}</td></tr>`;
-                });
-                duplicateTableBody.innerHTML = dupHtml;
-            } else {
-                duplicateTableBody.innerHTML = '<tr><td class="py-2 text-center text-slate-gray">Yinelenen örnek kayıt bulunamadı.</td></tr>';
+            if (duplicateTableBody) {
+                if (dupSamples.length > 0) {
+                    let dupHtml = '';
+                    dupSamples.forEach((sample, i) => {
+                        const sampleText = Object.entries(sample).map(([k, v]) => `${k}: ${v}`).join(' | ');
+                        dupHtml += `<tr class="border-b border-border-subtle"><td class="py-1 px-1 font-mono text-[11px] text-slate-gray truncate max-w-xs" title="${escapeHtml(sampleText)}">#${i+1}: ${escapeHtml(sampleText)}</td></tr>`;
+                    });
+                    duplicateTableBody.innerHTML = dupHtml;
+                } else {
+                    duplicateTableBody.innerHTML = '<tr><td class="py-2 text-center text-slate-gray">Yinelenen örnek kayıt bulunamadı.</td></tr>';
+                }
             }
 
             // Cardinality List
             const cardCols = (data.cardinality && data.cardinality.columns) ? data.cardinality.columns : [];
-            if (cardCols.length === 0) {
-                cardinalityList.innerHTML = '<p class="text-xs text-slate-gray py-2">Kardinalite bilgisi bulunamadı.</p>';
-            } else {
-                let cardHtml = '';
-                cardCols.forEach((c, idx) => {
-                    const isHigh = c.is_high || (c.label && c.label.toLowerCase().includes('yüksek'));
-                    const badge = isHigh 
-                        ? `<span class="text-xs text-warning-orange bg-warning-orange/10 px-1.5 py-0.5 rounded font-medium">${escapeHtml(c.label || 'Yüksek')}</span>`
-                        : `<span class="text-xs text-slate-gray bg-surface-container px-1.5 py-0.5 rounded">${escapeHtml(c.label || 'Düşük')}</span>`;
-                    const borderClass = idx < cardCols.length - 1 ? 'border-b border-border-subtle pb-1.5 mb-1.5' : '';
-                    cardHtml += `
-                        <div class="flex justify-between items-center text-sm ${borderClass}">
-                            <span class="font-mono text-xs text-on-surface font-medium truncate max-w-[140px]" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</span>
-                            ${badge}
-                        </div>
-                    `;
-                });
-                cardinalityList.innerHTML = cardHtml;
+            if (cardinalityList) {
+                if (cardCols.length === 0) {
+                    cardinalityList.innerHTML = '<p class="text-xs text-slate-gray py-2">Kardinalite bilgisi bulunamadı.</p>';
+                } else {
+                    let cardHtml = '';
+                    cardCols.forEach((c, idx) => {
+                        const isHigh = c.is_high || (c.label && c.label.toLowerCase().includes('yüksek')) || (c.label && c.label.toLowerCase().includes('yuksek'));
+                        const badge = isHigh 
+                            ? `<span class="text-xs text-warning-orange bg-warning-orange/10 px-1.5 py-0.5 rounded font-medium">Yüksek (${formatNumber(c.unique)})</span>`
+                            : `<span class="text-xs text-slate-gray bg-surface-container px-1.5 py-0.5 rounded">Düşük (${formatNumber(c.unique)})</span>`;
+                        const borderClass = idx < cardCols.length - 1 ? 'border-b border-border-subtle pb-1.5 mb-1.5' : '';
+                        cardHtml += `
+                            <div class="flex justify-between items-center text-sm ${borderClass}">
+                                <span class="font-mono text-xs text-on-surface font-medium truncate max-w-[140px]" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</span>
+                                ${badge}
+                            </div>
+                        `;
+                    });
+                    cardinalityList.innerHTML = cardHtml;
+                }
             }
 
             // Outliers Description
             const outliers = data.outliers || {};
             const outlierCols = outliers.columns || [];
-            if (outlierCols.length > 0) {
-                const top1 = outlierCols[0];
-                let text = `<span class="font-mono text-xs bg-surface-container px-1.5 py-0.5 rounded mr-1 font-semibold">${escapeHtml(top1.name)}</span> kolonunda <strong>${outliers.method || 'IQR'} yöntemiyle ${formatNumber(top1.count)} kayıt</strong> (%${top1.ratio}) tespit edildi.`;
-                if (outlierCols.length > 1) {
-                    const top2 = outlierCols[1];
-                    text += `<br><span class="text-xs text-slate-gray mt-1 block font-mono">${escapeHtml(top2.name)}: ${formatNumber(top2.count)} kayıt (%${top2.ratio})</span>`;
+            if (outliersDescription) {
+                if (outlierCols.length > 0) {
+                    const top1 = outlierCols[0];
+                    let text = `<span class="font-mono text-xs bg-surface-container px-1.5 py-0.5 rounded mr-1 font-semibold">${escapeHtml(top1.name)}</span> kolonunda <strong>${outliers.method || 'IQR'} yöntemiyle ${formatNumber(top1.count)} kayıt</strong> (%${top1.ratio}) tespit edildi.`;
+                    if (outlierCols.length > 1) {
+                        const top2 = outlierCols[1];
+                        text += `<br><span class="text-xs text-slate-gray mt-1 block font-mono">${escapeHtml(top2.name)}: ${formatNumber(top2.count)} kayıt (%${top2.ratio})</span>`;
+                    }
+                    outliersDescription.innerHTML = text;
+                } else {
+                    outliersDescription.innerHTML = '<span class="text-success-green font-medium flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Aykırı değer tespit edilmedi (Tüm veriler normal dağılım aralığında).</span>';
                 }
-                outliersDescription.innerHTML = text;
-            } else {
-                outliersDescription.innerHTML = '<span class="text-success-green font-medium flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Aykırı değer tespit edilmedi (Tüm veriler normal dağılım aralığında).</span>';
+            }
+
+            // Constant Columns
+            const constCols = data.constant_cols || [];
+            if (constantColsCountBadge) constantColsCountBadge.textContent = `${constCols.length} Kolon`;
+            if (constantColsList) {
+                if (constCols.length === 0) {
+                    constantColsList.innerHTML = '<p class="text-xs text-slate-gray py-2">Sabit kolon bulunmuyor.</p>';
+                } else {
+                    let constHtml = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">';
+                    constCols.forEach(c => {
+                        constHtml += `
+                            <div class="flex items-center justify-between p-2.5 bg-surface-faint border border-border-subtle rounded text-xs">
+                                <span class="font-mono font-semibold text-on-surface truncate max-w-[140px]" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</span>
+                                <span class="font-mono text-slate-gray bg-white px-2 py-0.5 rounded border border-border-subtle">${escapeHtml(c.value)} (%${c.ratio || 100})</span>
+                            </div>
+                        `;
+                    });
+                    constHtml += '</div>';
+                    constantColsList.innerHTML = constHtml;
+                }
             }
 
             // Data Types Table
             const dtypes = data.dtypes || [];
-            if (dtypes.length === 0) {
-                dtypesTableBody.innerHTML = '<tr><td colspan="5" class="px-4 py-4 text-center text-slate-gray">Veri tipi önerisi bulunamadı.</td></tr>';
-            } else {
-                let dtypesHtml = '';
-                dtypes.forEach(dt => {
-                    const isOk = dt.ok !== false;
-                    const rowClass = isOk ? 'hover:bg-surface-faint transition-colors' : 'hover:bg-surface-faint transition-colors bg-warning-orange/5';
-                    const sampleText = dt.sample_str || (dt.samples ? dt.samples.join(', ') : '-');
-                    
-                    const suggestionHtml = isOk
-                        ? `<span class="material-symbols-outlined text-sm text-success-green">check_circle</span> <span class="text-success-green">${escapeHtml(dt.suggestion || 'Uygun görünüyor')}</span>`
-                        : `<span class="material-symbols-outlined text-sm text-warning-orange">warning</span> <span class="font-medium text-warning-orange">${escapeHtml(dt.suggestion || 'Dönüştürme önerilir')}</span>`;
-                    
-                    const actionHtml = isOk
-                        ? `<span class="text-slate-gray text-xs">-</span>`
-                        : `<button type="button" class="px-3 py-1 bg-white border border-border-subtle text-xs font-semibold rounded hover:bg-surface-container transition-colors cursor-pointer shadow-sm">Dönüştür</button>`;
+            if (dtypesTableBody) {
+                if (dtypes.length === 0) {
+                    dtypesTableBody.innerHTML = '<tr><td colspan="5" class="px-4 py-4 text-center text-slate-gray">Veri tipi önerisi bulunamadı.</td></tr>';
+                } else {
+                    let dtypesHtml = '';
+                    dtypes.forEach(dt => {
+                        const isOk = dt.ok !== false;
+                        const rowClass = isOk ? 'hover:bg-surface-faint transition-colors' : 'hover:bg-surface-faint transition-colors bg-warning-orange/5';
+                        const sampleText = dt.sample_str || (dt.samples ? dt.samples.join(', ') : '-');
+                        
+                        const suggestionHtml = isOk
+                            ? `<span class="material-symbols-outlined text-sm text-success-green">check_circle</span> <span class="text-success-green">${escapeHtml(dt.suggestion || 'Uygun görünüyor')}</span>`
+                            : `<span class="material-symbols-outlined text-sm text-warning-orange">warning</span> <span class="font-medium text-warning-orange">${escapeHtml(dt.suggestion || 'Dönüştürme önerilir')}</span>`;
+                        
+                        const actionHtml = isOk
+                            ? `<span class="text-slate-gray text-xs">—</span>`
+                            : `<button type="button" class="px-3 py-1 bg-white border border-border-subtle text-xs font-semibold rounded hover:bg-surface-container transition-colors cursor-pointer shadow-sm">Dönüştür</button>`;
 
-                    dtypesHtml += `
-                        <tr class="${rowClass}">
-                            <td class="px-4 py-3 font-mono text-xs font-medium text-on-surface">${escapeHtml(dt.name)}</td>
-                            <td class="px-4 py-3 text-slate-gray font-mono text-xs">${escapeHtml(dt.current)}</td>
-                            <td class="px-4 py-3 text-slate-gray text-xs truncate max-w-xs" title="${escapeHtml(sampleText)}">${escapeHtml(sampleText)}</td>
-                            <td class="px-4 py-3 flex items-center gap-1.5 text-xs">${suggestionHtml}</td>
-                            <td class="px-4 py-3">${actionHtml}</td>
-                        </tr>
-                    `;
-                });
-                dtypesTableBody.innerHTML = dtypesHtml;
+                        dtypesHtml += `
+                            <tr class="${rowClass}">
+                                <td class="px-4 py-3 font-mono text-xs font-medium text-on-surface">${escapeHtml(dt.name)}</td>
+                                <td class="px-4 py-3 text-slate-gray font-mono text-xs">${escapeHtml(dt.current)}</td>
+                                <td class="px-4 py-3 text-slate-gray text-xs truncate max-w-xs" title="${escapeHtml(sampleText)}">${escapeHtml(sampleText)}</td>
+                                <td class="px-4 py-3 flex items-center gap-1.5 text-xs">${suggestionHtml}</td>
+                                <td class="px-4 py-3">${actionHtml}</td>
+                            </tr>
+                        `;
+                    });
+                    dtypesTableBody.innerHTML = dtypesHtml;
+                }
             }
 
             // Score Breakdown Table
@@ -750,28 +817,29 @@
                     </tr>
                 `;
             });
-            scoreBreakdownBody.innerHTML = breakdownHtml;
+            if (scoreBreakdownBody) scoreBreakdownBody.innerHTML = breakdownHtml;
 
-            scoreBreakdownFoot.innerHTML = `
-                <tr>
-                    <td colspan="3" class="px-4 py-3 text-on-surface">Toplam Uygulanan Ceza</td>
-                    <td class="px-4 py-3 text-right text-error font-bold">-${totalPenalty} Puan</td>
-                </tr>
-                <tr class="bg-surface-container text-primary">
-                    <td colspan="3" class="px-4 py-2 font-bold">Hesaplanan Kalite Skoru (100 - ${totalPenalty})</td>
-                    <td class="px-4 py-2 text-right font-headline-md font-bold text-sm text-primary">${score} / 100</td>
-                </tr>
-            `;
+            if (scoreBreakdownFoot) {
+                scoreBreakdownFoot.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="px-4 py-3 text-on-surface">Toplam Uygulanan Ceza</td>
+                        <td class="px-4 py-3 text-right text-error font-bold">-${totalPenalty} Puan</td>
+                    </tr>
+                    <tr class="bg-surface-container text-primary">
+                        <td colspan="3" class="px-4 py-2 font-bold">Hesaplanan Kalite Skoru (100 - ${totalPenalty})</td>
+                        <td class="px-4 py-2 text-right font-headline-md font-bold text-sm text-primary">${score} / 100</td>
+                    </tr>
+                `;
+            }
 
             // Switch to Report View
-            loadingView.classList.add('hidden');
-            emptyStateView.classList.add('hidden');
-            qualityReportView.classList.remove('hidden');
+            if (loadingView) loadingView.classList.add('hidden');
+            if (emptyStateView) emptyStateView.classList.add('hidden');
+            if (qualityReportView) qualityReportView.classList.remove('hidden');
         }
 
         // Render Pure CSS/SVG Missing Bar Chart
         function renderMissingBarChart(columns) {
-            // Keep existing grid lines
             const gridLines = `
                 <div class="absolute w-full border-t border-border-subtle border-dashed bottom-12 left-0 z-0"></div>
                 <div class="absolute w-full border-t border-border-subtle border-dashed bottom-24 left-0 z-0"></div>
@@ -779,24 +847,25 @@
             `;
 
             if (!columns || columns.length === 0) {
-                missingBarsWrapper.innerHTML = gridLines + `
-                    <div class="z-10 w-full text-center text-xs text-slate-gray self-center">
-                        Tüm kolonlar eksiksiz doldurulmuş (%0 kayıp).
-                    </div>
-                `;
+                if (missingBarsWrapper) {
+                    missingBarsWrapper.innerHTML = gridLines + `
+                        <div class="z-10 w-full text-center text-xs text-slate-gray self-center">
+                            Eksik değer yok (%0 kayıp).
+                        </div>
+                    `;
+                }
                 return;
             }
 
-            // Take top 8-10 columns
+            // Filter or display columns
             const displayCols = columns.slice(0, 8);
             const maxRatio = Math.max(...displayCols.map(c => c.ratio || 0), 1);
 
             let barsHtml = gridLines;
             displayCols.forEach(col => {
                 const ratio = col.ratio || 0;
-                // Height between 4% and 85%
                 const heightPct = ratio > 0 ? Math.max(6, Math.min(85, (ratio / maxRatio) * 80)) : 3;
-                const barColor = ratio >= 5 ? 'bg-warning-orange/80' : (ratio > 0 ? 'bg-success-green/60' : 'bg-surface-container-high');
+                const barColor = ratio >= 25 ? 'bg-error' : (ratio >= 5 ? 'bg-warning-orange' : (ratio > 0 ? 'bg-success-green' : 'bg-surface-container-high'));
                 const shortName = col.name.length > 8 ? col.name.substring(0, 7) + '..' : col.name;
 
                 barsHtml += `
@@ -811,43 +880,50 @@
                 `;
             });
 
-            missingBarsWrapper.innerHTML = barsHtml;
+            if (missingBarsWrapper) missingBarsWrapper.innerHTML = barsHtml;
         }
 
         // Fetch Quality Data from Backend
         async function fetchQualityData() {
             try {
-                const response = await fetch('/api/quality');
+                const response = await fetch(API_BASE + '/api/quality');
 
                 if (response.status === 200) {
                     const data = await response.json();
                     renderQualityReport(data);
                 } else if (response.status === 409) {
                     // Empty state
-                    loadingView.classList.add('hidden');
-                    qualityReportView.classList.add('hidden');
-                    emptyStateView.classList.remove('hidden');
+                    if (loadingView) loadingView.classList.add('hidden');
+                    if (qualityReportView) qualityReportView.classList.add('hidden');
+                    if (emptyStateView) emptyStateView.classList.remove('hidden');
                 } else {
                     // Error state
-                    loadingView.innerHTML = `
-                        <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
-                            <span class="material-symbols-outlined text-4xl">error</span>
-                        </div>
-                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Rapor Yüklenemedi</h3>
-                        <p class="text-on-surface-variant font-body-md mb-6">Sunucudan analiz verisi alınırken bir hata oluştu.</p>
-                        <a href="/" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Ana Sayfaya Dön</a>
-                    `;
+                    if (loadingView) {
+                        loadingView.innerHTML = `
+                            <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
+                                <span class="material-symbols-outlined text-4xl">error</span>
+                            </div>
+                            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Rapor Yüklenemedi</h3>
+                            <p class="text-on-surface-variant font-body-md mb-6">Sunucudan analiz verisi alınırken bir hata oluştu.</p>
+                            <a href="index.html" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors cursor-pointer">Ana Sayfaya Dön</a>
+                        `;
+                    }
                 }
             } catch (err) {
                 console.error('Veri kalitesi raporu getirme hatası:', err);
-                loadingView.innerHTML = `
-                    <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
-                        <span class="material-symbols-outlined text-4xl">wifi_off</span>
-                    </div>
-                    <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Bağlantı Hatası</h3>
-                    <p class="text-on-surface-variant font-body-md mb-6">Sunucuya ulaşılamadı. Lütfen sunucunun çalıştığından emin olun.</p>
-                    <button onclick="location.reload()" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Yeniden Dene</button>
-                `;
+                const isFileProtocol = location.protocol === 'file:' || location.protocol === 'about:';
+                if (loadingView) {
+                    loadingView.innerHTML = `
+                        <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
+                            <span class="material-symbols-outlined text-4xl">wifi_off</span>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Bağlantı Hatası</h3>
+                        <p class="text-on-surface-variant font-body-md mb-6 max-w-lg mx-auto">${isFileProtocol
+                            ? 'Sayfa doğrudan dosyadan açıldı. Verileri görmek için önce FastAPI sunucusunu başlatıp <b>http://127.0.0.1:8000/data-quality</b> adresinden açın.'
+                            : 'Sunucuya ulaşılamadı. Lütfen sunucunun çalıştığından emin olun.'}</p>
+                        <button onclick="location.reload()" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors cursor-pointer">Yeniden Dene</button>
+                    `;
+                }
             }
         }
 
@@ -865,9 +941,21 @@
                         toggleDuplicateDetailsBtn.querySelector('.material-symbols-outlined').textContent = 'expand_less';
                     } else {
                         duplicateDetailsContainer.classList.add('hidden');
-                        toggleDuplicateDetailsBtn.querySelector('span:first-child').textContent = 'Detayları Gör';
+                        toggleDuplicateDetailsBtn.querySelector('span:first-child').textContent = 'Detayları Gör & Temizle';
                         toggleDuplicateDetailsBtn.querySelector('.material-symbols-outlined').textContent = 'expand_more';
                     }
+                });
+            }
+
+            // Scroll to Breakdown Link
+            if (scrollToBreakdownLink && toggleScoreBreakdownBtn && scoreBreakdownContainer) {
+                scrollToBreakdownLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (scoreBreakdownContainer.classList.contains('hidden')) {
+                        scoreBreakdownContainer.classList.remove('hidden');
+                        if (scoreAccordionIcon) scoreAccordionIcon.textContent = 'expand_less';
+                    }
+                    toggleScoreBreakdownBtn.scrollIntoView({ behavior: 'smooth' });
                 });
             }
 
@@ -877,15 +965,16 @@
                     const isHidden = scoreBreakdownContainer.classList.contains('hidden');
                     if (isHidden) {
                         scoreBreakdownContainer.classList.remove('hidden');
-                        scoreAccordionIcon.textContent = 'expand_less';
+                        if (scoreAccordionIcon) scoreAccordionIcon.textContent = 'expand_less';
                     } else {
                         scoreBreakdownContainer.classList.add('hidden');
-                        scoreAccordionIcon.textContent = 'expand_more';
+                        if (scoreAccordionIcon) scoreAccordionIcon.textContent = 'expand_more';
                     }
                 });
             }
         });
     </script>
+    <script src="/static/components/export-pdf.js"></script>
 </body>
 
 </html>

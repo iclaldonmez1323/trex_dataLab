@@ -80,26 +80,31 @@ def parse_csv_content(content_bytes: bytes, filename: str) -> pd.DataFrame:
 
 
 @app.get("/")
+@app.get("/index.html")
 async def serve_index():
     return FileResponse("static/index.html")
 
 
 @app.get("/data-quality")
+@app.get("/data-quality.html")
 async def serve_data_quality():
     return FileResponse("static/data-quality.html")
 
 
 @app.get("/preprocessing")
+@app.get("/preprocessing.html")
 async def serve_preprocessing():
     return FileResponse("static/preprocessing.html")
 
 
 @app.get("/visualization")
+@app.get("/visualization.html")
 async def serve_visualization():
     return FileResponse("static/visualization.html")
 
 
 @app.get("/portfolio")
+@app.get("/portfolio.html")
 async def serve_portfolio():
     return FileResponse("static/portfolio.html")
 
@@ -307,8 +312,8 @@ async def get_quality_report():
     high_card_count = 0
     for col in df.columns:
         unique_cnt = int(df[col].nunique(dropna=True))
-        is_high = (unique_cnt > rows_count * 0.4 and unique_cnt > 20) or (unique_cnt > 500)
-        label = f"Yüksek ({unique_cnt})" if is_high else f"Düşük ({unique_cnt})"
+        is_high = (unique_cnt / max(1, rows_count)) > 0.5
+        label = "Yuksek" if is_high else "Dusuk"
         if is_high:
             high_card_count += 1
         cardinality_columns.append({
@@ -325,8 +330,8 @@ async def get_quality_report():
     for col in numeric_df.columns:
         valid_series = numeric_df[col].dropna()
         if len(valid_series) >= 4:
-            q25 = valid_series.quantile(0.25)
-            q75 = valid_series.quantile(0.75)
+            q25 = float(valid_series.quantile(0.25))
+            q75 = float(valid_series.quantile(0.75))
             iqr = q75 - q25
             if iqr > 0:
                 lower = q25 - 1.5 * iqr
@@ -340,38 +345,46 @@ async def get_quality_report():
                         "ratio": round((outliers_cnt / max(1, len(valid_series))) * 100, 2)
                     })
     outlier_columns.sort(key=lambda x: x["count"], reverse=True)
-    outlier_rate = round((total_outliers / max(1, rows_count * max(1, len(numeric_df.columns)))) * 100, 2)
-    outlier_summary = "Belirgin" if total_outliers > 0 else "Minimal"
+    outlier_rate = round((total_outliers / max(1, rows_count)) * 100, 2)
+    has_significant_outlier = any(c["ratio"] > 1.0 for c in outlier_columns)
+    outlier_summary = "Belirgin" if has_significant_outlier or total_outliers > 0 else "Minimal"
 
     # Data Types Check & Suggestions
     dtypes_list = []
     type_issues_count = 0
     for col in df.columns:
         curr_dtype = str(df[col].dtype)
-        samples = [str(clean_val_for_json(v)) for v in df[col].dropna().head(3).tolist()]
+        samples = [str(clean_val_for_json(v)) for v in df[col].dropna().head(2).tolist()]
         sample_str = ", ".join([f'"{s}"' if not s.replace('.', '', 1).isdigit() else s for s in samples])
         
         ok = True
         suggestion = "Uygun görünüyor"
         
         if df[col].dtype == object or str(df[col].dtype) == "string":
-            # Check if numeric
             non_na = df[col].dropna()
             if len(non_na) > 0:
-                try:
-                    pd.to_numeric(non_na)
+                # 1. Check numeric conversion
+                num_converted = pd.to_numeric(non_na, errors='coerce')
+                valid_num_ratio = float(num_converted.notna().sum()) / len(non_na)
+                if valid_num_ratio >= 0.8:
                     ok = False
-                    suggestion = "Sayısal (float/int) olabilir"
+                    suggestion = "Sayısal (int64) olabilir"
                     type_issues_count += 1
-                except Exception:
-                    # Check if date
+                else:
+                    # 2. Check datetime conversion
                     try:
-                        pd.to_datetime(non_na, format="%Y-%m-%d", errors="raise")
-                        ok = False
-                        suggestion = "Tarih (datetime) olabilir"
-                        type_issues_count += 1
+                        date_converted = pd.to_datetime(non_na, errors='coerce')
+                        valid_date_ratio = float(date_converted.notna().sum()) / len(non_na)
+                        if valid_date_ratio >= 0.8:
+                            ok = False
+                            suggestion = "Tarih (datetime) olabilir"
+                            type_issues_count += 1
+                        else:
+                            suggestion = "Kategorik uygun görünüyor"
+                            ok = True
                     except Exception:
-                        pass
+                        suggestion = "Kategorik uygun görünüyor"
+                        ok = True
         
         dtypes_list.append({
             "name": str(col),
@@ -383,28 +396,30 @@ async def get_quality_report():
         })
 
     # Score and Penalties
-    missing_penalty = min(30, int(round(missing_rate * 2)))
-    duplicate_penalty = min(20, int(round(duplicate_rate * 5)))
-    type_penalty = min(20, type_issues_count * 5)
-    constant_penalty = min(15, len(constant_columns) * 5)
-    outlier_penalty = min(15, min(15, int(round(outlier_rate * 3))))
+    missing_penalty = min(30, int(round((total_missing / total_cells) * 50)))
+    duplicate_penalty = min(10, int(round((duplicate_count / max(1, rows_count)) * 100)))
+    type_penalty = min(15, type_issues_count * 4)
+    constant_penalty = min(10, len(constant_columns) * 5)
+    card_penalty = min(9, high_card_count * 3)
+    outlier_penalty = min(10, int(round((total_outliers / max(1, rows_count)) * 40)))
 
-    total_penalty = missing_penalty + duplicate_penalty + type_penalty + constant_penalty + outlier_penalty
+    total_penalty = missing_penalty + duplicate_penalty + type_penalty + constant_penalty + card_penalty + outlier_penalty
     final_score = max(0, 100 - total_penalty)
 
     if final_score >= 85:
-        score_status = "iyi"
+        score_status = "iyi_durumda"
     elif final_score >= 70:
         score_status = "iyilestirme_gerekli"
     else:
         score_status = "zayif"
 
     score_breakdown = [
-        {"component": "Kayıp Veri", "formula": "Eksik oran × 2 (maks 30)", "value": f"%{missing_rate}", "penalty": missing_penalty},
-        {"component": "Tekrarlanan Kayıt", "formula": "Tekrar oranı × 5 (maks 20)", "value": f"%{duplicate_rate}", "penalty": duplicate_penalty},
-        {"component": "Veri Tipi Sorunları", "formula": "Sorunlu kolon × 5 (maks 20)", "value": f"{type_issues_count} Kolon", "penalty": type_penalty},
-        {"component": "Sabit Kolonlar", "formula": "Sabit kolon × 5 (maks 15)", "value": f"{len(constant_columns)} Kolon", "penalty": constant_penalty},
-        {"component": "Aykırı Değerler", "formula": "Aykırı oran × 3 (maks 15)", "value": f"%{outlier_rate}", "penalty": outlier_penalty}
+        {"component": "Eksik değer", "formula": "oran × 50 (maks 30)", "value": f"%{missing_rate}", "penalty": missing_penalty},
+        {"component": "Tekrarlanan kayıt", "formula": "oran × 100 (maks 10)", "value": f"%{duplicate_rate}", "penalty": duplicate_penalty},
+        {"component": "Veri tipi sorunu", "formula": "sorunlu kolon × 4 (maks 15)", "value": f"{type_issues_count} Kolon", "penalty": type_penalty},
+        {"component": "Sabit kolon", "formula": "sabit kolon × 5 (maks 10)", "value": f"{len(constant_columns)} Kolon", "penalty": constant_penalty},
+        {"component": "Yüksek kardinalite", "formula": "kolon sayısı × 3 (maks 9)", "value": f"{high_card_count} Kolon", "penalty": card_penalty},
+        {"component": "Aykırı değer", "formula": "oran × 40 (maks 10)", "value": f"%{outlier_rate}", "penalty": outlier_penalty}
     ]
 
     return JSONResponse(content={
@@ -1083,5 +1098,8 @@ async def reset_dataset():
 
 if os.path.exists("portfolio/grafikler"):
     app.mount("/portfolio/grafikler", StaticFiles(directory="portfolio/grafikler"), name="portfolio_grafikler")
+
+if os.path.exists("components"):
+    app.mount("/components", StaticFiles(directory="components"), name="components")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")

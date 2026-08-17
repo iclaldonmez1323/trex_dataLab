@@ -143,7 +143,7 @@
 
         <!-- CTA Action -->
         <div class="mb-6">
-            <a href="/" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+            <a href="index.html" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
                 <span class="material-symbols-outlined text-sm">upload</span>
                 <span>Yeni Veri Yükle</span>
             </a>
@@ -152,27 +152,27 @@
         <!-- Main Navigation -->
         <div class="flex-1 space-y-2 font-body-md text-body-md">
             <!-- Dashboard -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="index.html">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span>Dashboard</span>
             </a>
             <!-- Data Quality -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/data-quality">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="data-quality.html">
                 <span class="material-symbols-outlined">analytics</span>
                 <span>Data Quality</span>
             </a>
             <!-- Preprocessing -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/preprocessing">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="preprocessing.html">
                 <span class="material-symbols-outlined">construction</span>
                 <span>Preprocessing</span>
             </a>
             <!-- Visualization (Active) -->
-            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="/visualization">
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="visualization.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
                 <span class="font-medium">Visualization</span>
             </a>
             <!-- Portfolio -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/portfolio">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
                 <span class="material-symbols-outlined">folder_shared</span>
                 <span>Portfolio</span>
             </a>
@@ -206,8 +206,8 @@
             <!-- Center & Right Navigation -->
             <div class="flex items-center gap-6">
                 <nav class="hidden md:flex items-center gap-6">
-                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Hızlı İşlemler</a>
-                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Raporlar</a>
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="index.html">Hızlı İşlemler</a>
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="data-quality.html">Raporlar</a>
                 </nav>
                 <div class="w-px h-6 bg-border-subtle mx-2"></div>
                 <div class="flex items-center gap-3">
@@ -246,7 +246,7 @@
                     <p class="text-on-surface-variant font-body-lg mb-8">
                         Grafikleri ve istatistiksel analizleri görüntüleyebilmek için lütfen önce sisteme bir CSV veri seti yükleyin.
                     </p>
-                    <a href="/" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                    <a href="index.html" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
                         <span class="material-symbols-outlined">upload_file</span>
                         <span>Ana Sayfaya Dön &amp; Veri Yükle</span>
                     </a>
@@ -451,6 +451,11 @@
 
     <!-- Application Script -->
     <script>
+        // API Base Resolver
+        const API_BASE = (location.protocol === 'file:' || location.protocol === 'about:')
+            ? 'http://127.0.0.1:8000'
+            : '';
+
         // Global Chart Instance Registry
         const _charts = {};
 
@@ -760,7 +765,7 @@
 
                 // Fetch & Render Histogram
                 try {
-                    const res = await fetch(`/api/visualization/chart?type=histogram&column=${encodeURIComponent(colName)}`);
+                    const res = await fetch(API_BASE + `/api/visualization/chart?type=histogram&column=${encodeURIComponent(colName)}`);
                     if (res.ok) {
                         const chartData = await res.json();
                         const chart = getOrCreateChart('univariateChartContainer');
@@ -794,7 +799,7 @@
 
                 // Fetch & Render Bar
                 try {
-                    const res = await fetch(`/api/visualization/chart?type=bar&column=${encodeURIComponent(colName)}`);
+                    const res = await fetch(API_BASE + `/api/visualization/chart?type=bar&column=${encodeURIComponent(colName)}`);
                     if (res.ok) {
                         const chartData = await res.json();
                         const chart = getOrCreateChart('univariateChartContainer');
@@ -822,7 +827,7 @@
                     bivariateChartBadge.textContent = 'Dağılım (Scatter Plot)';
                     bivariateChartBadge.className = 'text-xs font-label-mono bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-medium';
 
-                    const res = await fetch(`/api/visualization/chart?type=scatter&x=${encodeURIComponent(xCol)}&y=${encodeURIComponent(yCol)}`);
+                    const res = await fetch(API_BASE + `/api/visualization/chart?type=scatter&x=${encodeURIComponent(xCol)}&y=${encodeURIComponent(yCol)}`);
                     if (res.ok) {
                         const chartData = await res.json();
                         const chart = getOrCreateChart('bivariateChartContainer');
@@ -834,7 +839,7 @@
                     bivariateChartBadge.textContent = 'Grup Bazlı Kutu Grafiği (Boxplot)';
                     bivariateChartBadge.className = 'text-xs font-label-mono bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-medium';
 
-                    const res = await fetch(`/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(xCol)}&num=${encodeURIComponent(yCol)}`);
+                    const res = await fetch(API_BASE + `/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(xCol)}&num=${encodeURIComponent(yCol)}`);
                     if (res.ok) {
                         const chartData = await res.json();
                         const chart = getOrCreateChart('bivariateChartContainer');
@@ -846,7 +851,7 @@
                     bivariateChartBadge.textContent = 'Grup Bazlı Kutu Grafiği (Boxplot)';
                     bivariateChartBadge.className = 'text-xs font-label-mono bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-medium';
 
-                    const res = await fetch(`/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(yCol)}&num=${encodeURIComponent(xCol)}`);
+                    const res = await fetch(API_BASE + `/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(yCol)}&num=${encodeURIComponent(xCol)}`);
                     if (res.ok) {
                         const chartData = await res.json();
                         const chart = getOrCreateChart('bivariateChartContainer');
@@ -858,7 +863,7 @@
                     bivariateChartBadge.textContent = 'Kategori Karşılaştırması';
                     bivariateChartBadge.className = 'text-xs font-label-mono bg-warning-orange/10 text-[#a1680d] px-2.5 py-0.5 rounded-full font-medium';
 
-                    const res = await fetch(`/api/visualization/chart?type=bar&column=${encodeURIComponent(xCol)}`);
+                    const res = await fetch(API_BASE + `/api/visualization/chart?type=bar&column=${encodeURIComponent(xCol)}`);
                     if (res.ok) {
                         const chartData = await res.json();
                         const chart = getOrCreateChart('bivariateChartContainer');
@@ -1304,7 +1309,7 @@
         // ==========================================
         async function fetchVisualizationOverview() {
             try {
-                const response = await fetch('/api/visualization/overview');
+                const response = await fetch(API_BASE + '/api/visualization/overview');
                 if (response.status === 200) {
                     const data = await response.json();
                     renderVisualization(data);
@@ -1319,18 +1324,21 @@
                         </div>
                         <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Yüklenemedi</h3>
                         <p class="text-on-surface-variant font-body-md mb-6">Sunucudan görselleştirme verisi alınamadı.</p>
-                        <a href="/" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Ana Sayfaya Dön</a>
+                        <a href="index.html" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Ana Sayfaya Dön</a>
                     `;
                 }
             } catch (err) {
                 console.error('Visualization fetch error:', err);
+                const isFileProtocol = location.protocol === 'file:' || location.protocol === 'about:';
                 loadingView.innerHTML = `
                     <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
                         <span class="material-symbols-outlined text-4xl">wifi_off</span>
                     </div>
                     <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Bağlantı Hatası</h3>
-                    <p class="text-on-surface-variant font-body-md mb-6">Sunucuya bağlanılamadı. Lütfen FastAPI sunucusunun çalıştığından emin olun.</p>
-                    <button onclick="location.reload()" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Yeniden Dene</button>
+                    <p class="text-on-surface-variant font-body-md mb-6 max-w-lg mx-auto">${isFileProtocol
+                        ? 'Sayfa doğrudan dosyadan açıldı. Grafikleri görmek için önce FastAPI sunucusunu başlatıp <b>http://127.0.0.1:8000/visualization</b> adresinden açın.'
+                        : 'Sunucuya bağlanılamadı. Lütfen FastAPI sunucusunun çalıştığından emin olun.'}</p>
+                    <button onclick="location.reload()" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors cursor-pointer">Yeniden Dene</button>
                 `;
             }
         }

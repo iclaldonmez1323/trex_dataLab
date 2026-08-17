@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -136,7 +137,7 @@
 
         <!-- CTA Action -->
         <div class="mb-6">
-            <a href="/" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+            <a href="index.html" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
                 <span class="material-symbols-outlined">upload</span>
                 Yeni Veri Yükle
             </a>
@@ -145,27 +146,27 @@
         <!-- Main Navigation -->
         <div class="flex-1 space-y-2 font-body-md text-body-md">
             <!-- Dashboard -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="index.html">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span>Dashboard</span>
             </a>
             <!-- Data Quality -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/data-quality">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="data-quality.html">
                 <span class="material-symbols-outlined">analytics</span>
                 <span>Data Quality</span>
             </a>
             <!-- Preprocessing (Active) -->
-            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="/preprocessing">
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="preprocessing.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">construction</span>
                 <span class="font-medium">Preprocessing</span>
             </a>
             <!-- Visualization -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/visualization">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="visualization.html">
                 <span class="material-symbols-outlined">insights</span>
                 <span>Visualization</span>
             </a>
             <!-- Portfolio -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/portfolio">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
                 <span class="material-symbols-outlined">folder_shared</span>
                 <span>Portfolio</span>
             </a>
@@ -198,6 +199,10 @@
                     <span class="material-symbols-outlined text-[18px]">download</span>
                     <span>Temizlenmiş CSV'yi İndir</span>
                 </button>
+                <button id="exportPdfBtn" type="button" data-filename="veri_hazirlama_raporu" class="bg-primary text-on-primary px-3 sm:px-4 py-2 rounded-lg font-body-md text-xs sm:text-body-md font-medium flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm cursor-pointer">
+                    <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                    <span>Dışa Aktar</span>
+                </button>
                 <div class="h-6 w-px bg-border-subtle mx-1"></div>
                 <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
                     <span class="material-symbols-outlined">notifications</span>
@@ -213,15 +218,14 @@
             <!-- Loading State -->
             <div id="loadingView" class="py-24 flex flex-col items-center justify-center text-center">
                 <div class="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                    <span class="material-symbols-outlined text-primary text-4xl animate-spin">progress_activity</span>
+                    <span class="material-symbols-outlined text-primary text-3xl animate-spin">sync</span>
                 </div>
-                <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Hazırlama Modülü Yükleniyor...</h3>
-                <p class="text-on-surface-variant font-body-md">Şema bilgileri, eksik değerler ve işlem geçmişi alınıyor.</p>
+                <p class="font-body-md text-body-md text-on-surface-variant font-medium">Veri seti ve ön işleme durumu yükleniyor...</p>
             </div>
 
-            <!-- Empty State (409) -->
-            <div id="emptyStateView" class="hidden py-16 max-w-xl mx-auto text-center">
-                <div class="bg-surface border border-border-subtle rounded-xl p-10 flex flex-col items-center shadow-sm">
+            <!-- Empty State -->
+            <div id="emptyStateView" class="hidden py-24 flex flex-col items-center justify-center text-center">
+                <div class="max-w-md mx-auto flex flex-col items-center">
                     <div class="h-20 w-20 bg-secondary-container rounded-full flex items-center justify-center mb-6">
                         <span class="material-symbols-outlined text-primary text-4xl">folder_off</span>
                     </div>
@@ -229,7 +233,7 @@
                     <p class="text-on-surface-variant font-body-lg mb-8">
                         Veri hazırlama ve dönüştürme işlemlerini yapabilmek için lütfen önce sisteme bir CSV veri seti yükleyin.
                     </p>
-                    <a href="/" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                    <a href="index.html" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
                         <span class="material-symbols-outlined">upload_file</span>
                         Ana Sayfaya Dön &amp; Veri Yükle
                     </a>
@@ -264,7 +268,7 @@
                     <!-- Left Column (Main Operations) -->
                     <div class="col-span-12 xl:col-span-9 flex flex-col gap-6">
                         <!-- Overview Stats -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div data-export-section="stats" data-export-title="Orijinal ve İşlenmiş Veri Karşılaştırması" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Original Data Card -->
                             <div class="bg-surface rounded-xl border border-border-subtle p-5 flex items-center justify-between shadow-sm">
                                 <div>
@@ -305,7 +309,7 @@
                         </div>
 
                         <!-- Quick Actions -->
-                        <div class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                        <div data-export-section="quick-actions" data-export-title="Eksik Veri ve Tekrar Yönetimi" class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
                             <h4 class="font-body-md text-body-md font-semibold text-on-surface mb-4">Hızlı Aksiyonlar</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Missing Values -->
@@ -350,7 +354,7 @@
                         </div>
 
                         <!-- Column Operations Table (Schema) -->
-                        <div class="bg-surface border border-border-subtle rounded-xl flex flex-col overflow-hidden shadow-sm">
+                        <div data-export-section="schema" data-export-title="Sütun İşlemleri (Schema)" class="bg-surface border border-border-subtle rounded-xl flex flex-col overflow-hidden shadow-sm">
                             <div class="px-6 py-4 border-b border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container-low/50">
                                 <div>
                                     <h4 class="font-body-md text-body-md font-semibold text-on-surface">Sütun İşlemleri (Schema)</h4>
@@ -382,7 +386,7 @@
 
                     <!-- Right Column (Action History) -->
                     <div class="col-span-12 xl:col-span-3">
-                        <div class="bg-surface border border-border-subtle rounded-xl flex flex-col shadow-sm sticky top-4">
+                        <div data-export-section="history" data-export-title="Uygulanan İşlem Geçmişi" class="bg-surface border border-border-subtle rounded-xl flex flex-col shadow-sm sticky top-4">
                             <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex items-center justify-between">
                                 <div>
                                     <h3 class="font-body-md text-body-md font-semibold text-on-surface flex items-center gap-2">
@@ -415,6 +419,11 @@
 
     <!-- Application Script -->
     <script>
+        // API Base Resolver
+        const API_BASE = (location.protocol === 'file:' || location.protocol === 'about:')
+            ? 'http://127.0.0.1:8000'
+            : '';
+
         // DOM Elements
         const loadingView = document.getElementById('loadingView');
         const emptyStateView = document.getElementById('emptyStateView');
@@ -726,7 +735,7 @@
             hideError();
 
             try {
-                const response = await fetch('/api/preprocessing/apply', {
+                const response = await fetch(API_BASE + '/api/preprocessing/apply', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -769,7 +778,7 @@
         // Initial Data Fetch
         async function fetchPreprocessingData() {
             try {
-                const response = await fetch('/api/preprocessing');
+                const response = await fetch(API_BASE + '/api/preprocessing');
                 if (response.status === 200) {
                     const data = await response.json();
                     renderPreprocessing(data);
@@ -784,18 +793,21 @@
                         </div>
                         <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Yüklenemedi</h3>
                         <p class="text-on-surface-variant font-body-md mb-6">Sunucudan ön işleme verisi alınırken bir hata oluştu.</p>
-                        <a href="/" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Ana Sayfaya Dön</a>
+                        <a href="index.html" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Ana Sayfaya Dön</a>
                     `;
                 }
             } catch (err) {
                 console.error('Preprocessing fetch error:', err);
+                const isFileProtocol = location.protocol === 'file:' || location.protocol === 'about:';
                 loadingView.innerHTML = `
                     <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
                         <span class="material-symbols-outlined text-4xl">wifi_off</span>
                     </div>
                     <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Bağlantı Hatası</h3>
-                    <p class="text-on-surface-variant font-body-md mb-6">Sunucuya bağlanılamadı. Lütfen sunucunun çalıştığından emin olun.</p>
-                    <button onclick="location.reload()" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Yeniden Dene</button>
+                    <p class="text-on-surface-variant font-body-md mb-6 max-w-lg mx-auto">${isFileProtocol
+                        ? 'Sayfa doğrudan dosyadan açıldı. Verileri görmek için önce FastAPI sunucusunu başlatıp <b>http://127.0.0.1:8000/preprocessing</b> adresinden açın.'
+                        : 'Sunucuya bağlanılamadı. Lütfen sunucunun çalıştığından emin olun.'}</p>
+                    <button onclick="location.reload()" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors cursor-pointer">Yeniden Dene</button>
                 `;
             }
         }
@@ -832,7 +844,7 @@
                 hideError();
 
                 try {
-                    const response = await fetch('/api/preprocessing/undo', { method: 'POST' });
+                    const response = await fetch(API_BASE + '/api/preprocessing/undo', { method: 'POST' });
                     if (response.ok) {
                         const data = await response.json();
                         renderPreprocessing(data);
@@ -856,7 +868,7 @@
                 hideError();
 
                 try {
-                    const response = await fetch('/api/preprocessing/reset', { method: 'POST' });
+                    const response = await fetch(API_BASE + '/api/preprocessing/reset', { method: 'POST' });
                     if (response.ok) {
                         const data = await response.json();
                         renderPreprocessing(data);
@@ -871,7 +883,7 @@
 
             // Download Cleaned CSV Button
             downloadCleanedCsvBtn.addEventListener('click', () => {
-                window.location.href = '/api/preprocessing/download';
+                window.location.href = API_BASE + '/api/preprocessing/download';
             });
 
             // Search Filter on Schema
@@ -885,6 +897,7 @@
             closeErrorBannerBtn.addEventListener('click', hideError);
         });
     </script>
+    <script src="/static/components/export-pdf.js"></script>
 </body>
 
 </html>

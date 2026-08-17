@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -144,7 +145,7 @@
 
         <!-- CTA Action -->
         <div class="mb-6">
-            <a href="/" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+            <a href="index.html" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
                 <span class="material-symbols-outlined text-sm">upload</span>
                 <span>Yeni Veri Yükle</span>
             </a>
@@ -153,27 +154,27 @@
         <!-- Main Navigation -->
         <div class="flex-1 space-y-2 font-body-md text-body-md">
             <!-- Dashboard -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="index.html">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span>Dashboard</span>
             </a>
             <!-- Data Quality -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/data-quality">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="data-quality.html">
                 <span class="material-symbols-outlined">analytics</span>
                 <span>Data Quality</span>
             </a>
             <!-- Preprocessing -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/preprocessing">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="preprocessing.html">
                 <span class="material-symbols-outlined">construction</span>
                 <span>Preprocessing</span>
             </a>
             <!-- Visualization -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/visualization">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="visualization.html">
                 <span class="material-symbols-outlined">insights</span>
                 <span>Visualization</span>
             </a>
             <!-- Portfolio (Active) -->
-            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="/portfolio">
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="portfolio.html">
                 <span class="material-symbols-outlined filled" style="font-variation-settings: 'FILL' 1;">folder_shared</span>
                 <span class="font-medium">Portfolio</span>
             </a>
@@ -207,8 +208,8 @@
             <!-- Center & Right Navigation -->
             <div class="flex items-center gap-6">
                 <nav class="hidden md:flex items-center gap-6">
-                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Hızlı İşlemler</a>
-                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Raporlar</a>
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="index.html">Hızlı İşlemler</a>
+                    <a class="font-body-md text-on-surface-variant hover:text-primary transition-colors text-sm" href="data-quality.html">Raporlar</a>
                 </nav>
                 <div class="w-px h-6 bg-border-subtle mx-2"></div>
                 <div class="flex items-center gap-3">
@@ -218,7 +219,7 @@
                     <button class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container" title="Kullanıcı Profili">
                         <span class="material-symbols-outlined">account_circle</span>
                     </button>
-                    <button id="exportPdfBtn" type="button" class="ml-2 font-data-table text-primary hover:text-primary-container font-medium px-3 py-1.5 rounded border border-primary/30 hover:bg-primary/5 transition-colors text-sm flex items-center gap-1 cursor-pointer">
+                    <button id="exportPdfBtn" type="button" data-filename="staj_portfolyo" class="ml-2 font-data-table text-primary hover:text-primary-container font-medium px-3 py-1.5 rounded border border-primary/30 hover:bg-primary/5 transition-colors text-sm flex items-center gap-1 cursor-pointer">
                         <span class="material-symbols-outlined text-sm">download</span>
                         <span>Dışa Aktar</span>
                     </button>
@@ -230,7 +231,7 @@
         <main class="flex-1 overflow-y-auto p-gutter custom-scrollbar">
             <div class="max-w-[1440px] mx-auto space-y-8 pb-12">
                 <!-- 1. Page Header -->
-                <div class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div data-export-section="header" data-export-title="Staj Süreci ve Veri Analizi Çalışmaları Başlığı" class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <p class="font-label-mono text-xs text-primary uppercase font-semibold mb-1">PORTFOLIO &gt; STAJ ÇALIŞMALARI</p>
                         <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Staj Süreci ve Veri Analizi Çalışmaları</h2>
@@ -247,7 +248,7 @@
                 </div>
 
                 <!-- 2. Staj Süreci — Yatay Timeline (8 Adım) -->
-                <section class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                <section data-export-section="timeline" data-export-title="Staj Süreci — Yatay Akış Zaman Çizelgesi" class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-8">
                         <div>
                             <h3 class="font-label-mono text-xs text-on-surface-variant uppercase tracking-wider font-bold">STAJ SÜRECİ</h3>
@@ -363,7 +364,7 @@
                     <!-- Left Column: Tech Stack & Summary (4/12) -->
                     <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
                         <!-- Tech Stack Card -->
-                        <section class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex-1 flex flex-col justify-between">
+                        <section data-export-section="methods" data-export-title="Kullanılan Yöntemler ve Teknolojiler" class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex-1 flex flex-col justify-between">
                             <div>
                                 <h3 class="font-label-mono text-xs text-on-surface-variant uppercase mb-4 flex items-center gap-2 font-bold">
                                     <span class="material-symbols-outlined text-primary text-[18px]">terminal</span>
@@ -409,7 +410,7 @@
                         </section>
 
                         <!-- Project Summary Card -->
-                        <section class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm">
+                        <section data-export-section="summary" data-export-title="Staj Özeti" class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm">
                             <h3 class="font-label-mono text-xs text-on-surface-variant uppercase mb-3 flex items-center gap-2 font-bold">
                                 <span class="material-symbols-outlined text-primary text-[18px]">info</span>
                                 <span>Staj Özeti</span>
@@ -422,7 +423,7 @@
 
                     <!-- Right Column: Model Results Table (8/12) -->
                     <div class="col-span-12 lg:col-span-8 flex flex-col">
-                        <section class="bg-surface border border-border-subtle rounded-xl shadow-sm overflow-hidden flex-1 flex flex-col justify-between">
+                        <section data-export-section="models" data-export-title="Model Sonuçları (AI4I 2020)" class="bg-surface border border-border-subtle rounded-xl shadow-sm overflow-hidden flex-1 flex flex-col justify-between">
                             <div>
                                 <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
                                     <div>
@@ -666,7 +667,7 @@
                 </section>
 
                 <!-- 5. Staj Kapsamı (Scope) Tags -->
-                <section class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm">
+                <section data-export-section="scope" data-export-title="Staj Kapsamı (Scope)" class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="font-label-mono text-xs text-on-surface-variant font-bold uppercase mr-2 flex items-center gap-1">
                             <span class="material-symbols-outlined text-primary text-[16px]">done_all</span>
@@ -739,12 +740,8 @@
                 closeModal();
             }
         });
-
-        // Export PDF Button Handler
-        document.getElementById('exportPdfBtn').addEventListener('click', () => {
-            window.print();
-        });
     </script>
+    <script src="/static/components/export-pdf.js"></script>
 </body>
 
 </html>
