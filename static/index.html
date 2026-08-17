@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>trex DataLab - Precision Data Platform</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-faint min-h-screen text-on-surface font-body-md text-body-md overflow-x-hidden flex">
+
+    <!-- Hidden File Input -->
+    <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+
+    <!-- SideNavBar -->
+    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant flat no shadows flex flex-col py-6 px-4 z-20">
+        <div class="flex items-center gap-3 mb-10 px-2">
+            <span aria-label="trex Logo" class="material-symbols-outlined font-headline-lg text-headline-lg font-bold text-white" style="font-variation-settings: 'FILL' 1;">analytics</span>
+            <div>
+                <h1 class="font-headline-md text-headline-md text-white m-0 leading-tight">trex DataLab</h1>
+                <p class="font-label-mono text-label-mono text-white/70 uppercase">Precision Data Platform</p>
+            </div>
+        </div>
+
+        <button id="sidebarUploadBtn" class="w-full mb-8 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+            <span class="material-symbols-outlined">upload</span>
+            Yeni Veri Yükle
+        </button>
+
+        <ul class="flex flex-col gap-2 flex-grow">
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90" href="/">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                    <span class="font-body-md text-body-md font-medium">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/data-quality">
+                    <span class="material-symbols-outlined">analytics</span>
+                    <span class="font-body-md text-body-md">Data Quality</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                    <span class="material-symbols-outlined">construction</span>
+                    <span class="font-body-md text-body-md">Preprocessing</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                    <span class="material-symbols-outlined">insights</span>
+                    <span class="font-body-md text-body-md">Visualization</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                    <span class="material-symbols-outlined">folder_shared</span>
+                    <span class="font-body-md text-body-md">Portfolio</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="mt-auto pt-6 border-t border-white/10">
+            <ul class="flex flex-col gap-2">
+                <li>
+                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span class="font-body-md text-body-md">Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                        <span class="material-symbols-outlined">help</span>
+                        <span class="font-body-md text-body-md">Support</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 ml-sidebar-width flex flex-col min-h-screen">
+        <!-- TopAppBar -->
+        <header class="fixed top-0 right-0 w-[calc(100%-260px)] z-10 border-b border-border-subtle bg-surface flat no shadows flex justify-between items-center h-16 px-gutter">
+            <div class="flex items-center gap-8">
+                <!-- Search -->
+                <div class="relative w-64">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                    <input class="w-full pl-9 pr-4 py-1.5 bg-surface-container-low border border-border-subtle rounded text-sm focus:outline-none focus:border-primary transition-colors font-body-md text-body-md" placeholder="Arama..." type="text">
+                </div>
+                <!-- Nav Links -->
+                <nav class="hidden lg:flex gap-6">
+                    <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="#">Hızlı İşlemler</a>
+                    <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="#">Raporlar</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm">
+                    Dışa Aktar
+                </button>
+                <button class="text-on-surface-variant hover:text-primary transition-colors ml-2" title="Kullanıcı Profili">
+                    <span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Canvas -->
+        <main class="flex-1 pt-24 px-gutter pb-12 max-w-container-max mx-auto w-full">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Yükleme ve Analiz</h2>
+                <p class="text-on-surface-variant font-body-md text-body-md">Sistem analizi için CSV veri setinizi yükleyin veya mevcut veriyi inceleyin.</p>
+            </div>
+
+            <!-- Bento Grid Layout -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+                
+                <!-- Upload Zone (Takes 1 column) -->
+                <div id="dropZone" class="col-span-1 bg-surface-container-lowest border-2 border-dashed border-slate-gray/30 hover:border-primary rounded-xl p-6 flex flex-col justify-center items-center h-64 transition-all cursor-pointer group relative overflow-hidden">
+                    <!-- Standard State -->
+                    <div id="uploadNormalState" class="flex flex-col items-center justify-center text-center w-full">
+                        <div class="h-16 w-16 bg-secondary-container rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-primary text-3xl">upload_file</span>
+                        </div>
+                        <h3 class="font-body-lg text-body-lg font-medium text-on-surface mb-1">Dosyayı buraya sürükleyin</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant text-center mb-4">veya bilgisayarınızdan seçin (CSV, max 50MB)</p>
+                        <button type="button" class="px-4 py-2 bg-surface-container border border-border-subtle rounded text-on-surface hover:bg-surface-container-highest transition-colors font-body-md text-body-md pointer-events-none">
+                            Göz At
+                        </button>
+                    </div>
+
+                    <!-- Processing / Loading State (Hidden by default) -->
+                    <div id="uploadLoadingState" class="hidden flex flex-col items-center justify-center text-center w-full">
+                        <div class="h-16 w-16 bg-secondary-container/50 rounded-full flex items-center justify-center mb-4 animate-spin">
+                            <span class="material-symbols-outlined text-primary text-3xl">progress_activity</span>
+                        </div>
+                        <h3 class="font-body-lg text-body-lg font-medium text-on-surface mb-1">Dosya İşleniyor...</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Metrikler ve önizleme hazırlanıyor</p>
+                    </div>
+
+                    <!-- Error Alert Banner (Hidden by default) -->
+                    <div id="uploadErrorBanner" class="hidden absolute bottom-3 left-3 right-3 bg-error-container text-on-error-container text-xs p-2.5 rounded-lg flex items-center gap-2 border border-error/20">
+                        <span class="material-symbols-outlined text-base text-error">error</span>
+                        <span id="uploadErrorMessage" class="flex-1 font-medium">Hata oluştu</span>
+                        <button id="closeErrorBtn" type="button" class="hover:opacity-75">
+                            <span class="material-symbols-outlined text-sm">close</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Summary Metrics (Takes 2 columns) -->
+                <div class="col-span-1 xl:col-span-2 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-between shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span id="fileStatusIcon" class="material-symbols-outlined text-success-green text-sm">check_circle</span>
+                                <h3 id="displayFileName" class="font-body-lg text-body-lg font-medium text-on-surface">Müşteri_Verisi_2023_Q4.csv</h3>
+                            </div>
+                            <p id="displayFileSize" class="font-label-mono text-label-mono text-on-surface-variant">YÜKLENDİ • 14.2 MB</p>
+                        </div>
+                        <button id="deleteDatasetBtn" class="text-on-surface-variant hover:text-error transition-colors p-1.5 rounded hover:bg-error-container/20 cursor-pointer" title="Veri Setini Sıfırla">
+                            <span class="material-symbols-outlined text-lg">delete</span>
+                        </button>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1 uppercase">SATIR (ROW)</p>
+                            <p id="metricRows" class="font-headline-md text-headline-md text-on-surface">10,000</p>
+                        </div>
+                        <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1 uppercase">SÜTUN (COLUMN)</p>
+                            <p id="metricCols" class="font-headline-md text-headline-md text-on-surface">14</p>
+                        </div>
+                        <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg border-l-4 border-l-warning-orange">
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1 uppercase">EKSİK (MISSING)</p>
+                            <p id="metricMissing" class="font-headline-md text-headline-md text-warning-orange">327</p>
+                        </div>
+                        <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1 uppercase">YİNELENEN (DUP)</p>
+                            <p id="metricDuplicates" class="font-headline-md text-headline-md text-on-surface">42</p>
+                        </div>
+                        <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1 uppercase">SAYISAL (NUM)</p>
+                            <p id="metricNumeric" class="font-headline-md text-headline-md text-primary">9</p>
+                        </div>
+                        <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1 uppercase">KATEGORİK (CAT)</p>
+                            <p id="metricCategorical" class="font-headline-md text-headline-md text-tertiary">5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="flex justify-end mb-8">
+                <button id="analyzeCtaBtn" class="bg-primary hover:bg-primary-container text-on-primary font-body-lg text-body-lg font-medium py-3 px-8 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-primary">
+                    <span class="material-symbols-outlined">troubleshoot</span>
+                    Veriyi Analiz Et
+                </button>
+            </div>
+
+            <!-- Data Table Preview Card -->
+            <div class="bg-surface border border-border-subtle rounded-xl overflow-hidden shadow-sm">
+                <div class="px-6 py-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                    <h3 class="font-body-lg text-body-lg font-medium text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-lg">table</span>
+                        Veri Önizleme
+                    </h3>
+                    <span class="font-label-mono text-label-mono text-slate-gray bg-surface-container-low px-2 py-1 rounded">İLK 10 SATIR</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="previewDataTable" class="w-full text-left border-collapse min-w-max">
+                        <thead id="previewTableHead">
+                            <tr class="bg-surface-container-low border-b border-border-subtle">
+                                <th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">ID</th>
+                                <th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">AGE</th>
+                                <th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">INCOME</th>
+                                <th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">SCORE</th>
+                                <th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">CATEGORY</th>
+                                <th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewTableBody" class="font-data-table text-data-table text-on-surface">
+                            <tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+                                <td class="py-2 px-4 font-label-mono text-slate-gray">1001</td>
+                                <td class="py-2 px-4 text-right">34</td>
+                                <td class="py-2 px-4 text-right">65,000</td>
+                                <td class="py-2 px-4 text-right">88.5</td>
+                                <td class="py-2 px-4">Premium</td>
+                                <td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container">Active</span></td>
+                            </tr>
+                            <tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+                                <td class="py-2 px-4 font-label-mono text-slate-gray">1002</td>
+                                <td class="py-2 px-4 text-right">45</td>
+                                <td class="py-2 px-4 text-right">82,500</td>
+                                <td class="py-2 px-4 text-right">92.0</td>
+                                <td class="py-2 px-4">Standard</td>
+                                <td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container">Active</span></td>
+                            </tr>
+                            <tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+                                <td class="py-2 px-4 font-label-mono text-slate-gray">1003</td>
+                                <td class="py-2 px-4 text-right">28</td>
+                                <td class="py-2 px-4 text-right font-medium">NaN <span class="material-symbols-outlined text-warning-orange text-[13px] ml-1 inline-block align-text-bottom" title="Missing Value">warning</span></td>
+                                <td class="py-2 px-4 text-right">76.2</td>
+                                <td class="py-2 px-4">Standard</td>
+                                <td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-error-container text-on-error-container">Inactive</span></td>
+                            </tr>
+                            <tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+                                <td class="py-2 px-4 font-label-mono text-slate-gray">1004</td>
+                                <td class="py-2 px-4 text-right">52</td>
+                                <td class="py-2 px-4 text-right">120,000</td>
+                                <td class="py-2 px-4 text-right">95.8</td>
+                                <td class="py-2 px-4">Premium</td>
+                                <td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container">Active</span></td>
+                            </tr>
+                            <tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">
+                                <td class="py-2 px-4 font-label-mono text-slate-gray">1005</td>
+                                <td class="py-2 px-4 text-right">31</td>
+                                <td class="py-2 px-4 text-right">45,000</td>
+                                <td class="py-2 px-4 text-right">62.1</td>
+                                <td class="py-2 px-4">Basic</td>
+                                <td class="py-2 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Frontend Script -->
+    <script>
+        // DOM Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('csvFileInput');
+        const sidebarUploadBtn = document.getElementById('sidebarUploadBtn');
+        const uploadNormalState = document.getElementById('uploadNormalState');
+        const uploadLoadingState = document.getElementById('uploadLoadingState');
+        const uploadErrorBanner = document.getElementById('uploadErrorBanner');
+        const uploadErrorMessage = document.getElementById('uploadErrorMessage');
+        const closeErrorBtn = document.getElementById('closeErrorBtn');
+        
+        const displayFileName = document.getElementById('displayFileName');
+        const displayFileSize = document.getElementById('displayFileSize');
+        const fileStatusIcon = document.getElementById('fileStatusIcon');
+        const deleteDatasetBtn = document.getElementById('deleteDatasetBtn');
+        const analyzeCtaBtn = document.getElementById('analyzeCtaBtn');
+
+        const metricRows = document.getElementById('metricRows');
+        const metricCols = document.getElementById('metricCols');
+        const metricMissing = document.getElementById('metricMissing');
+        const metricDuplicates = document.getElementById('metricDuplicates');
+        const metricNumeric = document.getElementById('metricNumeric');
+        const metricCategorical = document.getElementById('metricCategorical');
+
+        const previewTableHead = document.getElementById('previewTableHead');
+        const previewTableBody = document.getElementById('previewTableBody');
+
+        let isDatasetLoaded = true; // Initially true with demo data
+
+        // Helper: Format Bytes to human readable string
+        function formatBytes(bytes, decimals = 1) {
+            if (!bytes || bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        // Helper: Format Numbers with Turkish locale
+        function formatNumber(num) {
+            if (num === null || num === undefined) return '0';
+            return Number(num).toLocaleString('tr-TR');
+        }
+
+        // Show Error
+        function showError(message) {
+            uploadErrorMessage.textContent = message;
+            uploadErrorBanner.classList.remove('hidden');
+        }
+
+        // Clear Error
+        function clearError() {
+            uploadErrorBanner.classList.add('hidden');
+        }
+
+        closeErrorBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearError();
+        });
+
+        // Set Loading State
+        function setLoading(loading) {
+            if (loading) {
+                clearError();
+                uploadNormalState.classList.add('hidden');
+                uploadLoadingState.classList.remove('hidden');
+                dropZone.classList.add('pointer-events-none', 'opacity-80');
+                if (sidebarUploadBtn) sidebarUploadBtn.classList.add('pointer-events-none', 'opacity-50');
+            } else {
+                uploadNormalState.classList.remove('hidden');
+                uploadLoadingState.classList.add('hidden');
+                dropZone.classList.remove('pointer-events-none', 'opacity-80');
+                if (sidebarUploadBtn) sidebarUploadBtn.classList.remove('pointer-events-none', 'opacity-50');
+            }
+        }
+
+        // Trigger file select
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        sidebarUploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag and Drop Events
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('border-primary', 'bg-secondary-container/10');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('border-primary', 'bg-secondary-container/10');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        // Upload and process CSV file
+        async function handleFileUpload(file) {
+            if (!file) return;
+
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                showError('Sadece CSV formatındaki dosyalar desteklenmektedir.');
+                return;
+            }
+
+            if (file.size > 50 * 1024 * 1024) {
+                showError('Dosya boyutu 50MB sınırını aşıyor.');
+                return;
+            }
+
+            setLoading(true);
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.detail || `Yükleme hatası (${response.status})`);
+                }
+
+                const data = await response.json();
+                renderDatasetView(data);
+                isDatasetLoaded = true;
+            } catch (err) {
+                showError(err.message || 'Dosya işlenirken bir hata meydana geldi.');
+            } finally {
+                setLoading(false);
+                fileInput.value = '';
+            }
+        }
+
+        // Render dataset to metrics and preview table
+        function renderDatasetView(data) {
+            // Header & File info
+            displayFileName.textContent = data.filename;
+            displayFileSize.textContent = `YÜKLENDİ • ${formatBytes(data.size_bytes)}`;
+            fileStatusIcon.className = 'material-symbols-outlined text-success-green text-sm';
+            fileStatusIcon.textContent = 'check_circle';
+
+            // Metrics
+            metricRows.textContent = formatNumber(data.rows);
+            metricCols.textContent = formatNumber(data.columns);
+            metricMissing.textContent = formatNumber(data.missing);
+            metricDuplicates.textContent = formatNumber(data.duplicates);
+            metricNumeric.textContent = formatNumber(data.numeric_cols);
+            metricCategorical.textContent = formatNumber(data.categorical_cols);
+
+            // Enable CTA Button
+            analyzeCtaBtn.disabled = false;
+
+            // Render Table
+            renderTable(data.columns_list, data.preview, data.column_types);
+        }
+
+        // Render dynamic preview table
+        function renderTable(columns, previewRows, columnTypes = {}) {
+            // Table Header
+            let theadHtml = '<tr class="bg-surface-container-low border-b border-border-subtle">';
+            columns.forEach(col => {
+                theadHtml += `<th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">${escapeHtml(col)}</th>`;
+            });
+            theadHtml += '</tr>';
+            previewTableHead.innerHTML = theadHtml;
+
+            // Table Body
+            if (!previewRows || previewRows.length === 0) {
+                previewTableBody.innerHTML = `<tr><td colspan="${columns.length}" class="py-8 text-center text-on-surface-variant font-body-md">Önizlenecek veri bulunamadı</td></tr>`;
+                return;
+            }
+
+            let tbodyHtml = '';
+            previewRows.forEach((row, idx) => {
+                tbodyHtml += `<tr class="border-b border-border-subtle hover:bg-surface-faint transition-colors">`;
+                columns.forEach(col => {
+                    const val = row[col];
+                    const isNum = columnTypes[col] === 'numeric';
+                    const alignClass = isNum ? 'text-right' : 'text-left';
+
+                    if (val === null || val === undefined || (typeof val === 'string' && val.trim().toLowerCase() === 'nan')) {
+                        tbodyHtml += `<td class="py-2 px-4 ${alignClass} font-medium">NaN <span class="material-symbols-outlined text-warning-orange text-[13px] ml-1 inline-block align-text-bottom" title="Eksik Değer (Missing Value)">warning</span></td>`;
+                    } else if (typeof val === 'number') {
+                        tbodyHtml += `<td class="py-2 px-4 ${alignClass}">${formatNumber(val)}</td>`;
+                    } else {
+                        tbodyHtml += `<td class="py-2 px-4 ${alignClass}">${escapeHtml(String(val))}</td>`;
+                    }
+                });
+                tbodyHtml += '</tr>';
+            });
+            previewTableBody.innerHTML = tbodyHtml;
+        }
+
+        // Escape HTML helper for safe table rendering
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Reset / Delete Dataset
+        deleteDatasetBtn.addEventListener('click', async () => {
+            try {
+                await fetch('/api/reset', { method: 'DELETE' }).catch(() => {});
+            } catch(e) {}
+
+            isDatasetLoaded = false;
+            displayFileName.textContent = 'Dosya Yüklenmedi';
+            displayFileSize.textContent = 'BEKLENİYOR • 0 Bytes';
+            fileStatusIcon.className = 'material-symbols-outlined text-slate-gray text-sm';
+            fileStatusIcon.textContent = 'radio_button_unchecked';
+
+            metricRows.textContent = '0';
+            metricCols.textContent = '0';
+            metricMissing.textContent = '0';
+            metricDuplicates.textContent = '0';
+            metricNumeric.textContent = '0';
+            metricCategorical.textContent = '0';
+
+            analyzeCtaBtn.disabled = true;
+
+            previewTableHead.innerHTML = `
+                <tr class="bg-surface-container-low border-b border-border-subtle">
+                    <th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">SÜTUN 1</th>
+                    <th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">SÜTUN 2</th>
+                    <th class="py-3 px-4 font-label-mono text-label-mono text-slate-gray uppercase">SÜTUN 3</th>
+                </tr>
+            `;
+            previewTableBody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="py-12 text-center text-on-surface-variant font-body-md">
+                        <div class="flex flex-col items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-3xl text-slate-gray/50">folder_open</span>
+                            <span>Veri önizlemesi için lütfen bir CSV dosyası yükleyin.</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // CTA Click Handler
+        analyzeCtaBtn.addEventListener('click', () => {
+            if (isDatasetLoaded) {
+                window.location.href = '/data-quality';
+            }
+        });
+    </script>
+</body>
+</html>

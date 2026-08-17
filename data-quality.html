@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>trex DataLab - Data Quality</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-faint min-h-screen text-on-surface font-body-md text-body-md overflow-x-hidden flex">
+
+    <!-- SideNavBar -->
+    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant flat no shadows flex flex-col py-6 px-4 z-20">
+        <div class="flex items-center gap-3 mb-10 px-2">
+            <span aria-label="trex Logo" class="material-symbols-outlined font-headline-lg text-headline-lg font-bold text-white" style="font-variation-settings: 'FILL' 1;">analytics</span>
+            <div>
+                <h1 class="font-headline-md text-headline-md text-white m-0 leading-tight">trex DataLab</h1>
+                <p class="font-label-mono text-label-mono text-white/70 uppercase">Precision Data Platform</p>
+            </div>
+        </div>
+
+        <a href="/" class="w-full mb-8 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer text-center">
+            <span class="material-symbols-outlined">upload</span>
+            Yeni Veri Yükle
+        </a>
+
+        <ul class="flex flex-col gap-2 flex-grow">
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="font-body-md text-body-md">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90" href="/data-quality">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                    <span class="font-body-md text-body-md font-medium">Data Quality</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                    <span class="material-symbols-outlined">construction</span>
+                    <span class="font-body-md text-body-md">Preprocessing</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                    <span class="material-symbols-outlined">insights</span>
+                    <span class="font-body-md text-body-md">Visualization</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                    <span class="material-symbols-outlined">folder_shared</span>
+                    <span class="font-body-md text-body-md">Portfolio</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="mt-auto pt-6 border-t border-white/10">
+            <ul class="flex flex-col gap-2">
+                <li>
+                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span class="font-body-md text-body-md">Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                        <span class="material-symbols-outlined">help</span>
+                        <span class="font-body-md text-body-md">Support</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 ml-sidebar-width flex flex-col min-h-screen">
+        <!-- TopAppBar -->
+        <header class="fixed top-0 right-0 w-[calc(100%-260px)] z-10 border-b border-border-subtle bg-surface flat no shadows flex justify-between items-center h-16 px-gutter">
+            <div class="flex items-center gap-8">
+                <!-- Search -->
+                <div class="relative w-64">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                    <input class="w-full pl-9 pr-4 py-1.5 bg-surface-container-low border border-border-subtle rounded text-sm focus:outline-none focus:border-primary transition-colors font-body-md text-body-md" placeholder="Arama..." type="text">
+                </div>
+                <!-- Nav Links -->
+                <nav class="hidden lg:flex gap-6">
+                    <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="/">Hızlı İşlemler</a>
+                    <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="/data-quality">Raporlar</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm">
+                    Dışa Aktar
+                </button>
+                <button class="text-on-surface-variant hover:text-primary transition-colors ml-2" title="Kullanıcı Profili">
+                    <span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Canvas -->
+        <main class="flex-1 pt-24 px-gutter pb-12 max-w-container-max mx-auto w-full">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <div class="flex items-center gap-2 text-sm text-slate-gray mb-2 font-label-mono">
+                    <a href="/" class="hover:text-primary transition-colors">DASHBOARD</a>
+                    <span>/</span>
+                    <span class="text-primary font-semibold">DATA QUALITY</span>
+                </div>
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Kalitesi Analizi</h2>
+                <p class="text-on-surface-variant font-body-md text-body-md">Veri seti sağlık puanı, eksik değerler, veri tipi anomalileri ve aykırı değer değerlendirmesi.</p>
+            </div>
+
+            <!-- Skeleton Content / Coming Soon Card -->
+            <div class="bg-surface border border-border-subtle rounded-xl p-12 flex flex-col items-center justify-center text-center shadow-sm max-w-2xl mx-auto my-8">
+                <div class="h-20 w-20 bg-secondary-container rounded-full flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-primary text-4xl">analytics</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-3">Data Quality Modülü Yakında</h3>
+                <p class="text-on-surface-variant font-body-lg text-body-lg mb-8 max-w-md">
+                    Otomatik Veri Kalite Skoru (0-100), eksik değer grafikleri, cardinality kontrolü ve IQR aykırı değer analizi modülü bir sonraki aşamada aktif olacaktır.
+                </p>
+                <div class="flex gap-4">
+                    <a href="/" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                        Ana Sayfaya Dön
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

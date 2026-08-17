@@ -1,0 +1,13 @@
+Müşteri_ID,Yaş,Gelir,Kredi_Skoru,Segment,Şehir,Durum
+1001,34,65000,88.5,Premium,İstanbul,Aktif
+1002,45,82500,92.0,Standard,Ankara,Aktif
+1003,28,,76.2,Standard,İzmir,Pasif
+1004,52,120000,95.8,Premium,Bursa,Aktif
+1005,31,45000,62.1,Basic,Antalya,Aktif
+1006,24,32000,58.0,Basic,İstanbul,Pasif
+1007,,98000,89.4,Premium,İzmir,Aktif
+1008,41,74000,,Standard,Ankara,Aktif
+1009,39,81000,91.2,Standard,İstanbul,Aktif
+1009,39,81000,91.2,Standard,İstanbul,Aktif
+1010,48,115000,94.0,Premium,Bursa,Aktif
+1011,29,52000,71.5,Standard,Eskişehir,Aktif
