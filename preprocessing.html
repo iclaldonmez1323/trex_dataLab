@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>trex DataLab - Veri Hazırlama (Preprocessing)</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "#bdcabc",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "#4A5568",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bfeac7",
+                        "background": "#fcf9f8",
+                        "on-surface-variant": "#3e4a3f",
+                        "on-error-container": "#93000a",
+                        "warning-orange": "#F5B054",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "#006b33",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "#19924B",
+                        "primary-fixed": "#8bf9a6",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#6e7a6e",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#ebe7e7",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "#f0edec",
+                        "border-subtle": "#E2E8F0",
+                        "on-primary-fixed": "#00210b",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-container": "#008742",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden bg-surface-faint text-on-surface font-body-md antialiased">
+    <!-- SideNavBar -->
+    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant flex flex-col py-6 px-4 z-20">
+        <!-- Brand -->
+        <div class="mb-8 px-2 flex items-center gap-3">
+            <span aria-label="T-REX Logo" class="material-symbols-outlined font-headline-lg text-headline-lg font-bold text-white" style="font-variation-settings: 'FILL' 1;">analytics</span>
+            <div>
+                <h1 class="font-headline-md text-headline-md text-white m-0 leading-tight">trex DataLab</h1>
+                <p class="font-label-mono text-label-mono text-white/70 uppercase">PRECISION DATA PLATFORM</p>
+            </div>
+        </div>
+
+        <!-- CTA Action -->
+        <div class="mb-6">
+            <a href="/" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+                <span class="material-symbols-outlined">upload</span>
+                Yeni Veri Yükle
+            </a>
+        </div>
+
+        <!-- Main Navigation -->
+        <div class="flex-1 space-y-2 font-body-md text-body-md">
+            <!-- Dashboard -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <!-- Data Quality -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/data-quality">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Data Quality</span>
+            </a>
+            <!-- Preprocessing (Active) -->
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="/preprocessing">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">construction</span>
+                <span class="font-medium">Preprocessing</span>
+            </a>
+            <!-- Visualization -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/visualization">
+                <span class="material-symbols-outlined">insights</span>
+                <span>Visualization</span>
+            </a>
+            <!-- Portfolio -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="/portfolio">
+                <span class="material-symbols-outlined">folder_shared</span>
+                <span>Portfolio</span>
+            </a>
+        </div>
+
+        <!-- Footer Navigation -->
+        <div class="pt-4 border-t border-white/10 space-y-1 font-body-md text-body-md mt-auto">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined text-[20px]">settings</span>
+                <span>Settings</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+                <span class="material-symbols-outlined text-[20px]">help</span>
+                <span>Support</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col ml-[260px] min-w-0 bg-surface-faint h-screen overflow-hidden">
+        <!-- TopAppBar -->
+        <header class="flex justify-between items-center h-16 px-gutter w-full border-b border-border-subtle bg-surface shrink-0 z-10">
+            <!-- Left: Title / Context -->
+            <div class="flex items-center gap-6">
+                <h2 class="font-headline-md text-[18px] sm:text-[20px] font-semibold text-on-surface">trex DataLab - Veri Hazırlama (Preprocessing)</h2>
+            </div>
+            <!-- Right: Actions & Profile -->
+            <div class="flex items-center gap-3 sm:gap-4">
+                <button id="downloadCleanedCsvBtn" type="button" class="bg-primary text-on-primary px-3 sm:px-4 py-2 rounded-lg font-body-md text-xs sm:text-body-md font-medium flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm cursor-pointer">
+                    <span class="material-symbols-outlined text-[18px]">download</span>
+                    <span>Temizlenmiş CSV'yi İndir</span>
+                </button>
+                <div class="h-6 w-px bg-border-subtle mx-1"></div>
+                <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="text-on-surface-variant hover:text-primary transition-colors ml-1" title="Kullanıcı Profili">
+                    <span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Canvas -->
+        <main class="flex-1 overflow-y-auto p-gutter custom-scrollbar">
+            <!-- Loading State -->
+            <div id="loadingView" class="py-24 flex flex-col items-center justify-center text-center">
+                <div class="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-primary text-4xl animate-spin">progress_activity</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Hazırlama Modülü Yükleniyor...</h3>
+                <p class="text-on-surface-variant font-body-md">Şema bilgileri, eksik değerler ve işlem geçmişi alınıyor.</p>
+            </div>
+
+            <!-- Empty State (409) -->
+            <div id="emptyStateView" class="hidden py-16 max-w-xl mx-auto text-center">
+                <div class="bg-surface border border-border-subtle rounded-xl p-10 flex flex-col items-center shadow-sm">
+                    <div class="h-20 w-20 bg-secondary-container rounded-full flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-primary text-4xl">folder_off</span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Aktif Veri Seti Bulunamadı</h3>
+                    <p class="text-on-surface-variant font-body-lg mb-8">
+                        Veri hazırlama ve dönüştürme işlemlerini yapabilmek için lütfen önce sisteme bir CSV veri seti yükleyin.
+                    </p>
+                    <a href="/" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined">upload_file</span>
+                        Ana Sayfaya Dön &amp; Veri Yükle
+                    </a>
+                </div>
+            </div>
+
+            <!-- Preprocessing Content View -->
+            <div id="preprocessingContentView" class="hidden max-w-[1440px] mx-auto">
+                <!-- Error Banner -->
+                <div id="errorBanner" class="hidden mb-6 bg-error-container text-on-error-container p-4 rounded-xl border border-error/20 flex items-start justify-between gap-3 shadow-sm transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-error text-2xl flex-shrink-0">error</span>
+                        <p class="font-medium text-sm" id="errorMessage">İşlem gerçekleştirilirken bir hata oluştu.</p>
+                    </div>
+                    <button id="closeErrorBannerBtn" type="button" class="text-on-error-container/70 hover:text-on-error-container p-1 rounded">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+
+                <!-- Change Summary Banner (Before/After) -->
+                <div id="changeSummary" class="hidden mb-6 p-4 bg-secondary-container/30 border border-secondary-container rounded-xl flex flex-wrap items-center justify-between gap-4 text-sm shadow-sm animate-fade-in">
+                    <div class="flex items-center gap-2 text-primary font-semibold">
+                        <span class="material-symbols-outlined text-primary text-lg">verified</span>
+                        <span id="changeSummaryText">Son işlem başarıyla uygulandı:</span>
+                    </div>
+                    <div id="changeSummaryMetrics" class="flex flex-wrap items-center gap-4 text-xs font-label-mono">
+                        <!-- Dynamic before/after pills -->
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-6">
+                    <!-- Left Column (Main Operations) -->
+                    <div class="col-span-12 xl:col-span-9 flex flex-col gap-6">
+                        <!-- Overview Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Original Data Card -->
+                            <div class="bg-surface rounded-xl border border-border-subtle p-5 flex items-center justify-between shadow-sm">
+                                <div>
+                                    <p class="font-body-md text-body-md text-slate-gray mb-1">Orijinal Veri (Original)</p>
+                                    <div class="flex items-baseline gap-2">
+                                        <h3 id="originalRows" class="font-headline-md text-headline-md text-on-surface font-bold">10,000</h3>
+                                        <span class="font-label-mono text-label-mono text-slate-gray">satır</span>
+                                        <span class="text-border-subtle mx-1">×</span>
+                                        <h3 id="originalCols" class="font-headline-md text-headline-md text-on-surface font-bold">14</h3>
+                                        <span class="font-label-mono text-label-mono text-slate-gray">sütun</span>
+                                    </div>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+                                    <span class="material-symbols-outlined text-2xl">dataset</span>
+                                </div>
+                            </div>
+
+                            <!-- Processed Data Card -->
+                            <div class="bg-surface rounded-xl border border-primary-fixed-dim/30 p-5 flex items-center justify-between shadow-[0_4px_12px_-2px_rgba(0,107,51,0.05)] relative overflow-hidden">
+                                <div class="absolute right-0 top-0 w-32 h-32 bg-primary-container/5 rounded-bl-full -z-10"></div>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <p class="font-body-md text-body-md text-primary font-medium">İşlenmiş Veri (Processed)</p>
+                                        <span id="processedMissing" class="font-label-mono text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">0 Eksik</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-2">
+                                        <h3 id="processedRows" class="font-headline-md text-headline-md text-primary font-bold">9,958</h3>
+                                        <span class="font-label-mono text-label-mono text-primary/70">satır</span>
+                                        <span class="text-primary/30 mx-1">×</span>
+                                        <h3 id="processedCols" class="font-headline-md text-headline-md text-primary font-bold">13</h3>
+                                        <span class="font-label-mono text-label-mono text-primary/70">sütun</span>
+                                    </div>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+                                    <span class="material-symbols-outlined text-2xl">check_circle</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                            <h4 class="font-body-md text-body-md font-semibold text-on-surface mb-4">Hızlı Aksiyonlar</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Missing Values -->
+                                <div class="border border-border-subtle rounded-lg p-4 bg-surface-container-low hover:shadow-sm transition-shadow flex flex-col justify-between">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-warning-orange text-[20px]">warning</span>
+                                            <span class="font-body-md text-body-md font-medium text-on-surface">Eksik Veri Yönetimi</span>
+                                        </div>
+                                        <span id="missingTotalBadge" class="bg-warning-orange/10 text-[#a1680d] font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium">0 Hücre</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <select id="fillMissingSelect" class="block w-full rounded-md border-border-subtle bg-surface py-2 pl-3 pr-10 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-primary sm:text-sm">
+                                            <option value="">Yöntem seçin...</option>
+                                            <option value="mean">Ortalama (Mean) ile doldur</option>
+                                            <option value="median">Medyan (Median) ile doldur</option>
+                                            <option value="mode">Mod ile doldur</option>
+                                            <option value="unknown">'Unknown' olarak işaretle</option>
+                                            <option value="drop_rows">Eksik satırları kaldır</option>
+                                        </select>
+                                        <button id="applyFillMissingBtn" type="button" disabled class="bg-primary text-on-primary hover:bg-primary-container px-3 py-2 rounded-md transition-colors border border-transparent disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center" title="Uygula">
+                                            <span class="material-symbols-outlined text-[20px]">play_arrow</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Duplicates -->
+                                <div class="border border-border-subtle rounded-lg p-4 bg-surface-container-low hover:shadow-sm transition-shadow flex flex-col justify-between">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-slate-gray text-[20px]">content_copy</span>
+                                            <span class="font-body-md text-body-md font-medium text-on-surface">Tekrarlayan Satırlar</span>
+                                        </div>
+                                        <span id="duplicatesBadge" class="bg-surface-variant text-on-surface-variant font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium">0 Satır</span>
+                                    </div>
+                                    <button id="removeDuplicatesBtn" type="button" class="w-full flex items-center justify-center gap-2 bg-surface text-on-surface border border-border-subtle py-2 px-4 rounded-md font-body-md text-body-md hover:border-error hover:text-error hover:bg-error-container/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        <span id="removeDuplicatesBtnText">Kopyaları Kaldır</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column Operations Table (Schema) -->
+                        <div class="bg-surface border border-border-subtle rounded-xl flex flex-col overflow-hidden shadow-sm">
+                            <div class="px-6 py-4 border-b border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container-low/50">
+                                <div>
+                                    <h4 class="font-body-md text-body-md font-semibold text-on-surface">Sütun İşlemleri (Schema)</h4>
+                                    <p class="text-xs text-slate-gray">Sütunları dahil et/çıkar ve veri tiplerini dönüştür</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-label-mono text-xs text-slate-gray">Filtrele:</span>
+                                    <input id="schemaSearchInput" class="block w-48 rounded-md border-border-subtle bg-surface py-1 px-3 font-body-md text-sm text-on-surface focus:border-primary focus:ring-primary h-8" placeholder="Sütun ara..." type="text">
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-border-subtle">
+                                    <thead class="bg-surface-container-lowest">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-label-mono text-slate-gray uppercase tracking-wider w-20" scope="col">Durum</th>
+                                            <th class="px-6 py-3 text-left text-xs font-label-mono text-slate-gray uppercase tracking-wider" scope="col">Sütun Adı</th>
+                                            <th class="px-6 py-3 text-left text-xs font-label-mono text-slate-gray uppercase tracking-wider" scope="col">Veri Tipi</th>
+                                            <th class="px-6 py-3 text-left text-xs font-label-mono text-slate-gray uppercase tracking-wider" scope="col">Eksik (%)</th>
+                                            <th class="px-6 py-3 text-right text-xs font-label-mono text-slate-gray uppercase tracking-wider w-16" scope="col">İşlem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="schemaTableBody" class="bg-surface divide-y divide-border-subtle font-data-table text-data-table">
+                                        <!-- Dynamic Schema Rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column (Action History) -->
+                    <div class="col-span-12 xl:col-span-3">
+                        <div class="bg-surface border border-border-subtle rounded-xl flex flex-col shadow-sm sticky top-4">
+                            <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-body-md text-body-md font-semibold text-on-surface flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[20px] text-primary">history</span>
+                                        İşlem Geçmişi
+                                    </h3>
+                                    <p class="text-xs text-slate-gray mt-0.5">Uygulanan veri dönüşümleri</p>
+                                </div>
+                                <button id="resetBtn" type="button" title="Tüm İşlemleri Sıfırla" class="text-xs text-slate-gray hover:text-error transition-colors p-1 rounded hover:bg-surface-container cursor-pointer">
+                                    <span class="material-symbols-outlined text-lg">restart_alt</span>
+                                </button>
+                            </div>
+                            <div class="max-h-[calc(100vh-280px)] overflow-y-auto p-4 custom-scrollbar">
+                                <ul id="historyList" class="space-y-4 relative before:absolute before:inset-y-0 before:left-3.5 before:w-px before:bg-border-subtle">
+                                    <!-- Dynamic History Items -->
+                                </ul>
+                            </div>
+                            <div class="p-4 border-t border-border-subtle bg-surface-container-lowest">
+                                <button id="undoBtn" type="button" disabled class="w-full bg-surface text-error border border-error/30 hover:bg-error-container/20 py-2.5 px-4 rounded-md font-body-md text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">undo</span>
+                                    <span>Geri Al (Undo Last)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // DOM Elements
+        const loadingView = document.getElementById('loadingView');
+        const emptyStateView = document.getElementById('emptyStateView');
+        const preprocessingContentView = document.getElementById('preprocessingContentView');
+        const originalRows = document.getElementById('originalRows');
+        const originalCols = document.getElementById('originalCols');
+        const processedRows = document.getElementById('processedRows');
+        const processedCols = document.getElementById('processedCols');
+        const processedMissing = document.getElementById('processedMissing');
+        const missingTotalBadge = document.getElementById('missingTotalBadge');
+        const fillMissingSelect = document.getElementById('fillMissingSelect');
+        const applyFillMissingBtn = document.getElementById('applyFillMissingBtn');
+        const duplicatesBadge = document.getElementById('duplicatesBadge');
+        const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
+        const removeDuplicatesBtnText = document.getElementById('removeDuplicatesBtnText');
+        const schemaTableBody = document.getElementById('schemaTableBody');
+        const schemaSearchInput = document.getElementById('schemaSearchInput');
+        const historyList = document.getElementById('historyList');
+        const undoBtn = document.getElementById('undoBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const downloadCleanedCsvBtn = document.getElementById('downloadCleanedCsvBtn');
+        const errorBanner = document.getElementById('errorBanner');
+        const errorMessage = document.getElementById('errorMessage');
+        const closeErrorBannerBtn = document.getElementById('closeErrorBannerBtn');
+        const changeSummary = document.getElementById('changeSummary');
+        const changeSummaryText = document.getElementById('changeSummaryText');
+        const changeSummaryMetrics = document.getElementById('changeSummaryMetrics');
+
+        // State
+        let currentPreprocessingData = null;
+        let isProcessing = false;
+
+        // Helpers
+        function formatNumber(num) {
+            if (num === null || num === undefined || isNaN(num)) return '0';
+            return Number(num).toLocaleString('tr-TR');
+        }
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showError(msg) {
+            errorMessage.textContent = msg || 'İşlem gerçekleştirilirken bir hata oluştu.';
+            errorBanner.classList.remove('hidden');
+        }
+
+        function hideError() {
+            errorBanner.classList.add('hidden');
+        }
+
+        // Render Preprocessing Dashboard
+        function renderPreprocessing(data) {
+            currentPreprocessingData = data;
+            hideError();
+
+            // Overview Stats
+            const orig = data.original || { rows: 0, columns: 0 };
+            const proc = data.processed || { rows: 0, columns: 0, missing: 0 };
+
+            originalRows.textContent = formatNumber(orig.rows);
+            originalCols.textContent = formatNumber(orig.columns);
+
+            processedRows.textContent = formatNumber(proc.rows);
+            processedCols.textContent = formatNumber(proc.columns);
+            processedMissing.textContent = `${formatNumber(proc.missing)} Eksik`;
+
+            // Quick Actions: Missing Values
+            const missingSummary = data.missing_summary || { total_missing_cells: 0, columns_with_missing: [] };
+            missingTotalBadge.textContent = `${formatNumber(missingSummary.total_missing_cells)} Hücre`;
+            
+            if (missingSummary.total_missing_cells === 0) {
+                missingTotalBadge.className = 'bg-success-green/10 text-success-green font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium';
+                missingTotalBadge.textContent = 'Eksik Yok';
+            } else {
+                missingTotalBadge.className = 'bg-warning-orange/10 text-[#a1680d] font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium';
+            }
+
+            // Quick Actions: Duplicates
+            const dups = data.duplicates || 0;
+            duplicatesBadge.textContent = `${formatNumber(dups)} Satır`;
+            if (dups === 0) {
+                duplicatesBadge.className = 'bg-success-green/10 text-success-green font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium';
+                duplicatesBadge.textContent = 'Duplicate yok';
+                removeDuplicatesBtn.disabled = true;
+                removeDuplicatesBtn.classList.add('opacity-40', 'cursor-not-allowed');
+            } else {
+                duplicatesBadge.className = 'bg-surface-variant text-on-surface-variant font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium';
+                removeDuplicatesBtn.disabled = false;
+                removeDuplicatesBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+            }
+
+            // Render Schema Table
+            renderSchemaTable(data.schema || []);
+
+            // Render History Timeline
+            renderHistory(data.history || []);
+
+            // Undo Button State
+            const historyLen = (data.history || []).length;
+            if (historyLen > 1) {
+                undoBtn.disabled = false;
+                undoBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+            } else {
+                undoBtn.disabled = true;
+                undoBtn.classList.add('opacity-40', 'cursor-not-allowed');
+            }
+
+            // Switch to Content View
+            loadingView.classList.add('hidden');
+            emptyStateView.classList.add('hidden');
+            preprocessingContentView.classList.remove('hidden');
+        }
+
+        // Render Schema Rows
+        function renderSchemaTable(schema) {
+            const searchQuery = (schemaSearchInput.value || '').trim().toLowerCase();
+            const filteredSchema = searchQuery 
+                ? schema.filter(item => item.name.toLowerCase().includes(searchQuery))
+                : schema;
+
+            if (filteredSchema.length === 0) {
+                schemaTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-slate-gray">
+                            Arama kriterine uygun sütun bulunamadı.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredSchema.forEach((col) => {
+                const isKept = col.kept !== false;
+                const isTypeChanged = col.current_type && col.original_type && (col.current_type.toUpperCase() !== col.original_type.toUpperCase());
+                
+                // Row classes
+                let rowClass = 'hover:bg-surface-faint transition-colors';
+                if (!isKept) {
+                    rowClass = 'bg-surface-container-low opacity-60';
+                } else if (isTypeChanged) {
+                    rowClass = 'hover:bg-surface-faint transition-colors bg-secondary-container/10';
+                }
+
+                // Toggle Switch Component
+                const toggleClass = isKept ? 'bg-primary' : 'bg-border-subtle';
+                const translateClass = isKept ? 'translate-x-4' : 'translate-x-0';
+                const toggleSwitchHtml = `
+                    <button type="button" onclick="toggleColumn('${escapeHtml(col.name)}', ${isKept})" role="switch" aria-checked="${isKept}" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent ${toggleClass} transition-colors duration-200 ease-in-out focus:outline-none">
+                        <span class="${translateClass} pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                    </button>
+                `;
+
+                // Column Name
+                const colNameClass = isKept ? 'text-on-surface font-semibold' : 'text-on-surface-variant line-through';
+
+                // Data Type Component
+                const types = ['STRING', 'INT64', 'FLOAT64', 'CATEGORY', 'DATETIME'];
+                const currT = (col.current_type || 'STRING').toUpperCase();
+                const origT = (col.original_type || 'STRING').toUpperCase();
+
+                let selectOptions = '';
+                types.forEach(t => {
+                    const sel = currT.includes(t) ? 'selected' : '';
+                    selectOptions += `<option value="${t.toLowerCase()}" ${sel}>${t}</option>`;
+                });
+
+                let typeCellContent = '';
+                if (!isKept) {
+                    typeCellContent = `
+                        <select disabled class="rounded border-border-subtle bg-transparent py-1 pl-2 pr-8 text-xs font-label-mono text-on-surface-variant h-7 opacity-50">
+                            ${selectOptions}
+                        </select>
+                    `;
+                } else if (isTypeChanged) {
+                    typeCellContent = `
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-label-mono text-slate-gray line-through">${origT}</span>
+                            <span class="material-symbols-outlined text-[14px] text-primary">arrow_forward</span>
+                            <select onchange="changeColumnType('${escapeHtml(col.name)}', this.value)" class="rounded border-primary/30 bg-primary/5 py-1 pl-2 pr-8 text-xs font-label-mono text-primary font-bold h-7 cursor-pointer">
+                                ${selectOptions}
+                            </select>
+                        </div>
+                    `;
+                } else {
+                    typeCellContent = `
+                        <select onchange="changeColumnType('${escapeHtml(col.name)}', this.value)" class="rounded border-border-subtle bg-surface-container-low py-1 pl-2 pr-8 text-xs font-label-mono text-on-surface-variant h-7 cursor-pointer hover:border-primary">
+                            ${selectOptions}
+                        </select>
+                    `;
+                }
+
+                // Missing Ratio
+                let missingRatioHtml = '';
+                if (!isKept) {
+                    missingRatioHtml = `<span class="text-error font-medium">${col.missing_ratio}%</span>`;
+                } else if (col.missing_ratio === 0 || col.missing_count === 0) {
+                    missingRatioHtml = `<span class="text-success-green font-medium">0.0%</span>`;
+                } else {
+                    missingRatioHtml = `<span class="text-warning-orange font-medium">${col.missing_ratio}%</span> <span class="text-slate-gray text-[11px] ml-1">(${col.missing_count})</span>`;
+                }
+
+                html += `
+                    <tr class="${rowClass}">
+                        <td class="px-6 py-3 whitespace-nowrap">${toggleSwitchHtml}</td>
+                        <td class="px-6 py-3 whitespace-nowrap ${colNameClass} font-mono text-xs">${escapeHtml(col.name)}</td>
+                        <td class="px-6 py-3 whitespace-nowrap">${typeCellContent}</td>
+                        <td class="px-6 py-3 whitespace-nowrap font-mono">${missingRatioHtml}</td>
+                        <td class="px-6 py-3 whitespace-nowrap text-right text-sm font-medium">
+                            <button class="text-slate-gray hover:text-primary p-1 rounded hover:bg-surface-container"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            schemaTableBody.innerHTML = html;
+        }
+
+        // Render Action History
+        function renderHistory(history) {
+            if (!history || history.length === 0) {
+                historyList.innerHTML = '<li class="text-xs text-slate-gray pl-8">İşlem geçmişi bulunamadı.</li>';
+                return;
+            }
+
+            let html = '';
+            history.forEach((item, index) => {
+                const isInitial = item.op === 'initial' || index === history.length - 1;
+                const iconBg = item.icon_bg || (isInitial ? 'bg-slate-gray/10' : 'bg-primary-container/20');
+                const iconColor = item.icon_color || (isInitial ? 'text-slate-gray' : 'text-primary');
+                const iconName = item.icon || (isInitial ? 'upload_file' : 'healing');
+
+                html += `
+                    <li class="relative pl-10">
+                        <div class="absolute left-0 top-1 w-7 h-7 rounded-full ${iconBg} flex items-center justify-center border-4 border-surface z-10">
+                            <span class="material-symbols-outlined text-[14px] ${iconColor}">${iconName}</span>
+                        </div>
+                        <div class="bg-surface-container-low p-3 rounded-lg border border-border-subtle ${isInitial ? 'bg-surface-container-lowest' : ''}">
+                            <p class="font-data-table text-data-table text-on-surface ${isInitial ? 'text-slate-gray italic' : 'font-medium'}">${escapeHtml(item.description)}</p>
+                            <span class="font-label-mono text-[10px] text-slate-gray block mt-1">${escapeHtml(item.time || '10:00')}</span>
+                        </div>
+                    </li>
+                `;
+            });
+
+            historyList.innerHTML = html;
+        }
+
+        // Show Before/After Changes Banner
+        function showChangeSummary(before, after, opDesc) {
+            if (!before || !after) return;
+
+            let metricsHtml = '';
+
+            // Rows changed
+            if (before.rows !== after.rows) {
+                metricsHtml += `
+                    <div class="bg-white px-2.5 py-1 rounded border border-border-subtle">
+                        <span class="text-slate-gray">Satır:</span> 
+                        <span class="text-slate-gray">${formatNumber(before.rows)}</span> 
+                        <span class="text-primary font-bold">→</span> 
+                        <span class="text-primary font-bold">${formatNumber(after.rows)}</span>
+                    </div>
+                `;
+            }
+
+            // Columns changed
+            if (before.columns !== after.columns) {
+                metricsHtml += `
+                    <div class="bg-white px-2.5 py-1 rounded border border-border-subtle">
+                        <span class="text-slate-gray">Sütun:</span> 
+                        <span class="text-slate-gray">${before.columns}</span> 
+                        <span class="text-primary font-bold">→</span> 
+                        <span class="text-primary font-bold">${after.columns}</span>
+                    </div>
+                `;
+            }
+
+            // Missing changed
+            if (before.missing !== after.missing) {
+                metricsHtml += `
+                    <div class="bg-white px-2.5 py-1 rounded border border-border-subtle">
+                        <span class="text-slate-gray">Eksik:</span> 
+                        <span class="text-slate-gray">${formatNumber(before.missing)}</span> 
+                        <span class="text-primary font-bold">→</span> 
+                        <span class="text-primary font-bold">${formatNumber(after.missing)}</span>
+                    </div>
+                `;
+            }
+
+            if (metricsHtml) {
+                changeSummaryText.textContent = opDesc || 'Değişiklik uygulandı:';
+                changeSummaryMetrics.innerHTML = metricsHtml;
+                changeSummary.classList.remove('hidden');
+            }
+        }
+
+        // API Requests: Apply Operation
+        async function applyOperation(payload, opDesc) {
+            if (isProcessing) return;
+            isProcessing = true;
+            hideError();
+
+            try {
+                const response = await fetch('/api/preprocessing/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderPreprocessing(data);
+                    if (data.before && data.after) {
+                        showChangeSummary(data.before, data.after, opDesc);
+                    }
+                } else {
+                    let errDetail = 'İşlem gerçekleştirilemedi.';
+                    try {
+                        const errJson = await response.json();
+                        if (errJson && errJson.detail) errDetail = errJson.detail;
+                    } catch (e) {}
+                    showError(errDetail);
+                }
+            } catch (err) {
+                console.error('Apply error:', err);
+                showError('Sunucu bağlantısında hata oluştu.');
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        // Column Toggle Handler
+        window.toggleColumn = function(colName, currentlyKept) {
+            const op = currentlyKept ? 'drop_column' : 'keep_column';
+            const desc = currentlyKept ? `Sütun kaldırıldı: ${colName}` : `Sütun geri eklendi: ${colName}`;
+            applyOperation({ op: op, column: colName }, desc);
+        };
+
+        // Column Type Conversion Handler
+        window.changeColumnType = function(colName, targetType) {
+            applyOperation({ op: 'convert_type', column: colName, target_type: targetType }, `Tip dönüşümü: ${colName} (${targetType.toUpperCase()})`);
+        };
+
+        // Initial Data Fetch
+        async function fetchPreprocessingData() {
+            try {
+                const response = await fetch('/api/preprocessing');
+                if (response.status === 200) {
+                    const data = await response.json();
+                    renderPreprocessing(data);
+                } else if (response.status === 409) {
+                    loadingView.classList.add('hidden');
+                    preprocessingContentView.classList.add('hidden');
+                    emptyStateView.classList.remove('hidden');
+                } else {
+                    loadingView.innerHTML = `
+                        <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
+                            <span class="material-symbols-outlined text-4xl">error</span>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Yüklenemedi</h3>
+                        <p class="text-on-surface-variant font-body-md mb-6">Sunucudan ön işleme verisi alınırken bir hata oluştu.</p>
+                        <a href="/" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Ana Sayfaya Dön</a>
+                    `;
+                }
+            } catch (err) {
+                console.error('Preprocessing fetch error:', err);
+                loadingView.innerHTML = `
+                    <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
+                        <span class="material-symbols-outlined text-4xl">wifi_off</span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Bağlantı Hatası</h3>
+                    <p class="text-on-surface-variant font-body-md mb-6">Sunucuya bağlanılamadı. Lütfen sunucunun çalıştığından emin olun.</p>
+                    <button onclick="location.reload()" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Yeniden Dene</button>
+                `;
+            }
+        }
+
+        // Event Listeners Setup
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPreprocessingData();
+
+            // Missing Value Select Change
+            fillMissingSelect.addEventListener('change', function() {
+                if (this.value) {
+                    applyFillMissingBtn.disabled = false;
+                } else {
+                    applyFillMissingBtn.disabled = true;
+                }
+            });
+
+            // Apply Fill Missing Button
+            applyFillMissingBtn.addEventListener('click', () => {
+                const method = fillMissingSelect.value;
+                if (!method) return;
+                applyOperation({ op: 'fill_missing', method: method }, 'Eksik veriler dolduruldu');
+            });
+
+            // Remove Duplicates Button
+            removeDuplicatesBtn.addEventListener('click', () => {
+                applyOperation({ op: 'drop_duplicates' }, 'Tekrarlayan kayıtlar kaldırıldı');
+            });
+
+            // Undo Button
+            undoBtn.addEventListener('click', async () => {
+                if (isProcessing) return;
+                isProcessing = true;
+                hideError();
+
+                try {
+                    const response = await fetch('/api/preprocessing/undo', { method: 'POST' });
+                    if (response.ok) {
+                        const data = await response.json();
+                        renderPreprocessing(data);
+                        changeSummary.classList.add('hidden');
+                    } else {
+                        showError('Geri alma işlemi başarısız oldu.');
+                    }
+                } catch (err) {
+                    console.error('Undo error:', err);
+                    showError('Geri alma sırasında sunucu hatası.');
+                } finally {
+                    isProcessing = false;
+                }
+            });
+
+            // Reset Button
+            resetBtn.addEventListener('click', async () => {
+                if (isProcessing) return;
+                if (!confirm('Tüm ön işleme adımlarını sıfırlamak istediğinize emin misiniz?')) return;
+                isProcessing = true;
+                hideError();
+
+                try {
+                    const response = await fetch('/api/preprocessing/reset', { method: 'POST' });
+                    if (response.ok) {
+                        const data = await response.json();
+                        renderPreprocessing(data);
+                        changeSummary.classList.add('hidden');
+                    }
+                } catch (err) {
+                    console.error('Reset error:', err);
+                } finally {
+                    isProcessing = false;
+                }
+            });
+
+            // Download Cleaned CSV Button
+            downloadCleanedCsvBtn.addEventListener('click', () => {
+                window.location.href = '/api/preprocessing/download';
+            });
+
+            // Search Filter on Schema
+            schemaSearchInput.addEventListener('input', () => {
+                if (currentPreprocessingData && currentPreprocessingData.schema) {
+                    renderSchemaTable(currentPreprocessingData.schema);
+                }
+            });
+
+            // Close Error Banner
+            closeErrorBannerBtn.addEventListener('click', hideError);
+        });
+    </script>
+</body>
+
+</html>

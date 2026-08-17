@@ -4,14 +4,14 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>trex DataLab - Data Quality</title>
+    <title>trex DataLab - Veri Kalitesi Raporu</title>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap"
-        rel="stylesheet">
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -107,157 +107,786 @@
     </script>
 </head>
 
-<body class="bg-surface-faint min-h-screen text-on-surface font-body-md text-body-md overflow-x-hidden flex">
-
-    <!-- SideNavBar -->
-    <nav
-        class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant flat no shadows flex flex-col py-6 px-4 z-20">
-        <div class="flex items-center gap-3 mb-10 px-2">
-            <span aria-label="trex Logo"
-                class="material-symbols-outlined font-headline-lg text-headline-lg font-bold text-white"
-                style="font-variation-settings: 'FILL' 1;">analytics</span>
+<body class="bg-surface-faint text-on-surface font-body-md antialiased min-h-screen">
+    <!-- Side Navigation Shell -->
+    <aside class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant z-20 flex flex-col py-6 px-4">
+        <!-- Header -->
+        <div class="mb-stack-lg px-2 flex items-center gap-3">
+            <span aria-label="T-REX Logo" class="material-symbols-outlined font-headline-lg text-headline-lg font-bold text-white" style="font-variation-settings: 'FILL' 1;">analytics</span>
             <div>
                 <h1 class="font-headline-md text-headline-md text-white m-0 leading-tight">trex DataLab</h1>
-                <p class="font-label-mono text-label-mono text-white/70 uppercase">Precision Data Platform</p>
+                <p class="font-label-mono text-label-mono text-white/70 uppercase">PRECISION DATA PLATFORM</p>
             </div>
         </div>
 
-        <a href="/"
-            class="w-full mb-8 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer text-center">
-            <span class="material-symbols-outlined">upload</span>
-            Yeni Veri Yükle
-        </a>
-
-        <ul class="flex flex-col gap-2 flex-grow">
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg"
-                    href="/">
-                    <span class="material-symbols-outlined">dashboard</span>
-                    <span class="font-body-md text-body-md">Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90"
-                    href="/data-quality">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
-                    <span class="font-body-md text-body-md font-medium">Data Quality</span>
-                </a>
-            </li>
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg"
-                    href="#">
-                    <span class="material-symbols-outlined">construction</span>
-                    <span class="font-body-md text-body-md">Preprocessing</span>
-                </a>
-            </li>
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg"
-                    href="#">
-                    <span class="material-symbols-outlined">insights</span>
-                    <span class="font-body-md text-body-md">Visualization</span>
-                </a>
-            </li>
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg"
-                    href="#">
-                    <span class="material-symbols-outlined">folder_shared</span>
-                    <span class="font-body-md text-body-md">Portfolio</span>
-                </a>
-            </li>
-        </ul>
-
-        <div class="mt-auto pt-6 border-t border-white/10">
-            <ul class="flex flex-col gap-2">
-                <li>
-                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg"
-                        href="#">
-                        <span class="material-symbols-outlined">settings</span>
-                        <span class="font-body-md text-body-md">Settings</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg"
-                        href="#">
-                        <span class="material-symbols-outlined">help</span>
-                        <span class="font-body-md text-body-md">Support</span>
-                    </a>
-                </li>
-            </ul>
+        <!-- CTA Action -->
+        <div class="mb-6">
+            <a href="/" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+                <span class="material-symbols-outlined">upload</span>
+                Yeni Veri Yükle
+            </a>
         </div>
-    </nav>
 
-    <!-- Main Content Wrapper -->
-    <div class="flex-1 ml-sidebar-width flex flex-col min-h-screen">
-        <!-- TopAppBar -->
-        <header
-            class="fixed top-0 right-0 w-[calc(100%-260px)] z-10 border-b border-border-subtle bg-surface flat no shadows flex justify-between items-center h-16 px-gutter">
-            <div class="flex items-center gap-8">
-                <!-- Search -->
-                <div class="relative w-64">
-                    <span
-                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-                    <input
-                        class="w-full pl-9 pr-4 py-1.5 bg-surface-container-low border border-border-subtle rounded text-sm focus:outline-none focus:border-primary transition-colors font-body-md text-body-md"
-                        placeholder="Arama..." type="text">
-                </div>
-                <!-- Nav Links -->
-                <nav class="hidden lg:flex gap-6">
-                    <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1"
-                        href="/">Hızlı İşlemler</a>
-                    <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform"
-                        href="/data-quality">Raporlar</a>
-                </nav>
-            </div>
-            <div class="flex items-center gap-4">
-                <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
-                    <span class="material-symbols-outlined">notifications</span>
-                </button>
-                <button
-                    class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm">
-                    Dışa Aktar
-                </button>
-                <button class="text-on-surface-variant hover:text-primary transition-colors ml-2"
-                    title="Kullanıcı Profili">
-                    <span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
-                </button>
-            </div>
-        </header>
+        <!-- Main Navigation -->
+        <nav class="flex-1 space-y-2">
+            <!-- Dashboard -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-body-md text-body-md">Dashboard</span>
+            </a>
+            <!-- Data Quality (Active) -->
+            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="/data-quality">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                <span class="font-body-md text-body-md font-medium">Data Quality</span>
+            </a>
+            <!-- Preprocessing -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/preprocessing">
+                <span class="material-symbols-outlined">construction</span>
+                <span class="font-body-md text-body-md">Preprocessing</span>
+            </a>
+            <!-- Visualization -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/visualization">
+                <span class="material-symbols-outlined">insights</span>
+                <span class="font-body-md text-body-md">Visualization</span>
+            </a>
+            <!-- Portfolio -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="/portfolio">
+                <span class="material-symbols-outlined">folder_shared</span>
+                <span class="font-body-md text-body-md">Portfolio</span>
+            </a>
+        </nav>
 
-        <!-- Main Canvas -->
-        <main class="flex-1 pt-24 px-gutter pb-12 max-w-container-max mx-auto w-full">
-            <!-- Header Section -->
-            <div class="mb-8">
-                <div class="flex items-center gap-2 text-sm text-slate-gray mb-2 font-label-mono">
-                    <a href="/" class="hover:text-primary transition-colors">DASHBOARD</a>
-                    <span>/</span>
-                    <span class="text-primary font-semibold">DATA QUALITY</span>
-                </div>
-                <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Kalitesi Analizi</h2>
-                <p class="text-on-surface-variant font-body-md text-body-md">Veri seti sağlık puanı, eksik değerler,
-                    veri tipi anomalileri ve aykırı değer değerlendirmesi.</p>
-            </div>
+        <!-- Footer Navigation -->
+        <div class="border-t border-white/20 pt-stack-sm space-y-1 mt-auto">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="font-body-md text-body-md">Settings</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="#">
+                <span class="material-symbols-outlined">help</span>
+                <span class="font-body-md text-body-md">Support</span>
+            </a>
+        </div>
+    </aside>
 
-            <!-- Skeleton Content / Coming Soon Card -->
-            <div
-                class="bg-surface border border-border-subtle rounded-xl p-12 flex flex-col items-center justify-center text-center shadow-sm max-w-2xl mx-auto my-8">
+    <!-- Top App Bar -->
+    <header class="fixed top-0 right-0 w-[calc(100%-260px)] z-10 flex justify-between items-center h-16 px-gutter bg-surface border-b border-border-subtle">
+        <!-- Left Section: Search -->
+        <div class="flex items-center flex-1">
+            <div class="relative w-64">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                <input class="w-full pl-9 pr-3 py-1.5 bg-surface-container-low border border-border-subtle rounded font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors" placeholder="Arama..." type="text">
+            </div>
+        </div>
+
+        <!-- Center Nav -->
+        <div class="hidden lg:flex items-center justify-center space-x-6 flex-1">
+            <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="/">Hızlı İşlemler</a>
+            <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="/data-quality">Raporlar</a>
+        </div>
+
+        <!-- Right Section: Actions -->
+        <div class="flex items-center justify-end space-x-4 flex-1">
+            <button id="exportPdfBtn" type="button" class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm">
+                Dışa Aktar
+            </button>
+            <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="text-on-surface-variant hover:text-primary transition-colors ml-2" title="Kullanıcı Profili">
+                <span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Canvas -->
+    <main class="ml-sidebar-width pt-20 px-gutter pb-12 max-w-container-max mx-auto">
+        <!-- Loading State View -->
+        <div id="loadingView" class="py-24 flex flex-col items-center justify-center text-center">
+            <div class="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-primary text-4xl animate-spin">progress_activity</span>
+            </div>
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Kalitesi Analiz Ediliyor...</h3>
+            <p class="text-on-surface-variant font-body-md">İstatistiksel kontroller, kayıp veri ve aykırı değer hesaplamaları yürütülüyor.</p>
+        </div>
+
+        <!-- Empty State View (409) -->
+        <div id="emptyStateView" class="hidden py-16 max-w-xl mx-auto text-center">
+            <div class="bg-surface border border-border-subtle rounded-xl p-10 flex flex-col items-center shadow-sm">
                 <div class="h-20 w-20 bg-secondary-container rounded-full flex items-center justify-center mb-6">
-                    <span class="material-symbols-outlined text-primary text-4xl">analytics</span>
+                    <span class="material-symbols-outlined text-primary text-4xl">folder_off</span>
                 </div>
-                <h3 class="font-headline-md text-headline-md text-on-surface mb-3">Data Quality Modülü Yakında</h3>
-                <p class="text-on-surface-variant font-body-lg text-body-lg mb-8 max-w-md">
-                    Otomatik Veri Kalite Skoru (0-100), eksik değer grafikleri, cardinality kontrolü ve IQR aykırı değer
-                    analizi modülü bir sonraki aşamada aktif olacaktır.
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Aktif Veri Seti Bulunamadı</h3>
+                <p class="text-on-surface-variant font-body-lg mb-8">
+                    Veri kalitesi raporunu görüntüleyebilmek için lütfen önce sisteme bir CSV veri seti yükleyin.
                 </p>
-                <div class="flex gap-4">
-                    <a href="/"
-                        class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
-                        <span class="material-symbols-outlined">arrow_back</span>
-                        Ana Sayfaya Dön
-                    </a>
+                <a href="/" class="px-6 py-3 bg-primary hover:bg-primary-container text-on-primary font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined">upload_file</span>
+                    Ana Sayfaya Dön &amp; Veri Yükle
+                </a>
+            </div>
+        </div>
+
+        <!-- Report Content View -->
+        <div id="qualityReportView" class="hidden">
+            <!-- Page Header -->
+            <div class="mb-stack-lg flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="headerFileName" class="font-label-mono text-xs text-primary bg-primary/10 px-2 py-0.5 rounded font-medium">veri.csv</span>
+                    </div>
+                    <h2 class="font-headline-md text-headline-md text-on-surface">Veri Kalitesi Raporu</h2>
+                    <p class="font-body-md text-body-md text-slate-gray mt-1">Veri setinizin genel sağlık durumunu ve yapısal bütünlüğünü analiz edin.</p>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-slate-gray bg-white px-3 py-1.5 rounded border border-border-subtle shadow-sm self-start sm:self-auto">
+                    <span class="material-symbols-outlined text-sm text-slate-gray">update</span>
+                    <span id="lastAnalysisTime" class="font-label-mono text-xs">Son Analiz: —</span>
                 </div>
             </div>
-        </main>
-    </div>
+
+            <!-- Bento Grid Layout -->
+            <div class="grid grid-cols-12 gap-6">
+                <!-- Overall Score Card (4/12) -->
+                <div class="col-span-12 lg:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col items-center justify-center relative overflow-hidden group shadow-sm">
+                    <h3 class="font-label-mono text-label-mono text-slate-gray uppercase w-full text-left mb-6">Genel Kalite Skoru</h3>
+                    <!-- Circular Gauge -->
+                    <div class="relative w-40 h-40 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" fill="none" r="45" stroke="#f0edec" stroke-width="8"></circle>
+                            <circle id="gaugeProgressCircle" class="transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="45" stroke="#19924B" stroke-dasharray="282.7" stroke-dashoffset="282.7" stroke-width="8" stroke-linecap="round"></circle>
+                        </svg>
+                        <div class="absolute flex flex-col items-center">
+                            <span id="scoreValue" class="font-headline-lg text-headline-lg text-on-surface font-bold">—</span>
+                            <span class="font-label-mono text-label-mono text-slate-gray">/ 100</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <span id="scoreStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-success-green/10 text-success-green text-xs font-semibold">
+                            <span id="scoreStatusDot" class="w-2 h-2 rounded-full bg-success-green"></span>
+                            <span id="scoreStatusText">Analiz Ediliyor</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Key Metrics List (8/12) -->
+                <div class="col-span-12 lg:col-span-8 bg-white rounded-lg border border-border-subtle p-6 shadow-sm flex flex-col justify-between">
+                    <h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-4">Temel Metrikler</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Metric 1: Missing Rate -->
+                        <div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded hover:shadow-sm transition-shadow">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-error">visibility_off</span>
+                                <span class="font-body-md text-body-md text-on-surface">Kayıp Veri Oranı</span>
+                            </div>
+                            <span id="metricMissingRate" class="font-data-table text-data-table text-on-surface font-semibold">—</span>
+                        </div>
+
+                        <!-- Metric 2: Duplicate Rate -->
+                        <div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded hover:shadow-sm transition-shadow">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-warning-orange">content_copy</span>
+                                <span class="font-body-md text-body-md text-on-surface">Tekrarlanan Kayıt</span>
+                            </div>
+                            <span id="metricDuplicateRate" class="font-data-table text-data-table text-on-surface font-semibold">—</span>
+                        </div>
+
+                        <!-- Metric 3: Type Issues -->
+                        <div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded hover:shadow-sm transition-shadow">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-warning-orange">data_object</span>
+                                <span class="font-body-md text-body-md text-on-surface">Veri Tipi Sorunları</span>
+                            </div>
+                            <span id="metricTypeIssues" class="font-data-table text-data-table text-on-surface font-semibold">—</span>
+                        </div>
+
+                        <!-- Metric 4: Constant Columns -->
+                        <div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded hover:shadow-sm transition-shadow">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-success-green">horizontal_rule</span>
+                                <span class="font-body-md text-body-md text-on-surface">Sabit Kolonlar</span>
+                            </div>
+                            <span id="metricConstantCols" class="font-data-table text-data-table text-on-surface font-semibold">—</span>
+                        </div>
+
+                        <!-- Metric 5: High Cardinality -->
+                        <div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded hover:shadow-sm transition-shadow">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">dynamic_form</span>
+                                <span class="font-body-md text-body-md text-on-surface">Yüksek Kardinalite</span>
+                            </div>
+                            <span id="metricHighCardCols" class="font-data-table text-data-table text-on-surface font-semibold">—</span>
+                        </div>
+
+                        <!-- Metric 6: Outliers -->
+                        <div class="flex items-center justify-between p-3 bg-surface-faint border border-border-subtle rounded hover:shadow-sm transition-shadow">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-error">trending_up</span>
+                                <span class="font-body-md text-body-md text-on-surface">Aykırı Değerler</span>
+                            </div>
+                            <span id="metricOutlierSummary" class="font-data-table text-data-table text-on-surface font-semibold">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing Values Table (6/12) -->
+                <div class="col-span-12 lg:col-span-6 bg-white rounded-lg border border-border-subtle flex flex-col shadow-sm">
+                    <div class="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-container-lowest">
+                        <h3 class="font-label-mono text-label-mono text-slate-gray uppercase">Kayıp Veri Analizi</h3>
+                        <span class="material-symbols-outlined text-slate-gray text-sm cursor-help" title="Kolon bazında eksik değerlerin toplam kayda oranı.">info</span>
+                    </div>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left">
+                            <thead class="bg-surface-faint border-b border-border-subtle">
+                                <tr>
+                                    <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-3">Kolon Adı</th>
+                                    <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-3">Kayıp Sayısı</th>
+                                    <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-3">Oran</th>
+                                    <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-3 w-32">Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody id="missingTableBody" class="divide-y divide-border-subtle font-data-table text-data-table">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Visualization: Missing Values Bar Chart (6/12) -->
+                <div class="col-span-12 lg:col-span-6 bg-white rounded-lg border border-border-subtle p-4 flex flex-col shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-label-mono text-label-mono text-slate-gray uppercase">Kayıp Veri Dağılımı</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-warning-orange"></span>
+                            <span class="text-xs text-slate-gray font-medium">Eksik Değerler (%)</span>
+                        </div>
+                    </div>
+
+                    <!-- CSS/SVG Bar Chart Container -->
+                    <div id="missingBarsWrapper" class="flex-1 flex items-end justify-between px-4 pb-7 pt-4 border-b border-l border-border-subtle relative h-48 bg-surface-faint/30 rounded-br">
+                        <!-- Grid lines -->
+                        <div class="absolute w-full border-t border-border-subtle border-dashed bottom-12 left-0 z-0"></div>
+                        <div class="absolute w-full border-t border-border-subtle border-dashed bottom-24 left-0 z-0"></div>
+                        <div class="absolute w-full border-t border-border-subtle border-dashed bottom-36 left-0 z-0"></div>
+                        <!-- Dynamic bars rendered here -->
+                    </div>
+                </div>
+
+                <!-- Triple Group: Card 1 - Duplicates (4/12) -->
+                <div class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col justify-between shadow-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-surface-container rounded">
+                            <span class="material-symbols-outlined text-on-surface-variant">content_copy</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-1">Tekrarlanan Kayıtlar</h3>
+                            <div class="flex items-baseline gap-2 mt-2">
+                                <span id="duplicateCountText" class="font-headline-md text-headline-md text-on-surface font-bold">0</span>
+                                <span class="font-body-md text-body-md text-slate-gray">Satır</span>
+                            </div>
+                            <p id="duplicateRatioText" class="font-body-md text-sm text-warning-orange mt-1 font-medium">Toplam verinin %0.0'ı</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-border-subtle">
+                        <button id="toggleDuplicateDetailsBtn" type="button" class="text-xs font-semibold text-primary uppercase hover:underline flex items-center gap-1 cursor-pointer">
+                            <span>Detayları Gör</span>
+                            <span class="material-symbols-outlined text-sm">expand_more</span>
+                        </button>
+                        <div id="duplicateDetailsContainer" class="hidden mt-3 max-h-48 overflow-y-auto border border-border-subtle rounded bg-surface-faint p-2 text-xs">
+                            <table class="w-full text-left">
+                                <tbody id="duplicateTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Triple Group: Card 2 - Cardinality (4/12) -->
+                <div class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <div class="flex items-start gap-4 mb-3">
+                            <div class="p-3 bg-surface-container rounded">
+                                <span class="material-symbols-outlined text-on-surface-variant">dynamic_form</span>
+                            </div>
+                            <div>
+                                <h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-1">Kardinalite (Benzersizlik)</h3>
+                                <p class="text-xs text-slate-gray">Kolonlardaki tekil değer yoğunluğu</p>
+                            </div>
+                        </div>
+                        <div id="cardinalityList" class="flex flex-col gap-1.5 mt-3 max-h-44 overflow-y-auto pr-1">
+                            <!-- Dynamic items -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Triple Group: Card 3 - Outliers (4/12) -->
+                <div class="col-span-12 md:col-span-4 bg-white rounded-lg border border-border-subtle p-6 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <div class="flex items-start gap-4 mb-2">
+                            <div class="p-3 bg-error-container rounded">
+                                <span class="material-symbols-outlined text-error">trending_up</span>
+                            </div>
+                            <div>
+                                <h3 class="font-label-mono text-label-mono text-slate-gray uppercase mb-1">Aykırı Değerler</h3>
+                                <p class="text-xs text-slate-gray">IQR (Çeyrekler Arası) Yöntemi</p>
+                            </div>
+                        </div>
+                        <p id="outliersDescription" class="font-body-md text-sm text-on-surface mt-2 leading-relaxed">
+                            Hesaplanıyor...
+                        </p>
+                    </div>
+
+                    <!-- Mandatory Educational Note -->
+                    <div id="outlierWarningBox" class="mt-4 p-2.5 bg-surface-container-low border border-border-subtle rounded text-[11px] text-slate-gray leading-tight">
+                        <span class="font-semibold text-on-surface">Not:</span> Uç değer otomatik olarak hata değildir; gerçek veriye bağlı olarak anlamlı olabilir.
+                    </div>
+                </div>
+
+                <!-- Data Type Check Table (12/12 Full Width) -->
+                <div class="col-span-12 bg-white rounded-lg border border-border-subtle flex flex-col shadow-sm">
+                    <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
+                        <h3 class="font-label-mono text-label-mono text-slate-gray uppercase">Veri Tipi Kontrolü ve Öneriler</h3>
+                        <span class="text-xs text-slate-gray">Otomatik tip çıkarımı ve anomali tespiti</span>
+                    </div>
+                    <div class="overflow-x-auto p-4">
+                        <table class="w-full text-left">
+                            <thead class="bg-surface-faint">
+                                <tr>
+                                    <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2.5 border-b border-border-subtle">Kolon Adı</th>
+                                    <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2.5 border-b border-border-subtle">Mevcut Tip</th>
+                                    <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2.5 border-b border-border-subtle">Tespit Edilen Örnek</th>
+                                    <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2.5 border-b border-border-subtle">Sistem Önerisi</th>
+                                    <th class="font-label-mono text-label-mono text-slate-gray uppercase px-4 py-2.5 border-b border-border-subtle">Aksiyon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dtypesTableBody" class="divide-y divide-border-subtle font-data-table text-data-table">
+                                <!-- Dynamic dtypes rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Transparency: Score Breakdown Accordion (12/12) -->
+                <div class="col-span-12 bg-white rounded-lg border border-border-subtle overflow-hidden shadow-sm">
+                    <button id="toggleScoreBreakdownBtn" type="button" class="w-full p-4 bg-surface-container-lowest hover:bg-surface-faint transition-colors flex justify-between items-center text-left cursor-pointer">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">fact_check</span>
+                            <h3 class="font-label-mono text-label-mono text-slate-gray uppercase font-semibold">Skor Nasıl Hesaplanır?</h3>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-primary font-medium">
+                            <span>Detayları Göster / Gizle</span>
+                            <span id="scoreAccordionIcon" class="material-symbols-outlined text-base transition-transform">expand_more</span>
+                        </div>
+                    </button>
+                    <div id="scoreBreakdownContainer" class="hidden p-4 border-t border-border-subtle bg-white">
+                        <p class="text-xs text-slate-gray mb-4">
+                            Genel kalite skoru, 100 baz puan üzerinden veri anomalileri için uygulanan ağırlıklı ceza puanlarının çıkarılmasıyla hesaplanır.
+                        </p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left font-data-table text-xs">
+                                <thead class="bg-surface-faint text-slate-gray font-label-mono uppercase">
+                                    <tr>
+                                        <th class="px-4 py-2">Bileşen</th>
+                                        <th class="px-4 py-2">Formül / Kriter</th>
+                                        <th class="px-4 py-2">Hesaplanan Değer</th>
+                                        <th class="px-4 py-2 text-right">Ceza Puanı</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scoreBreakdownBody" class="divide-y divide-border-subtle">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                                <tfoot id="scoreBreakdownFoot" class="bg-surface-container-low font-semibold border-t-2 border-border-subtle">
+                                    <!-- Dynamic foot -->
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Application Script -->
+    <script>
+        // DOM Elements
+        const loadingView = document.getElementById('loadingView');
+        const emptyStateView = document.getElementById('emptyStateView');
+        const qualityReportView = document.getElementById('qualityReportView');
+        const headerFileName = document.getElementById('headerFileName');
+        const lastAnalysisTime = document.getElementById('lastAnalysisTime');
+        const scoreValue = document.getElementById('scoreValue');
+        const gaugeProgressCircle = document.getElementById('gaugeProgressCircle');
+        const scoreStatusBadge = document.getElementById('scoreStatusBadge');
+        const scoreStatusDot = document.getElementById('scoreStatusDot');
+        const scoreStatusText = document.getElementById('scoreStatusText');
+        const metricMissingRate = document.getElementById('metricMissingRate');
+        const metricDuplicateRate = document.getElementById('metricDuplicateRate');
+        const metricTypeIssues = document.getElementById('metricTypeIssues');
+        const metricConstantCols = document.getElementById('metricConstantCols');
+        const metricHighCardCols = document.getElementById('metricHighCardCols');
+        const metricOutlierSummary = document.getElementById('metricOutlierSummary');
+        const missingTableBody = document.getElementById('missingTableBody');
+        const missingBarsWrapper = document.getElementById('missingBarsWrapper');
+        const duplicateCountText = document.getElementById('duplicateCountText');
+        const duplicateRatioText = document.getElementById('duplicateRatioText');
+        const toggleDuplicateDetailsBtn = document.getElementById('toggleDuplicateDetailsBtn');
+        const duplicateDetailsContainer = document.getElementById('duplicateDetailsContainer');
+        const duplicateTableBody = document.getElementById('duplicateTableBody');
+        const cardinalityList = document.getElementById('cardinalityList');
+        const outliersDescription = document.getElementById('outliersDescription');
+        const outlierWarningBox = document.getElementById('outlierWarningBox');
+        const dtypesTableBody = document.getElementById('dtypesTableBody');
+        const toggleScoreBreakdownBtn = document.getElementById('toggleScoreBreakdownBtn');
+        const scoreBreakdownContainer = document.getElementById('scoreBreakdownContainer');
+        const scoreAccordionIcon = document.getElementById('scoreAccordionIcon');
+        const scoreBreakdownBody = document.getElementById('scoreBreakdownBody');
+        const scoreBreakdownFoot = document.getElementById('scoreBreakdownFoot');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+
+        // Helpers
+        function formatNumber(num) {
+            if (num === null || num === undefined || isNaN(num)) return '0';
+            return Number(num).toLocaleString('tr-TR');
+        }
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Render Quality Report
+        function renderQualityReport(data) {
+            // Header Info
+            headerFileName.textContent = data.filename || 'veri_seti.csv';
+            lastAnalysisTime.textContent = `Son Analiz: ${data.upload_time || 'Şimdi'}`;
+
+            // Score & Circular Gauge
+            const score = Math.max(0, Math.min(100, data.score || 0));
+            scoreValue.textContent = score;
+
+            // Gauge circumference is 2 * PI * 45 = 282.74
+            const circumference = 282.7;
+            const offset = circumference * (1 - score / 100);
+
+            // Determine Score Colors & Status
+            let gaugeColor = '#19924B'; // success-green
+            let badgeBg = 'bg-success-green/10 text-success-green';
+            let dotBg = 'bg-success-green';
+            let statusText = 'İyi Durumda';
+
+            if (score < 70) {
+                gaugeColor = '#ba1a1a'; // error
+                badgeBg = 'bg-error-container text-on-error-container';
+                dotBg = 'bg-error';
+                statusText = 'Zayıf';
+            } else if (score < 85) {
+                gaugeColor = '#F5B054'; // warning-orange
+                badgeBg = 'bg-warning-orange/10 text-warning-orange';
+                dotBg = 'bg-warning-orange';
+                statusText = 'İyileştirme Gerekli';
+            }
+
+            gaugeProgressCircle.setAttribute('stroke', gaugeColor);
+            setTimeout(() => {
+                gaugeProgressCircle.style.strokeDashoffset = offset;
+            }, 100);
+
+            scoreStatusBadge.className = `inline-flex items-center gap-1.5 px-3 py-1 rounded ${badgeBg} text-xs font-semibold`;
+            scoreStatusDot.className = `w-2 h-2 rounded-full ${dotBg}`;
+            scoreStatusText.textContent = statusText;
+
+            // Key Metrics
+            const metrics = data.metrics || {};
+            metricMissingRate.textContent = `%${metrics.missing_rate !== undefined ? metrics.missing_rate : (data.missing ? data.missing.rate : 0)}`;
+            metricDuplicateRate.textContent = `%${metrics.duplicate_rate !== undefined ? metrics.duplicate_rate : (data.duplicates ? data.duplicates.rate : 0)}`;
+            metricTypeIssues.textContent = `${metrics.type_issues !== undefined ? metrics.type_issues : 0} Kolon`;
+            metricConstantCols.textContent = `${metrics.constant_cols !== undefined ? metrics.constant_cols : (data.constant_cols ? data.constant_cols.length : 0)}`;
+            metricHighCardCols.textContent = `${metrics.high_cardinality_cols !== undefined ? metrics.high_cardinality_cols : 0} Kolon`;
+            metricOutlierSummary.textContent = metrics.outlier_summary || (data.outliers && data.outliers.total_outliers > 0 ? 'Belirgin' : 'Minimal');
+
+            // Missing Values Table
+            const missingCols = (data.missing && data.missing.columns) ? data.missing.columns : [];
+            const filteredMissing = missingCols.filter(c => c.count > 0);
+
+            if (filteredMissing.length === 0) {
+                missingTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-4 py-6 text-center text-slate-gray">
+                            <span class="inline-flex items-center gap-1 text-success-green font-medium">
+                                <span class="material-symbols-outlined text-sm">check_circle</span>
+                                Tebrikler! Veri setinde hiç eksik değer bulunmamaktadır.
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                let missingHtml = '';
+                filteredMissing.forEach(col => {
+                    const ratio = col.ratio || 0;
+                    const barColor = ratio >= 5 ? 'bg-warning-orange' : (ratio > 0 ? 'bg-success-green' : 'bg-surface-container-high');
+                    missingHtml += `
+                        <tr class="hover:bg-surface-faint transition-colors">
+                            <td class="px-4 py-3 font-mono text-xs text-on-surface font-medium">${escapeHtml(col.name)}</td>
+                            <td class="px-4 py-3 font-mono">${formatNumber(col.count)}</td>
+                            <td class="px-4 py-3 font-mono font-medium">%${ratio}</td>
+                            <td class="px-4 py-3">
+                                <div class="w-full bg-surface-container-high rounded-full h-1.5">
+                                    <div class="${barColor} h-1.5 rounded-full" style="width: ${Math.min(100, Math.max(2, ratio))}%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                missingTableBody.innerHTML = missingHtml;
+            }
+
+            // Missing Values Bar Chart (CSS/SVG pure rendering)
+            renderMissingBarChart(missingCols);
+
+            // Duplicate Records Card
+            const dupCount = (data.duplicates && data.duplicates.count !== undefined) ? data.duplicates.count : 0;
+            const dupRate = (data.duplicates && data.duplicates.rate !== undefined) ? data.duplicates.rate : 0;
+            duplicateCountText.textContent = formatNumber(dupCount);
+            duplicateRatioText.textContent = `Toplam verinin %${dupRate}'si`;
+
+            const dupSamples = (data.duplicates && data.duplicates.samples) ? data.duplicates.samples : [];
+            if (dupSamples.length > 0) {
+                let dupHtml = '';
+                dupSamples.forEach((sample, i) => {
+                    const sampleText = Object.entries(sample).map(([k, v]) => `${k}: ${v}`).join(' | ');
+                    dupHtml += `<tr class="border-b border-border-subtle"><td class="py-1 px-1 font-mono text-[11px] text-slate-gray truncate max-w-xs" title="${escapeHtml(sampleText)}">#${i+1}: ${escapeHtml(sampleText)}</td></tr>`;
+                });
+                duplicateTableBody.innerHTML = dupHtml;
+            } else {
+                duplicateTableBody.innerHTML = '<tr><td class="py-2 text-center text-slate-gray">Yinelenen örnek kayıt bulunamadı.</td></tr>';
+            }
+
+            // Cardinality List
+            const cardCols = (data.cardinality && data.cardinality.columns) ? data.cardinality.columns : [];
+            if (cardCols.length === 0) {
+                cardinalityList.innerHTML = '<p class="text-xs text-slate-gray py-2">Kardinalite bilgisi bulunamadı.</p>';
+            } else {
+                let cardHtml = '';
+                cardCols.forEach((c, idx) => {
+                    const isHigh = c.is_high || (c.label && c.label.toLowerCase().includes('yüksek'));
+                    const badge = isHigh 
+                        ? `<span class="text-xs text-warning-orange bg-warning-orange/10 px-1.5 py-0.5 rounded font-medium">${escapeHtml(c.label || 'Yüksek')}</span>`
+                        : `<span class="text-xs text-slate-gray bg-surface-container px-1.5 py-0.5 rounded">${escapeHtml(c.label || 'Düşük')}</span>`;
+                    const borderClass = idx < cardCols.length - 1 ? 'border-b border-border-subtle pb-1.5 mb-1.5' : '';
+                    cardHtml += `
+                        <div class="flex justify-between items-center text-sm ${borderClass}">
+                            <span class="font-mono text-xs text-on-surface font-medium truncate max-w-[140px]" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</span>
+                            ${badge}
+                        </div>
+                    `;
+                });
+                cardinalityList.innerHTML = cardHtml;
+            }
+
+            // Outliers Description
+            const outliers = data.outliers || {};
+            const outlierCols = outliers.columns || [];
+            if (outlierCols.length > 0) {
+                const top1 = outlierCols[0];
+                let text = `<span class="font-mono text-xs bg-surface-container px-1.5 py-0.5 rounded mr-1 font-semibold">${escapeHtml(top1.name)}</span> kolonunda <strong>${outliers.method || 'IQR'} yöntemiyle ${formatNumber(top1.count)} kayıt</strong> (%${top1.ratio}) tespit edildi.`;
+                if (outlierCols.length > 1) {
+                    const top2 = outlierCols[1];
+                    text += `<br><span class="text-xs text-slate-gray mt-1 block font-mono">${escapeHtml(top2.name)}: ${formatNumber(top2.count)} kayıt (%${top2.ratio})</span>`;
+                }
+                outliersDescription.innerHTML = text;
+            } else {
+                outliersDescription.innerHTML = '<span class="text-success-green font-medium flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Aykırı değer tespit edilmedi (Tüm veriler normal dağılım aralığında).</span>';
+            }
+
+            // Data Types Table
+            const dtypes = data.dtypes || [];
+            if (dtypes.length === 0) {
+                dtypesTableBody.innerHTML = '<tr><td colspan="5" class="px-4 py-4 text-center text-slate-gray">Veri tipi önerisi bulunamadı.</td></tr>';
+            } else {
+                let dtypesHtml = '';
+                dtypes.forEach(dt => {
+                    const isOk = dt.ok !== false;
+                    const rowClass = isOk ? 'hover:bg-surface-faint transition-colors' : 'hover:bg-surface-faint transition-colors bg-warning-orange/5';
+                    const sampleText = dt.sample_str || (dt.samples ? dt.samples.join(', ') : '-');
+                    
+                    const suggestionHtml = isOk
+                        ? `<span class="material-symbols-outlined text-sm text-success-green">check_circle</span> <span class="text-success-green">${escapeHtml(dt.suggestion || 'Uygun görünüyor')}</span>`
+                        : `<span class="material-symbols-outlined text-sm text-warning-orange">warning</span> <span class="font-medium text-warning-orange">${escapeHtml(dt.suggestion || 'Dönüştürme önerilir')}</span>`;
+                    
+                    const actionHtml = isOk
+                        ? `<span class="text-slate-gray text-xs">-</span>`
+                        : `<button type="button" class="px-3 py-1 bg-white border border-border-subtle text-xs font-semibold rounded hover:bg-surface-container transition-colors cursor-pointer shadow-sm">Dönüştür</button>`;
+
+                    dtypesHtml += `
+                        <tr class="${rowClass}">
+                            <td class="px-4 py-3 font-mono text-xs font-medium text-on-surface">${escapeHtml(dt.name)}</td>
+                            <td class="px-4 py-3 text-slate-gray font-mono text-xs">${escapeHtml(dt.current)}</td>
+                            <td class="px-4 py-3 text-slate-gray text-xs truncate max-w-xs" title="${escapeHtml(sampleText)}">${escapeHtml(sampleText)}</td>
+                            <td class="px-4 py-3 flex items-center gap-1.5 text-xs">${suggestionHtml}</td>
+                            <td class="px-4 py-3">${actionHtml}</td>
+                        </tr>
+                    `;
+                });
+                dtypesTableBody.innerHTML = dtypesHtml;
+            }
+
+            // Score Breakdown Table
+            const breakdowns = data.score_breakdown || [];
+            let totalPenalty = 0;
+            let breakdownHtml = '';
+
+            breakdowns.forEach(item => {
+                const penalty = Number(item.penalty || 0);
+                totalPenalty += penalty;
+                const penaltyClass = penalty > 0 ? 'text-error font-semibold' : 'text-success-green';
+                breakdownHtml += `
+                    <tr class="hover:bg-surface-faint transition-colors">
+                        <td class="px-4 py-2.5 font-medium text-on-surface">${escapeHtml(item.component)}</td>
+                        <td class="px-4 py-2.5 text-slate-gray font-mono text-[11px]">${escapeHtml(item.formula || '-')}</td>
+                        <td class="px-4 py-2.5 font-mono">${escapeHtml(item.value || '-')}</td>
+                        <td class="px-4 py-2.5 text-right ${penaltyClass}">-${penalty} Puan</td>
+                    </tr>
+                `;
+            });
+            scoreBreakdownBody.innerHTML = breakdownHtml;
+
+            scoreBreakdownFoot.innerHTML = `
+                <tr>
+                    <td colspan="3" class="px-4 py-3 text-on-surface">Toplam Uygulanan Ceza</td>
+                    <td class="px-4 py-3 text-right text-error font-bold">-${totalPenalty} Puan</td>
+                </tr>
+                <tr class="bg-surface-container text-primary">
+                    <td colspan="3" class="px-4 py-2 font-bold">Hesaplanan Kalite Skoru (100 - ${totalPenalty})</td>
+                    <td class="px-4 py-2 text-right font-headline-md font-bold text-sm text-primary">${score} / 100</td>
+                </tr>
+            `;
+
+            // Switch to Report View
+            loadingView.classList.add('hidden');
+            emptyStateView.classList.add('hidden');
+            qualityReportView.classList.remove('hidden');
+        }
+
+        // Render Pure CSS/SVG Missing Bar Chart
+        function renderMissingBarChart(columns) {
+            // Keep existing grid lines
+            const gridLines = `
+                <div class="absolute w-full border-t border-border-subtle border-dashed bottom-12 left-0 z-0"></div>
+                <div class="absolute w-full border-t border-border-subtle border-dashed bottom-24 left-0 z-0"></div>
+                <div class="absolute w-full border-t border-border-subtle border-dashed bottom-36 left-0 z-0"></div>
+            `;
+
+            if (!columns || columns.length === 0) {
+                missingBarsWrapper.innerHTML = gridLines + `
+                    <div class="z-10 w-full text-center text-xs text-slate-gray self-center">
+                        Tüm kolonlar eksiksiz doldurulmuş (%0 kayıp).
+                    </div>
+                `;
+                return;
+            }
+
+            // Take top 8-10 columns
+            const displayCols = columns.slice(0, 8);
+            const maxRatio = Math.max(...displayCols.map(c => c.ratio || 0), 1);
+
+            let barsHtml = gridLines;
+            displayCols.forEach(col => {
+                const ratio = col.ratio || 0;
+                // Height between 4% and 85%
+                const heightPct = ratio > 0 ? Math.max(6, Math.min(85, (ratio / maxRatio) * 80)) : 3;
+                const barColor = ratio >= 5 ? 'bg-warning-orange/80' : (ratio > 0 ? 'bg-success-green/60' : 'bg-surface-container-high');
+                const shortName = col.name.length > 8 ? col.name.substring(0, 7) + '..' : col.name;
+
+                barsHtml += `
+                    <div class="w-10 sm:w-12 ${barColor} rounded-t-sm z-10 relative group transition-all cursor-pointer" style="height: ${heightPct}%;">
+                        <div class="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[11px] bg-inverse-surface text-white px-1.5 py-0.5 rounded transition-opacity shadow pointer-events-none z-20 whitespace-nowrap">
+                            %${ratio} (${formatNumber(col.count)})
+                        </div>
+                        <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-slate-gray font-mono truncate w-14 text-center select-none" title="${escapeHtml(col.name)}">
+                            ${escapeHtml(shortName)}
+                        </div>
+                    </div>
+                `;
+            });
+
+            missingBarsWrapper.innerHTML = barsHtml;
+        }
+
+        // Fetch Quality Data from Backend
+        async function fetchQualityData() {
+            try {
+                const response = await fetch('/api/quality');
+
+                if (response.status === 200) {
+                    const data = await response.json();
+                    renderQualityReport(data);
+                } else if (response.status === 409) {
+                    // Empty state
+                    loadingView.classList.add('hidden');
+                    qualityReportView.classList.add('hidden');
+                    emptyStateView.classList.remove('hidden');
+                } else {
+                    // Error state
+                    loadingView.innerHTML = `
+                        <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
+                            <span class="material-symbols-outlined text-4xl">error</span>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Rapor Yüklenemedi</h3>
+                        <p class="text-on-surface-variant font-body-md mb-6">Sunucudan analiz verisi alınırken bir hata oluştu.</p>
+                        <a href="/" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Ana Sayfaya Dön</a>
+                    `;
+                }
+            } catch (err) {
+                console.error('Veri kalitesi raporu getirme hatası:', err);
+                loadingView.innerHTML = `
+                    <div class="h-16 w-16 bg-error-container rounded-full flex items-center justify-center mb-4 text-error">
+                        <span class="material-symbols-outlined text-4xl">wifi_off</span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Bağlantı Hatası</h3>
+                    <p class="text-on-surface-variant font-body-md mb-6">Sunucuya ulaşılamadı. Lütfen sunucunun çalıştığından emin olun.</p>
+                    <button onclick="location.reload()" class="px-5 py-2.5 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-colors">Yeniden Dene</button>
+                `;
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchQualityData();
+
+            // Toggle Duplicate Details
+            if (toggleDuplicateDetailsBtn && duplicateDetailsContainer) {
+                toggleDuplicateDetailsBtn.addEventListener('click', () => {
+                    const isHidden = duplicateDetailsContainer.classList.contains('hidden');
+                    if (isHidden) {
+                        duplicateDetailsContainer.classList.remove('hidden');
+                        toggleDuplicateDetailsBtn.querySelector('span:first-child').textContent = 'Gizle';
+                        toggleDuplicateDetailsBtn.querySelector('.material-symbols-outlined').textContent = 'expand_less';
+                    } else {
+                        duplicateDetailsContainer.classList.add('hidden');
+                        toggleDuplicateDetailsBtn.querySelector('span:first-child').textContent = 'Detayları Gör';
+                        toggleDuplicateDetailsBtn.querySelector('.material-symbols-outlined').textContent = 'expand_more';
+                    }
+                });
+            }
+
+            // Toggle Score Breakdown Accordion
+            if (toggleScoreBreakdownBtn && scoreBreakdownContainer) {
+                toggleScoreBreakdownBtn.addEventListener('click', () => {
+                    const isHidden = scoreBreakdownContainer.classList.contains('hidden');
+                    if (isHidden) {
+                        scoreBreakdownContainer.classList.remove('hidden');
+                        scoreAccordionIcon.textContent = 'expand_less';
+                    } else {
+                        scoreBreakdownContainer.classList.add('hidden');
+                        scoreAccordionIcon.textContent = 'expand_more';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
