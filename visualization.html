@@ -318,9 +318,12 @@
                         <div class="col-span-12 lg:col-span-8 bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col">
                             <div class="flex justify-between items-center mb-3 border-b border-border-subtle pb-3">
                                 <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold" id="univariateChartTitle">Dağılım Analizi</h4>
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1.5">
                                     <span id="univariateColumnBadge" class="text-xs font-label-mono bg-surface-container px-2.5 py-1 rounded text-on-surface-variant font-medium">Sütun: -</span>
-                                    <button onclick="downloadChartPNG('univariateChartContainer', 'tek_degiskenli_grafik')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container" title="PNG İndir">
+                                    <button onclick="openChartZoom('univariateChartContainer', 'Tek Değişkenli Analiz')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Grafiği Büyüt">
+                                        <span class="material-symbols-outlined text-[18px]">zoom_in</span>
+                                    </button>
+                                    <button onclick="downloadChartPNG('univariateChartContainer', 'tek_degiskenli_grafik')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="PNG İndir">
                                         <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                                     </button>
                                 </div>
@@ -376,9 +379,12 @@
                     <div class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm">
                         <div class="flex justify-between items-center mb-3 border-b border-border-subtle pb-3">
                             <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold" id="bivariateChartTitle">X × Y Karşılaştırması</h4>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1.5">
                                 <span id="bivariateChartBadge" class="text-xs font-label-mono bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-medium">Dağılım Grafiği</span>
-                                <button onclick="downloadChartPNG('bivariateChartContainer', 'iki_degiskenli_grafik')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container" title="PNG İndir">
+                                <button onclick="openChartZoom('bivariateChartContainer', 'İki Değişkenli Analiz')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Grafiği Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">zoom_in</span>
+                                </button>
+                                <button onclick="downloadChartPNG('bivariateChartContainer', 'iki_degiskenli_grafik')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="PNG İndir">
                                     <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                                 </button>
                             </div>
@@ -413,9 +419,14 @@
                         <div class="col-span-12 lg:col-span-7 bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col">
                             <div class="flex justify-between items-center mb-3 border-b border-border-subtle pb-3">
                                 <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold">Korelasyon Isı Haritası (Heatmap)</h4>
-                                <button onclick="downloadChartPNG('correlationHeatmapContainer', 'korelasyon_isi_haritasi')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container" title="PNG İndir">
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="openChartZoom('correlationHeatmapContainer', 'Korelasyon Isı Haritası')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Grafiği Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">zoom_in</span>
+                                </button>
+                                <button onclick="downloadChartPNG('correlationHeatmapContainer', 'korelasyon_isi_haritasi')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="PNG İndir">
                                     <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                                 </button>
+                            </div>
                             </div>
                             <div id="correlationHeatmapContainer" class="w-full h-[340px]"></div>
                         </div>
@@ -540,6 +551,16 @@
             }
 
             const chart = echarts.init(dom);
+            bindChartZoomReset(chart);
+            // Grafiğe tıklayınca büyüt (izole tıklama — chart'ın iç etkileşimi bozulmaz)
+            dom.addEventListener('click', function openZoomHandler(e) {
+                const cId = dom.id;
+                let title = dom.id;
+                const card = dom.closest('.bg-surface');
+                const h4 = card ? card.querySelector('h4') : null;
+                if (h4) title = h4.textContent.trim();
+                openChartZoom(cId, title);
+            });
             _charts[containerId] = chart;
             return chart;
         }
@@ -683,9 +704,14 @@
                                 <h4 class="font-headline-md text-sm font-semibold text-on-surface mt-1">${escapeHtml(item.title)}</h4>
                                 <p class="text-xs text-slate-gray">${escapeHtml(item.reason)}</p>
                             </div>
-                            <button onclick="downloadChartPNG('${cardId}', '${escapeHtml(item.title)}')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container" title="PNG İndir">
-                                <span class="material-symbols-outlined text-[18px]">photo_camera</span>
-                            </button>
+                            <div class="flex items-center gap-1">
+                                <button onclick="openChartZoom('${cardId}', '${escapeHtml(item.title)}')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Grafiği Büyüt">
+                                    <span class="material-symbols-outlined text-[18px]">zoom_in</span>
+                                </button>
+                                <button onclick="downloadChartPNG('${cardId}', '${escapeHtml(item.title)}')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="PNG İndir">
+                                    <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                                </button>
+                            </div>
                         </div>
                         <div id="${cardId}" class="w-full h-[260px]"></div>
                     </div>
@@ -994,7 +1020,7 @@
                         }
                     }]
                 };
-                chart.setOption(option, { notMerge: true });
+                chart.setOption(applyChartZoomOption(option), { notMerge: true });
                 chart.resize();
             }
 
@@ -1038,6 +1064,45 @@
         // ==========================================
         // ECharts Builders
         // ==========================================
+
+        // ---------- Tekerlekle Yakınlaştırma (Wheel Zoom) ----------
+        function applyChartZoomOption(option) {
+            // Tekerlekle kademeli zoom + sürükleyerek kaydırma
+            option.dataZoom = [{
+                type: 'inside',
+                zoomOnMouseWheel: true,
+                moveOnMouseMove: true,
+                moveOnMouseWheel: false,
+                start: 0,
+                end: 100
+            }];
+            // Sıfırla (restore) butonu
+            option.toolbox = {
+                right: 5,
+                top: 5,
+                itemSize: 14,
+                itemGap: 6,
+                feature: {
+                    restore: {
+                        show: true,
+                        title: 'Yakınlaştırmayı Sıfırla',
+                        iconStyle: { borderColor: '#4A5568' },
+                        emphasis: { iconStyle: { borderColor: '#006b33' } }
+                    }
+                }
+            };
+            return option;
+        }
+
+        function bindChartZoomReset(chart) {
+            if (!chart || chart.__zoomResetBound) return;
+            chart.__zoomResetBound = true;
+            // Çift tıkla yakınlaştırmayı sıfırla
+            chart.on('dblclick', function() {
+                chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
+            });
+        }
+
         function renderHistogramChart(chart, chartData, colName) {
             const binLabels = chartData.bin_labels || [];
             const counts = chartData.counts || [];
@@ -1091,7 +1156,7 @@
                     }
                 }]
             };
-            chart.setOption(option, { notMerge: true });
+            chart.setOption(applyChartZoomOption(option), { notMerge: true });
             chart.resize();
         }
 
@@ -1153,7 +1218,7 @@
                     }
                 }]
             };
-            chart.setOption(option, { notMerge: true });
+            chart.setOption(applyChartZoomOption(option), { notMerge: true });
             chart.resize();
         }
 
@@ -1207,7 +1272,7 @@
                     }
                 }]
             };
-            chart.setOption(option, { notMerge: true });
+            chart.setOption(applyChartZoomOption(option), { notMerge: true });
             chart.resize();
         }
 
@@ -1281,7 +1346,7 @@
                     }
                 ]
             };
-            chart.setOption(option, { notMerge: true });
+            chart.setOption(applyChartZoomOption(option), { notMerge: true });
             chart.resize();
         }
 
@@ -1332,7 +1397,7 @@
                     }
                 ]
             };
-            chart.setOption(option, { notMerge: true });
+            chart.setOption(applyChartZoomOption(option), { notMerge: true });
             chart.resize();
         }
 
@@ -1417,7 +1482,66 @@
             // Close Error Banner
             closeErrorBannerBtn.addEventListener('click', hideError);
         });
+
+        // ---------- Grafik Büyütme (Zoom) ----------
+        let _zoomChart = null;
+
+        window.openChartZoom = function(containerId, title) {
+            const source = _charts[containerId] || echarts.getInstanceByDom(document.getElementById(containerId));
+            if (!source || source.isDisposed()) return;
+
+            const modal = document.getElementById('chartZoomModal');
+            const modalContainer = document.getElementById('chartZoomContainer');
+            const modalTitle = document.getElementById('chartZoomTitle');
+            if (!modal || !modalContainer) return;
+
+            modalTitle.textContent = title || 'Grafik İnceleme';
+            modal.classList.remove('hidden');
+
+            // Kaynak grafiğin option'ını kopyala (referans paylaşımına karşı derin kopya)
+            const option = JSON.parse(JSON.stringify(source.getOption()));
+
+            // Önceki büyük grafik varsa temizle
+            if (_zoomChart && !_zoomChart.isDisposed()) {
+                _zoomChart.dispose();
+                _zoomChart = null;
+            }
+            _zoomChart = echarts.init(modalContainer);
+            _zoomChart.setOption(option);
+            bindChartZoomReset(_zoomChart);
+        };
+
+        window.closeChartZoom = function() {
+            const modal = document.getElementById('chartZoomModal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            if (_zoomChart && !_zoomChart.isDisposed()) {
+                _zoomChart.dispose();
+                _zoomChart = null;
+            }
+        };
+
+        // Modal açıkken pencere boyutlanınca büyük grafiği yeniden boyutlandır
+        window.addEventListener('resize', () => {
+            if (_zoomChart && !_zoomChart.isDisposed()) {
+                _zoomChart.resize();
+            }
+        });
     </script>
+
+    <!-- Grafik Büyütme Modal -->
+    <div id="chartZoomModal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
+        <div class="bg-surface rounded-2xl border border-border-subtle w-full max-w-6xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] animate-fade-in">
+            <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center gap-3">
+                <h4 id="chartZoomTitle" class="font-headline-md text-base font-semibold text-on-surface truncate">Grafik İnceleme</h4>
+                <button onclick="closeChartZoom()" class="px-4 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-medium hover:bg-primary-container transition-colors cursor-pointer">Kapat</button>
+            </div>
+            <div class="flex-1 p-4 min-h-0 bg-surface-faint">
+                <div id="chartZoomContainer" class="w-full h-[70vh]"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="/static/components/export-pdf.js"></script>
     <script src="/static/components/settings.js"></script>
     <script src="/static/components/i18n.js"></script>
