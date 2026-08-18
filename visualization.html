@@ -12,8 +12,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
-    <!-- html2pdf.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Apache ECharts 5 CDN -->
@@ -237,19 +235,11 @@
                     <a class="font-body-md text-primary font-semibold text-sm border-b-2 border-primary pb-1" href="visualization.html" data-i18n="nav.reports">Raporlar</a>
                 </nav>
                 <div class="flex items-center gap-3">
-                    <button id="exportPdfBtn" type="button" data-filename="gorsellestirme_raporu" class="bg-primary text-on-primary px-3 sm:px-4 py-2 rounded-lg font-body-md text-xs sm:text-body-md font-medium flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm cursor-pointer">
-                        <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
-                        <span data-i18n="nav.export">Dışa Aktar</span>
-                    </button>
                     <button id="notificationsBtn" class="relative text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler" data-i18n-title="nav.notifications">
                         <span class="material-symbols-outlined">notifications</span>
                     </button>
                     <button id="profileBtn" class="text-on-surface-variant hover:text-primary transition-colors ml-1 cursor-pointer p-1 flex items-center justify-center" title="Kullanıcı Profili" data-i18n-title="nav.profile">
                         <span class="material-symbols-outlined text-[24px]">account_circle</span>
-                    </button>
-                    <button id="exportAllChartsBtn" type="button" class="ml-2 font-data-table text-primary hover:text-primary-container font-medium px-3 py-1.5 rounded border border-primary/30 hover:bg-primary/5 transition-colors text-sm flex items-center gap-1 cursor-pointer">
-                        <span class="material-symbols-outlined text-sm">download</span>
-                        <span>Dışa Aktar</span>
                     </button>
                 </div>
             </div>
@@ -533,7 +523,6 @@
         const errorBanner = document.getElementById('errorBanner');
         const errorMessage = document.getElementById('errorMessage');
         const closeErrorBannerBtn = document.getElementById('closeErrorBannerBtn');
-        const exportAllChartsBtn = document.getElementById('exportAllChartsBtn');
 
         // State
         let overviewData = null;
@@ -1679,11 +1668,6 @@
                 if (xVal && yVal) loadBivariateAnalysis(xVal, yVal);
             });
 
-            // Export All Charts Button
-            exportAllChartsBtn.addEventListener('click', () => {
-                window.print();
-            });
-
             // Close Error Banner
             closeErrorBannerBtn.addEventListener('click', hideError);
         });
@@ -1747,7 +1731,6 @@
         </div>
     </div>
 
-    <script src="/static/components/export-pdf.js"></script>
     <script src="/static/components/settings.js"></script>
     <script src="/static/components/i18n.js"></script>
     <script src="/static/components/notifications.js"></script>

@@ -12,7 +12,6 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap"
         rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -227,10 +226,6 @@
             <div class="flex items-center gap-4">
                 <button id="notificationsBtn" class="relative text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler" data-i18n-title="nav.notifications">
                     <span class="material-symbols-outlined">notifications</span>
-                </button>
-                <button id="exportPdfBtn" type="button" data-filename="veri_yukleme_ve_analiz" class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm cursor-pointer flex items-center gap-1">
-                    <span class="material-symbols-outlined text-sm">download</span>
-                    <span data-i18n="nav.export">Dışa Aktar</span>
                 </button>
                 <button id="profileBtn" class="text-on-surface-variant hover:text-primary transition-colors ml-2 cursor-pointer p-1 flex items-center justify-center" title="Kullanıcı Profili" data-i18n-title="nav.profile">
                     <span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
@@ -800,7 +795,6 @@
             }
         });
     </script>
-    <script src="/static/components/export-pdf.js"></script>
     <script src="/static/components/settings.js"></script>
     <script src="/static/components/i18n.js"></script>
     <script src="/static/components/notifications.js"></script>
