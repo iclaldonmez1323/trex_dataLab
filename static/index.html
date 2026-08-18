@@ -19,53 +19,53 @@
             theme: {
                 extend: {
                     "colors": {
-                        "error": "#ba1a1a",
+                        "error": "var(--c-error, #ba1a1a)",
                         "tertiary-fixed": "#ffddb7",
-                        "on-background": "#1c1b1b",
+                        "on-background": "var(--c-on-background, #1c1b1b)",
                         "inverse-on-surface": "#f3f0ef",
-                        "surface-faint": "#F8FAFC",
+                        "surface-faint": "var(--c-surface-faint, #F8FAFC)",
                         "on-tertiary-fixed-variant": "#653e00",
-                        "outline-variant": "#bdcabc",
+                        "outline-variant": "var(--c-outline-variant, #bdcabc)",
                         "secondary": "#40674b",
                         "on-secondary-container": "#446b4f",
-                        "slate-gray": "#4A5568",
-                        "error-container": "#ffdad6",
+                        "slate-gray": "var(--c-slate-gray, #4A5568)",
+                        "error-container": "var(--c-error-container, #ffdad6)",
                         "secondary-container": "#bfeac7",
-                        "background": "#fcf9f8",
-                        "on-surface-variant": "#3e4a3f",
-                        "on-error-container": "#93000a",
-                        "warning-orange": "#F5B054",
-                        "surface-container-highest": "#e5e2e1",
+                        "background": "var(--c-background, #fcf9f8)",
+                        "on-surface-variant": "var(--c-on-surface-variant, #3e4a3f)",
+                        "on-error-container": "var(--c-on-error-container, #93000a)",
+                        "warning-orange": "var(--c-warning-orange, #F5B054)",
+                        "surface-container-highest": "var(--c-surface-container-highest, #e5e2e1)",
                         "on-secondary-fixed-variant": "#294e35",
                         "secondary-fixed-dim": "#a6d1af",
                         "inverse-primary": "#6fdc8c",
-                        "primary": "#006b33",
+                        "primary": "var(--c-primary, #006b33)",
                         "surface-dim": "#dcd9d9",
-                        "success-green": "#19924B",
-                        "primary-fixed": "#8bf9a6",
+                        "success-green": "var(--c-success-green, #19924B)",
+                        "primary-fixed": "var(--c-primary-fixed, #8bf9a6)",
                         "primary-fixed-dim": "#6fdc8c",
                         "surface-tint": "#006d34",
                         "tertiary": "#815200",
                         "on-tertiary-container": "#fffbff",
-                        "outline": "#6e7a6e",
+                        "outline": "var(--c-outline, #6e7a6e)",
                         "secondary-fixed": "#c2edca",
                         "on-secondary": "#ffffff",
-                        "on-primary": "#ffffff",
+                        "on-primary": "var(--c-on-primary, #ffffff)",
                         "inverse-surface": "#313030",
                         "surface-bright": "#fcf9f8",
-                        "surface-container-high": "#ebe7e7",
-                        "on-surface": "#1c1b1b",
-                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "var(--c-surface-container-high, #ebe7e7)",
+                        "on-surface": "var(--c-on-surface, #1c1b1b)",
+                        "surface-container-lowest": "var(--c-surface-container-lowest, #ffffff)",
                         "tertiary-container": "#a1680d",
-                        "surface-container": "#f0edec",
-                        "border-subtle": "#E2E8F0",
-                        "on-primary-fixed": "#00210b",
+                        "surface-container": "var(--c-surface-container, #f0edec)",
+                        "border-subtle": "var(--c-border-subtle, #E2E8F0)",
+                        "on-primary-fixed": "var(--c-on-primary-fixed, #00210b)",
                         "on-secondary-fixed": "#00210e",
                         "on-tertiary-fixed": "#2a1700",
                         "tertiary-fixed-dim": "#ffb95c",
-                        "surface-container-low": "#f6f3f2",
-                        "primary-container": "#008742",
-                        "surface": "#fcf9f8",
+                        "surface-container-low": "var(--c-surface-container-low, #f6f3f2)",
+                        "primary-container": "var(--c-primary-container, #008742)",
+                        "surface": "var(--c-surface, #fcf9f8)",
                         "on-primary-container": "#f7fff3",
                         "on-tertiary": "#ffffff",
                         "on-primary-fixed-variant": "#005226",
@@ -124,44 +124,44 @@
         <div class="mb-10 px-2">
             <div>
                 <h1 class="font-headline-md text-headline-md text-white m-0 leading-tight">trex DataLab</h1>
-                <p class="font-label-mono text-label-mono text-white/70 uppercase">PRECISION DATA PLATFORM</p>
+                <p class="font-label-mono text-label-mono text-white/70 uppercase" data-i18n="brand.tagline">PRECISION DATA PLATFORM</p>
             </div>
         </div>
 
         <button id="sidebarUploadBtn" type="button" class="w-full mb-8 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
             <span class="material-symbols-outlined">upload</span>
-            Yeni Veri Yükle
+            <span data-i18n="nav.newUpload">Yeni Veri Yükle</span>
         </button>
 
         <ul class="flex flex-col gap-2 flex-grow">
             <li>
                 <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="index.html">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
-                    <span class="font-body-md text-body-md font-medium">Dashboard</span>
+                    <span class="font-body-md text-body-md font-medium" data-i18n="nav.dashboard">Dashboard</span>
                 </a>
             </li>
             <li>
                 <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="data-quality.html">
                     <span class="material-symbols-outlined">analytics</span>
-                    <span class="font-body-md text-body-md">Data Quality</span>
+                    <span class="font-body-md text-body-md" data-i18n="nav.dataQuality">Data Quality</span>
                 </a>
             </li>
             <li>
                 <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="preprocessing.html">
                     <span class="material-symbols-outlined">construction</span>
-                    <span class="font-body-md text-body-md">Preprocessing</span>
+                    <span class="font-body-md text-body-md" data-i18n="nav.preprocessing">Preprocessing</span>
                 </a>
             </li>
             <li>
                 <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="visualization.html">
                     <span class="material-symbols-outlined">insights</span>
-                    <span class="font-body-md text-body-md">Visualization</span>
+                    <span class="font-body-md text-body-md" data-i18n="nav.visualization">Visualization</span>
                 </a>
             </li>
             <li>
                 <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
                     <span class="material-symbols-outlined">folder_shared</span>
-                    <span class="font-body-md text-body-md">Portfolio</span>
+                    <span class="font-body-md text-body-md" data-i18n="nav.portfolio">Portfolio</span>
                 </a>
             </li>
         </ul>
@@ -169,15 +169,15 @@
         <div class="mt-auto pt-6 border-t border-white/10">
             <ul class="flex flex-col gap-2">
                 <li>
-                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="#">
+                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="settings.html">
                         <span class="material-symbols-outlined">settings</span>
-                        <span class="font-body-md text-body-md">Settings</span>
+                        <span class="font-body-md text-body-md" data-i18n="nav.settings">Settings</span>
                     </a>
                 </li>
                 <li>
-                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="#">
+                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="support.html">
                         <span class="material-symbols-outlined">help</span>
-                        <span class="font-body-md text-body-md">Support</span>
+                        <span class="font-body-md text-body-md" data-i18n="nav.support">Support</span>
                     </a>
                 </li>
             </ul>
@@ -192,23 +192,23 @@
                 <!-- Search -->
                 <div class="relative w-64">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-                    <input id="searchInput" class="w-full pl-9 pr-4 py-1.5 bg-surface-container-low border border-border-subtle rounded text-sm focus:outline-none focus:border-primary transition-colors font-body-md text-body-md" placeholder="Arama..." type="text">
+                    <input id="searchInput" class="w-full pl-9 pr-4 py-1.5 bg-surface-container-low border border-border-subtle rounded text-sm focus:outline-none focus:border-primary transition-colors font-body-md text-body-md" placeholder="Arama..." data-i18n-placeholder="common.search" type="text">
                 </div>
                 <!-- Nav Links -->
                 <nav class="hidden lg:flex gap-6">
-                    <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="index.html">Hızlı İşlemler</a>
-                    <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="data-quality.html">Raporlar</a>
+                    <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md scale-95 transition-transform" href="index.html" data-i18n="nav.fastActions">Hızlı İşlemler</a>
+                    <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md pb-1" href="data-quality.html" data-i18n="nav.reports">Raporlar</a>
                 </nav>
             </div>
             <div class="flex items-center gap-4">
-                <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
+                <button id="notificationsBtn" class="relative text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler" data-i18n-title="nav.notifications">
                     <span class="material-symbols-outlined">notifications</span>
                 </button>
                 <button id="exportPdfBtn" type="button" data-filename="veri_yukleme_ve_analiz" class="bg-primary text-on-primary px-4 py-1.5 rounded font-body-md text-body-md hover:bg-primary-container transition-colors shadow-sm cursor-pointer flex items-center gap-1">
                     <span class="material-symbols-outlined text-sm">download</span>
-                    <span>Dışa Aktar</span>
+                    <span data-i18n="nav.export">Dışa Aktar</span>
                 </button>
-                <button class="text-on-surface-variant hover:text-primary transition-colors ml-2" title="Kullanıcı Profili">
+                <button id="profileBtn" class="text-on-surface-variant hover:text-primary transition-colors ml-2 cursor-pointer p-1 flex items-center justify-center" title="Kullanıcı Profili" data-i18n-title="nav.profile">
                     <span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
                 </button>
             </div>
@@ -218,8 +218,8 @@
         <main class="flex-1 pt-24 px-gutter pb-12 max-w-container-max mx-auto w-full">
             <!-- Header Section -->
             <div class="mb-8" data-export-section="header" data-export-title="Veri Yükleme ve Genel Bilgi">
-                <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Veri Yükleme ve Analiz</h2>
-                <p class="text-on-surface-variant font-body-md text-body-md">Sistem analizi için CSV veri setinizi yükleyin veya mevcut veriyi inceleyin.</p>
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-2" data-i18n="index.title">Veri Yükleme ve Analiz</h2>
+                <p class="text-on-surface-variant font-body-md text-body-md" data-i18n="index.subtitle">Sistem analizi için CSV veri setinizi yükleyin veya mevcut veriyi inceleyin.</p>
             </div>
 
             <!-- Error Banner -->
@@ -244,9 +244,9 @@
                         <div class="h-16 w-16 bg-secondary-container rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-primary text-3xl">upload_file</span>
                         </div>
-                        <h3 class="font-body-lg text-body-lg font-medium text-on-surface mb-1">Dosyayı buraya sürükleyin</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant text-center mb-4">veya bilgisayarınızdan seçin (CSV, max 50MB)</p>
-                        <button type="button" class="px-4 py-2 bg-surface-container border border-border-subtle rounded text-on-surface hover:bg-surface-container-highest transition-colors font-body-md text-body-md pointer-events-none">
+                        <h3 class="font-body-lg text-body-lg font-medium text-on-surface mb-1" data-i18n="index.dropzoneTitle">Dosyayı buraya sürükleyin</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant text-center mb-4" data-i18n="index.dropzoneSub">veya bilgisayarınızdan seçin (CSV, max 50MB)</p>
+                        <button type="button" class="px-4 py-2 bg-surface-container border border-border-subtle rounded text-on-surface hover:bg-surface-container-highest transition-colors font-body-md text-body-md pointer-events-none" data-i18n="index.browseBtn">
                             Göz At
                         </button>
                     </div>
@@ -267,11 +267,11 @@
                         <div>
                             <div class="flex items-center gap-2 mb-1">
                                 <span id="statusIndicatorIcon" class="material-symbols-outlined text-success-green text-sm">check_circle</span>
-                                <h3 id="displayFileName" class="font-body-lg text-body-lg font-medium text-on-surface">Veri Yüklenmedi</h3>
+                                <h3 id="displayFileName" class="font-body-lg text-body-lg font-medium text-on-surface" data-i18n="index.noDataTitle">Veri Yüklenmedi</h3>
                             </div>
                             <p id="displayFileSize" class="font-label-mono text-label-mono text-on-surface-variant">BEKLENİYOR • 0 B</p>
                         </div>
-                        <button id="deleteDatasetBtn" type="button" title="Veri Setini Sıfırla" class="text-on-surface-variant hover:text-error transition-colors p-1.5 rounded-lg hover:bg-surface-container cursor-pointer">
+                        <button id="deleteDatasetBtn" type="button" title="Veri Setini Sıfırla" data-i18n-title="index.deleteDataset" class="text-on-surface-variant hover:text-error transition-colors p-1.5 rounded-lg hover:bg-surface-container cursor-pointer">
                             <span class="material-symbols-outlined text-lg">delete</span>
                         </button>
                     </div>
@@ -279,27 +279,27 @@
                     <!-- Metrics Grid -->
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
-                            <p class="font-label-mono text-label-mono text-slate-gray mb-1">SATIR (ROW)</p>
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1" data-i18n="index.statRows">SATIR (ROW)</p>
                             <p id="metricRows" class="font-headline-md text-headline-md text-on-surface">—</p>
                         </div>
                         <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
-                            <p class="font-label-mono text-label-mono text-slate-gray mb-1">SÜTUN (COLUMN)</p>
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1" data-i18n="index.statCols">SÜTUN (COLUMN)</p>
                             <p id="metricCols" class="font-headline-md text-headline-md text-on-surface">—</p>
                         </div>
                         <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg border-l-4 border-l-warning-orange">
-                            <p class="font-label-mono text-label-mono text-slate-gray mb-1">EKSİK (MISSING)</p>
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1" data-i18n="index.statMissing">EKSİK (MISSING)</p>
                             <p id="metricMissing" class="font-headline-md text-headline-md text-warning-orange">—</p>
                         </div>
                         <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
-                            <p class="font-label-mono text-label-mono text-slate-gray mb-1">YİNELENEN (DUP)</p>
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1" data-i18n="index.statDuplicates">YİNELENEN (DUP)</p>
                             <p id="metricDuplicates" class="font-headline-md text-headline-md text-on-surface">—</p>
                         </div>
                         <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
-                            <p class="font-label-mono text-label-mono text-slate-gray mb-1">SAYISAL (NUM)</p>
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1" data-i18n="index.statNumeric">SAYISAL (NUM)</p>
                             <p id="metricNumeric" class="font-headline-md text-headline-md text-primary">—</p>
                         </div>
                         <div class="bg-surface-container-low p-3 border border-border-subtle rounded-lg">
-                            <p class="font-label-mono text-label-mono text-slate-gray mb-1">KATEGORİK (CAT)</p>
+                            <p class="font-label-mono text-label-mono text-slate-gray mb-1" data-i18n="index.statCategorical">KATEGORİK (CAT)</p>
                             <p id="metricCategorical" class="font-headline-md text-headline-md text-tertiary">—</p>
                         </div>
                     </div>
@@ -310,7 +310,7 @@
             <div class="flex justify-end mb-8">
                 <button id="analyzeCtaBtn" type="button" disabled class="bg-primary hover:bg-primary-container text-on-primary font-body-lg text-body-lg font-medium py-3 px-8 rounded-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-all flex items-center gap-2 opacity-40 cursor-not-allowed">
                     <span class="material-symbols-outlined">troubleshoot</span>
-                    Veriyi Analiz Et
+                    <span data-i18n="index.analyzeCta">Veriyi Analiz Et</span>
                 </button>
             </div>
 
@@ -319,7 +319,7 @@
                 <div class="px-6 py-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
                     <h3 class="font-body-lg text-body-lg font-medium text-on-surface flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-lg">table</span>
-                        Veri Önizleme
+                        <span data-i18n="index.previewTitle">Veri Önizleme</span>
                     </h3>
                     <span id="tableHeaderBadge" class="font-label-mono text-label-mono text-slate-gray bg-surface-container-low px-2 py-1 rounded">İLK 10 SATIR</span>
                 </div>
@@ -777,6 +777,10 @@
         });
     </script>
     <script src="/static/components/export-pdf.js"></script>
+    <script src="/static/components/settings.js"></script>
+    <script src="/static/components/i18n.js"></script>
+    <script src="/static/components/notifications.js"></script>
+    <script src="/static/components/profile-menu.js"></script>
 </body>
 
 </html>

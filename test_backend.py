@@ -169,6 +169,22 @@ def test_api():
     assert r_img.status_code == 200
     print("[OK] GET /portfolio/grafikler/oee_timeseries.png OK")
 
+    print("Testing GET /settings ...")
+    r_settings = client.get("/settings")
+    assert r_settings.status_code == 200
+    assert "Uygulama Ayarları" in r_settings.text
+    r_settings_html = client.get("/settings.html")
+    assert r_settings_html.status_code == 200
+    print("[OK] GET /settings and /settings.html OK")
+
+    print("Testing GET /support ...")
+    r_support = client.get("/support")
+    assert r_support.status_code == 200
+    assert "Destek & Yardım" in r_support.text
+    r_support_html = client.get("/support.html")
+    assert r_support_html.status_code == 200
+    print("[OK] GET /support and /support.html OK")
+
     print("Testing DELETE /api/reset ...")
     r = client.delete("/api/reset")
     assert r.status_code == 200

@@ -19,53 +19,53 @@
             theme: {
                 extend: {
                     "colors": {
-                        "error": "#ba1a1a",
+                        "error": "var(--c-error, #ba1a1a)",
                         "tertiary-fixed": "#ffddb7",
-                        "on-background": "#1c1b1b",
+                        "on-background": "var(--c-on-background, #1c1b1b)",
                         "inverse-on-surface": "#f3f0ef",
-                        "surface-faint": "#F8FAFC",
+                        "surface-faint": "var(--c-surface-faint, #F8FAFC)",
                         "on-tertiary-fixed-variant": "#653e00",
-                        "outline-variant": "#bdcabc",
+                        "outline-variant": "var(--c-outline-variant, #bdcabc)",
                         "secondary": "#40674b",
                         "on-secondary-container": "#446b4f",
-                        "slate-gray": "#4A5568",
-                        "error-container": "#ffdad6",
+                        "slate-gray": "var(--c-slate-gray, #4A5568)",
+                        "error-container": "var(--c-error-container, #ffdad6)",
                         "secondary-container": "#bfeac7",
-                        "background": "#fcf9f8",
-                        "on-surface-variant": "#3e4a3f",
-                        "on-error-container": "#93000a",
-                        "warning-orange": "#F5B054",
-                        "surface-container-highest": "#e5e2e1",
+                        "background": "var(--c-background, #fcf9f8)",
+                        "on-surface-variant": "var(--c-on-surface-variant, #3e4a3f)",
+                        "on-error-container": "var(--c-on-error-container, #93000a)",
+                        "warning-orange": "var(--c-warning-orange, #F5B054)",
+                        "surface-container-highest": "var(--c-surface-container-highest, #e5e2e1)",
                         "on-secondary-fixed-variant": "#294e35",
                         "secondary-fixed-dim": "#a6d1af",
                         "inverse-primary": "#6fdc8c",
-                        "primary": "#006b33",
+                        "primary": "var(--c-primary, #006b33)",
                         "surface-dim": "#dcd9d9",
-                        "success-green": "#19924B",
-                        "primary-fixed": "#8bf9a6",
+                        "success-green": "var(--c-success-green, #19924B)",
+                        "primary-fixed": "var(--c-primary-fixed, #8bf9a6)",
                         "primary-fixed-dim": "#6fdc8c",
                         "surface-tint": "#006d34",
                         "tertiary": "#815200",
                         "on-tertiary-container": "#fffbff",
-                        "outline": "#6e7a6e",
+                        "outline": "var(--c-outline, #6e7a6e)",
                         "secondary-fixed": "#c2edca",
                         "on-secondary": "#ffffff",
-                        "on-primary": "#ffffff",
+                        "on-primary": "var(--c-on-primary, #ffffff)",
                         "inverse-surface": "#313030",
                         "surface-bright": "#fcf9f8",
-                        "surface-container-high": "#ebe7e7",
-                        "on-surface": "#1c1b1b",
-                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "var(--c-surface-container-high, #ebe7e7)",
+                        "on-surface": "var(--c-on-surface, #1c1b1b)",
+                        "surface-container-lowest": "var(--c-surface-container-lowest, #ffffff)",
                         "tertiary-container": "#a1680d",
-                        "surface-container": "#f0edec",
-                        "border-subtle": "#E2E8F0",
-                        "on-primary-fixed": "#00210b",
+                        "surface-container": "var(--c-surface-container, #f0edec)",
+                        "border-subtle": "var(--c-border-subtle, #E2E8F0)",
+                        "on-primary-fixed": "var(--c-on-primary-fixed, #00210b)",
                         "on-secondary-fixed": "#00210e",
                         "on-tertiary-fixed": "#2a1700",
                         "tertiary-fixed-dim": "#ffb95c",
-                        "surface-container-low": "#f6f3f2",
-                        "primary-container": "#008742",
-                        "surface": "#fcf9f8",
+                        "surface-container-low": "var(--c-surface-container-low, #f6f3f2)",
+                        "primary-container": "var(--c-primary-container, #008742)",
+                        "surface": "var(--c-surface, #fcf9f8)",
                         "on-primary-container": "#f7fff3",
                         "on-tertiary": "#ffffff",
                         "on-primary-fixed-variant": "#005226",
@@ -131,7 +131,7 @@
         <div class="mb-8 px-2">
             <div>
                 <h1 class="font-headline-md text-headline-md text-white m-0 leading-tight">trex DataLab</h1>
-                <p class="font-label-mono text-label-mono text-white/70 uppercase">PRECISION DATA PLATFORM</p>
+                <p class="font-label-mono text-label-mono text-white/70 uppercase" data-i18n="brand.tagline">PRECISION DATA PLATFORM</p>
             </div>
         </div>
 
@@ -139,7 +139,7 @@
         <div class="mb-6">
             <a href="index.html" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
                 <span class="material-symbols-outlined">upload</span>
-                Yeni Veri Yükle
+                <span data-i18n="nav.newUpload">Yeni Veri Yükle</span>
             </a>
         </div>
 
@@ -148,39 +148,39 @@
             <!-- Dashboard -->
             <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="index.html">
                 <span class="material-symbols-outlined">dashboard</span>
-                <span>Dashboard</span>
+                <span data-i18n="nav.dashboard">Dashboard</span>
             </a>
             <!-- Data Quality -->
             <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="data-quality.html">
                 <span class="material-symbols-outlined">analytics</span>
-                <span>Data Quality</span>
+                <span data-i18n="nav.dataQuality">Data Quality</span>
             </a>
             <!-- Preprocessing (Active) -->
             <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="preprocessing.html">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">construction</span>
-                <span class="font-medium">Preprocessing</span>
+                <span class="font-medium" data-i18n="nav.preprocessing">Preprocessing</span>
             </a>
             <!-- Visualization -->
             <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="visualization.html">
                 <span class="material-symbols-outlined">insights</span>
-                <span>Visualization</span>
+                <span data-i18n="nav.visualization">Visualization</span>
             </a>
             <!-- Portfolio -->
             <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
                 <span class="material-symbols-outlined">folder_shared</span>
-                <span>Portfolio</span>
+                <span data-i18n="nav.portfolio">Portfolio</span>
             </a>
         </div>
 
         <!-- Footer Navigation -->
         <div class="pt-4 border-t border-white/10 space-y-1 font-body-md text-body-md mt-auto">
-            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="settings.html">
                 <span class="material-symbols-outlined text-[20px]">settings</span>
-                <span>Settings</span>
+                <span data-i18n="nav.settings">Settings</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="#">
+            <a class="flex items-center gap-3 px-4 py-2 text-white/50 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="support.html">
                 <span class="material-symbols-outlined text-[20px]">help</span>
-                <span>Support</span>
+                <span data-i18n="nav.support">Support</span>
             </a>
         </div>
     </nav>
@@ -197,18 +197,18 @@
             <div class="flex items-center gap-3 sm:gap-4">
                 <button id="downloadCleanedCsvBtn" type="button" class="bg-primary text-on-primary px-3 sm:px-4 py-2 rounded-lg font-body-md text-xs sm:text-body-md font-medium flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">download</span>
-                    <span>Temizlenmiş CSV'yi İndir</span>
+                    <span data-i18n="preprocessing.downloadCsv">Temizlenmiş CSV'yi İndir</span>
                 </button>
                 <button id="exportPdfBtn" type="button" data-filename="veri_hazirlama_raporu" class="bg-primary text-on-primary px-3 sm:px-4 py-2 rounded-lg font-body-md text-xs sm:text-body-md font-medium flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
-                    <span>Dışa Aktar</span>
+                    <span data-i18n="nav.export">Dışa Aktar</span>
                 </button>
                 <div class="h-6 w-px bg-border-subtle mx-1"></div>
-                <button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler">
+                <button id="notificationsBtn" class="relative text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler" data-i18n-title="nav.notifications">
                     <span class="material-symbols-outlined">notifications</span>
                 </button>
-                <button class="text-on-surface-variant hover:text-primary transition-colors ml-1" title="Kullanıcı Profili">
-                    <span aria-label="User Profile" class="material-symbols-outlined text-2xl">account_circle</span>
+                <button id="profileBtn" class="text-on-surface-variant hover:text-primary transition-colors ml-1 cursor-pointer p-1 flex items-center justify-center" title="Kullanıcı Profili" data-i18n-title="nav.profile">
+                    <span class="material-symbols-outlined text-[24px]">account_circle</span>
                 </button>
             </div>
         </header>
@@ -898,6 +898,10 @@
         });
     </script>
     <script src="/static/components/export-pdf.js"></script>
+    <script src="/static/components/settings.js"></script>
+    <script src="/static/components/i18n.js"></script>
+    <script src="/static/components/notifications.js"></script>
+    <script src="/static/components/profile-menu.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="tr" class="light">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>trex DataLab - Destek & Yardım Merkezi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error": "var(--c-error, #ba1a1a)",
+                        "error-container": "var(--c-error-container, #ffdad6)",
+                        "on-error": "#ffffff",
+                        "on-error-container": "var(--c-on-error-container, #93000a)",
+                        "primary": "var(--c-primary, #006b33)",
+                        "primary-container": "var(--c-primary-container, #008742)",
+                        "primary-fixed": "var(--c-primary-fixed, #8bf9a6)",
+                        "on-primary": "var(--c-on-primary, #ffffff)",
+                        "on-primary-container": "#f7fff3",
+                        "on-primary-fixed": "var(--c-on-primary-fixed, #00210b)",
+                        "secondary": "#40674b",
+                        "secondary-container": "#bfeac7",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#815200",
+                        "tertiary-container": "#a1680d",
+                        "background": "var(--c-background, #fcf9f8)",
+                        "on-background": "var(--c-on-background, #1c1b1b)",
+                        "surface": "var(--c-surface, #fcf9f8)",
+                        "surface-dim": "#dcd9d9",
+                        "surface-bright": "#fcf9f8",
+                        "surface-faint": "var(--c-surface-faint, #F8FAFC)",
+                        "surface-container-lowest": "var(--c-surface-container-lowest, #ffffff)",
+                        "surface-container-low": "var(--c-surface-container-low, #f6f3f2)",
+                        "surface-container": "var(--c-surface-container, #f0edec)",
+                        "surface-container-high": "var(--c-surface-container-high, #ebe7e7)",
+                        "surface-container-highest": "var(--c-surface-container-highest, #e5e2e1)",
+                        "on-surface": "var(--c-on-surface, #1c1b1b)",
+                        "on-surface-variant": "var(--c-on-surface-variant, #3e4a3f)",
+                        "outline": "var(--c-outline, #6e7a6e)",
+                        "outline-variant": "var(--c-outline-variant, #bdcabc)",
+                        "border-subtle": "var(--c-border-subtle, #E2E8F0)",
+                        "slate-gray": "var(--c-slate-gray, #4A5568)",
+                        "warning-orange": "var(--c-warning-orange, #F5B054)",
+                        "success-green": "var(--c-success-green, #19924B)",
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    spacing: {
+                        "sidebar-width": "260px",
+                        "gutter": "2rem",
+                    },
+                    maxWidth: {
+                        "container-max": "1400px",
+                    },
+                    boxShadow: {
+                        "xs": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                        "card": "0 2px 8px -2px rgba(0,0,0,0.06), 0 1px 4px -1px rgba(0,0,0,0.04)"
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-content.expanded { max-height: 1000px; transition: max-height 0.5s ease-in; }
+    </style>
+</head>
+
+<body class="bg-background text-on-surface font-body antialiased flex min-h-screen">
+
+    <!-- Left Side Navigation -->
+    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant z-30 flex flex-col py-6 px-4">
+        <!-- Brand -->
+        <div class="mb-8 px-2">
+            <h1 class="font-headline text-xl font-bold text-white tracking-tight" data-i18n="brand.name">trex DataLab</h1>
+            <p class="font-mono text-[10px] text-white/70 tracking-wider uppercase mt-0.5" data-i18n="brand.tagline">PRECISION DATA PLATFORM</p>
+        </div>
+
+        <!-- CTA Action -->
+        <div class="mb-6">
+            <a href="index.html" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body font-semibold text-sm rounded-lg hover:opacity-90 transition-all shadow-xs cursor-pointer">
+                <span class="material-symbols-outlined text-sm">upload</span>
+                <span data-i18n="nav.newUpload">Yeni Veri Yükle</span>
+            </a>
+        </div>
+
+        <!-- Main Navigation Links -->
+        <ul class="flex flex-col gap-1.5 flex-1">
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="index.html">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="font-body text-sm" data-i18n="nav.dashboard">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="data-quality.html">
+                    <span class="material-symbols-outlined">analytics</span>
+                    <span class="font-body text-sm" data-i18n="nav.dataQuality">Data Quality</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="preprocessing.html">
+                    <span class="material-symbols-outlined">construction</span>
+                    <span class="font-body text-sm" data-i18n="nav.preprocessing">Preprocessing</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="visualization.html">
+                    <span class="material-symbols-outlined">insights</span>
+                    <span class="font-body text-sm" data-i18n="nav.visualization">Visualization</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
+                    <span class="material-symbols-outlined">folder_shared</span>
+                    <span class="font-body text-sm" data-i18n="nav.portfolio">Portfolio</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Footer Navigation -->
+        <div class="mt-auto pt-4 border-t border-white/10">
+            <ul class="flex flex-col gap-1.5">
+                <li>
+                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="settings.html">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span class="font-body text-sm" data-i18n="nav.settings">Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <!-- Active Support Page -->
+                    <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 font-medium" href="support.html">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">help</span>
+                        <span class="font-body text-sm" data-i18n="nav.support">Support</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Top Header -->
+    <header class="fixed top-0 left-0 right-0 z-20 bg-surface/80 backdrop-blur-md border-b border-border-subtle h-16 flex items-center justify-between px-8 pl-[284px]">
+        <div class="flex items-center gap-4">
+            <h2 class="font-headline text-lg font-bold text-on-surface" data-i18n="support.title">Destek & Yardım Merkezi</h2>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="exportPdfBtn" type="button" data-filename="destek_ve_yardim_rehberi" class="bg-primary text-on-primary px-3.5 py-1.5 rounded-lg font-body text-xs font-semibold flex items-center gap-1.5 hover:bg-primary-container transition-colors shadow-xs cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+                <span data-i18n="nav.export">Dışa Aktar</span>
+            </button>
+            <button id="notificationsBtn" class="relative text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler" data-i18n-title="nav.notifications">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button id="profileBtn" class="text-on-surface-variant hover:text-primary transition-colors ml-2 flex items-center gap-2 cursor-pointer p-1" title="Kullanıcı Profili" data-i18n-title="nav.profile">
+                <div id="headerAvatarContainer" class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden">
+                    <span id="headerAvatarIcon" class="material-symbols-outlined text-primary text-xl">account_circle</span>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="ml-sidebar-width pt-24 px-gutter pb-16 max-w-container-max mx-auto w-full">
+
+        <!-- Page Hero Banner -->
+        <div class="mb-8 p-6 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 text-primary text-xs font-semibold mb-2">
+                    <span class="material-symbols-outlined text-sm">support_agent</span>
+                    <span>trex DataLab Knowledge Base & Support</span>
+                </div>
+                <h1 class="font-headline text-2xl md:text-3xl font-bold text-on-surface" data-i18n="support.title">Destek & Yardım Merkezi</h1>
+                <p class="text-on-surface-variant text-sm mt-1 max-w-2xl" data-i18n="support.subtitle">Kullanım kılavuzları, kalite metrikleri, sıkça sorulan sorular ve teknik destek.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="#ticketFormSection" class="px-4 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-semibold hover:bg-primary-container transition-all flex items-center gap-2 shadow-xs cursor-pointer">
+                    <span class="material-symbols-outlined text-base">confirmation_number</span>
+                    <span data-i18n="support.ticket.create">Yeni Destek Talebi Oluştur</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- LEFT 2 COLS: GUIDES, METRICS, FAQ, TICKET FORM, TICKET LIST -->
+            <div class="lg:col-span-2 space-y-8">
+
+                <!-- SECTION A: HIZLI YARDIM & DOKÜMANTASYON -->
+                <div class="bg-surface border border-border-subtle rounded-2xl p-6 shadow-xs space-y-5">
+                    <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-2xl">menu_book</span>
+                        </div>
+                        <div>
+                            <h3 class="font-headline text-base font-bold text-on-surface" data-i18n="support.helpDocs">Hızlı Yardım & Dokümantasyon</h3>
+                            <p class="text-xs text-on-surface-variant" data-i18n="support.helpDocsSub">Platformu verimli kullanmanız için hazırlanmış adım adım rehberler.</p>
+                        </div>
+                    </div>
+
+                    <!-- Accordion Guides List -->
+                    <div class="space-y-3">
+                        <!-- Guide 1: CSV Upload -->
+                        <div class="border border-border-subtle rounded-xl overflow-hidden transition-all bg-surface-container-lowest">
+                            <button type="button" class="guide-toggle w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary text-lg">upload_file</span>
+                                    <div>
+                                        <div data-i18n="support.guide.csv">CSV Yükleme Rehberi</div>
+                                        <div class="text-[11px] text-on-surface-variant font-normal mt-0.5" data-i18n="support.guide.csvDesc">Veri setinizi hazırlama, format uyumluluğu ve 50MB sınırına dair ipuçları.</div>
+                                    </div>
+                                </div>
+                                <span class="material-symbols-outlined text-on-surface-variant transition-transform text-base">expand_more</span>
+                            </button>
+                            <div class="accordion-content px-4 text-xs text-on-surface-variant space-y-2 border-t border-border-subtle/50 bg-surface-container-low">
+                                <div class="py-3 space-y-1.5">
+                                    <p><strong>1. Kodlama Formatı:</strong> CSV dosyanızın UTF-8 veya latin-1 formatında kodlandığından emin olun.</p>
+                                    <p><strong>2. Başlık Satırı:</strong> Dosyanın ilk satırı kolon isimlerini içermelidir. Kolon isimlerinde özel karakterler ve boşluklar otomatik normalize edilir.</p>
+                                    <p><strong>3. Ayrıcı Karakter:</strong> Virgül (,), Noktalı Virgül (;) veya Sekme (\t) ayracı kullanabilirsiniz. Ayarlar sayfasından varsayılan ayracı özelleştirebilirsiniz.</p>
+                                    <p><strong>4. Boyut Sınırı:</strong> Tarayıcı ve sunucu performansı için tek seferde en fazla 50 MB büyüklüğünde veri seti yükleyebilirsiniz.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guide 2: Preprocessing -->
+                        <div class="border border-border-subtle rounded-xl overflow-hidden transition-all bg-surface-container-lowest">
+                            <button type="button" class="guide-toggle w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary text-lg">cleaning_services</span>
+                                    <div>
+                                        <div data-i18n="support.guide.preprocess">Veri Temizleme & Ön İşleme Rehberi</div>
+                                        <div class="text-[11px] text-on-surface-variant font-normal mt-0.5" data-i18n="support.guide.preprocessDesc">Eksik değerleri doldurma, aykırı değerleri filtreleme ve tip dönüşümleri.</div>
+                                    </div>
+                                </div>
+                                <span class="material-symbols-outlined text-on-surface-variant transition-transform text-base">expand_more</span>
+                            </button>
+                            <div class="accordion-content px-4 text-xs text-on-surface-variant space-y-2 border-t border-border-subtle/50 bg-surface-container-low">
+                                <div class="py-3 space-y-1.5">
+                                    <p><strong>1. Eksik Veri Tamamlama:</strong> Sayısal alanlar için Ortalama (Mean) veya Medyan (Median), kategorik alanlar için En Çok Tekrar Eden (Mod) yöntemini kullanın.</p>
+                                    <p><strong>2. Yinelenen Kayıtlar:</strong> Tekrar eden satırları tek tıklamayla temizleyerek veri kalitesini artırabilirsiniz.</p>
+                                    <p><strong>3. Aykırı Değerler (Outliers):</strong> Z-Score (|z| > 3) veya IQR (1.5 × IQR) yöntemleriyle uç değerleri tespit edip kırpabilir veya filtreleyebilirsiniz.</p>
+                                    <p><strong>4. Geri Al & İndir:</strong> Yapılan tüm işlemler bellek üzerinde gerçekleşir; dilediğiniz adımı geri alabilir veya temizlenmiş CSV'yi bilgisayarınıza indirebilirsiniz.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guide 3: Visualization -->
+                        <div class="border border-border-subtle rounded-xl overflow-hidden transition-all bg-surface-container-lowest">
+                            <button type="button" class="guide-toggle w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary text-lg">query_stats</span>
+                                    <div>
+                                        <div data-i18n="support.guide.visualization">Görselleştirme & Grafik Rehberi</div>
+                                        <div class="text-[11px] text-on-surface-variant font-normal mt-0.5" data-i18n="support.guide.visualizationDesc">Otomatik grafik önerileri, dağılım, saçılım ve korelasyon çizimleri.</div>
+                                    </div>
+                                </div>
+                                <span class="material-symbols-outlined text-on-surface-variant transition-transform text-base">expand_more</span>
+                            </button>
+                            <div class="accordion-content px-4 text-xs text-on-surface-variant space-y-2 border-t border-border-subtle/50 bg-surface-container-low">
+                                <div class="py-3 space-y-1.5">
+                                    <p><strong>1. Akıllı Öneriler:</strong> Sistem kolon tiplerini inceleyerek otomatik 5 farklı grafik türü üretir.</p>
+                                    <p><strong>2. Özel Grafik Oluşturucu:</strong> Histogram, Çubuk (Bar), Saçılım (Scatter), Kutu (Boxplot) ve Isı Haritası (Heatmap) arasından seçim yapabilirsiniz.</p>
+                                    <p><strong>3. Görsel Dışa Aktarma:</strong> Grafikleri yüksek çözünürlüklü PNG formatında indirebilir veya tümünü tek PDF raporunda toplayabilirsiniz.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guide 4: Metrics Calculation -->
+                        <div class="border border-border-subtle rounded-xl overflow-hidden transition-all bg-surface-container-lowest">
+                            <button type="button" class="guide-toggle w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary text-lg">calculate</span>
+                                    <div>
+                                        <div data-i18n="support.metrics.qualityScore">Veri Kalite Skoru Nasıl Hesaplanır?</div>
+                                        <div class="text-[11px] text-on-surface-variant font-normal mt-0.5" data-i18n="support.metricsSub">Veri Kalite Skoru (0-100) arkasındaki ağırlıklı ceza formülü.</div>
+                                    </div>
+                                </div>
+                                <span class="material-symbols-outlined text-on-surface-variant transition-transform text-base">expand_more</span>
+                            </button>
+                            <div class="accordion-content px-4 text-xs text-on-surface-variant space-y-2 border-t border-border-subtle/50 bg-surface-container-low">
+                                <div class="py-3 space-y-2">
+                                    <p>Veri Kalitesi Skoru 100 tam puan üzerinden başlar ve tespit edilen 5 temel anomaliye göre ağırlıklı ceza kesilir:</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
+                                        <div class="p-2 bg-surface rounded-lg border border-border-subtle">
+                                            <span class="font-bold text-on-surface">1. Kayıp Veri Oranı:</span>
+                                            <div class="text-slate-gray">Eksik veri yüzdesi × 2 (Maksimum ceza: 30 puan)</div>
+                                        </div>
+                                        <div class="p-2 bg-surface rounded-lg border border-border-subtle">
+                                            <span class="font-bold text-on-surface">2. Tekrar Eden Satırlar:</span>
+                                            <div class="text-slate-gray">Duplicate satır oranı × 5 (Maksimum ceza: 20 puan)</div>
+                                        </div>
+                                        <div class="p-2 bg-surface rounded-lg border border-border-subtle">
+                                            <span class="font-bold text-on-surface">3. Tip Uyumsuzluğu:</span>
+                                            <div class="text-slate-gray">Hatalı tip oranı × 5 (Maksimum ceza: 20 puan)</div>
+                                        </div>
+                                        <div class="p-2 bg-surface rounded-lg border border-border-subtle">
+                                            <span class="font-bold text-on-surface">4. Sabit Değerli Kolonlar:</span>
+                                            <div class="text-slate-gray">Sıfır varyanslı kolon × 5 (Maksimum ceza: 15 puan)</div>
+                                        </div>
+                                        <div class="p-2 bg-surface rounded-lg border border-border-subtle md:col-span-2">
+                                            <span class="font-bold text-on-surface">5. Aykırı Değerler (Outliers):</span>
+                                            <div class="text-slate-gray">Z-Score & IQR aşan kayıt oranı × 3 (Maksimum ceza: 15 puan)</div>
+                                        </div>
+                                    </div>
+                                    <p class="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold pt-1">
+                                        Toplam Skor = 100 - (Ceza 1 + Ceza 2 + Ceza 3 + Ceza 4 + Ceza 5)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION B: SSS (FAQ) -->
+                <div class="bg-surface border border-border-subtle rounded-2xl p-6 shadow-xs space-y-5">
+                    <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-2xl">quiz</span>
+                        </div>
+                        <div>
+                            <h3 class="font-headline text-base font-bold text-on-surface" data-i18n="support.faq">Sıkça Sorulan Sorular (SSS)</h3>
+                            <p class="text-xs text-on-surface-variant" data-i18n="support.faqSub">En çok merak edilen sorular ve hızlı yanıtları.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- FAQ 1 -->
+                        <div class="border border-border-subtle rounded-xl overflow-hidden transition-all bg-surface-container-lowest">
+                            <button type="button" class="guide-toggle w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+                                <span data-i18n="support.faq.q1">Desteklenen dosya formatları ve boyut limitleri nelerdir?</span>
+                                <span class="material-symbols-outlined text-on-surface-variant transition-transform text-base">expand_more</span>
+                            </button>
+                            <div class="accordion-content px-4 text-xs text-on-surface-variant border-t border-border-subtle/50 bg-surface-container-low">
+                                <div class="py-3 leading-relaxed" data-i18n="support.faq.a1">
+                                    trex DataLab şu anda yalnızca .csv (Virgül, Noktalı Virgül ve Sekme ayrılmış) formatındaki tabloları destekler. Maksimum dosya boyutu 50 MB’tır.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 2 -->
+                        <div class="border border-border-subtle rounded-xl overflow-hidden transition-all bg-surface-container-lowest">
+                            <button type="button" class="guide-toggle w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+                                <span data-i18n="support.faq.q2">PDF raporu neden inmiyor veya hatalı görünüyor?</span>
+                                <span class="material-symbols-outlined text-on-surface-variant transition-transform text-base">expand_more</span>
+                            </button>
+                            <div class="accordion-content px-4 text-xs text-on-surface-variant border-t border-border-subtle/50 bg-surface-container-low">
+                                <div class="py-3 leading-relaxed" data-i18n="support.faq.a2">
+                                    PDF oluşturma motoru (html2pdf) tarayıcı tabanlı çalışır. Sayfayı yerel web sunucusu üzerinden (http://localhost:8000) açtığınızdan emin olun ve gerekirse sayfayı sert yenileyin (Ctrl+F5).
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 3 -->
+                        <div class="border border-border-subtle rounded-xl overflow-hidden transition-all bg-surface-container-lowest">
+                            <button type="button" class="guide-toggle w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+                                <span data-i18n="support.faq.q3">Verilerim sistemde saklanıyor mu, gizliliğim güvende mi?</span>
+                                <span class="material-symbols-outlined text-on-surface-variant transition-transform text-base">expand_more</span>
+                            </button>
+                            <div class="accordion-content px-4 text-xs text-on-surface-variant border-t border-border-subtle/50 bg-surface-container-low">
+                                <div class="py-3 leading-relaxed" data-i18n="support.faq.a3">
+                                    Hayır. Yüklenen veriler yalnızca sunucu hafızasında (in-memory) aktif oturum süresince tutulur. Sunucu kapandığında veya sıfırlandığında tüm veri tamamen silinir. Tercihler ise yalnızca yerel tarayıcınızda (localStorage) saklanır.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 4 -->
+                        <div class="border border-border-subtle rounded-xl overflow-hidden transition-all bg-surface-container-lowest">
+                            <button type="button" class="guide-toggle w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+                                <span data-i18n="support.faq.q4">Hangi analizler ve veri işlemleri yapılabilir?</span>
+                                <span class="material-symbols-outlined text-on-surface-variant transition-transform text-base">expand_more</span>
+                            </button>
+                            <div class="accordion-content px-4 text-xs text-on-surface-variant border-t border-border-subtle/50 bg-surface-container-low">
+                                <div class="py-3 leading-relaxed" data-i18n="support.faq.a4">
+                                    Veri kalitesi tespiti (eksiklik, aykırılık, tekillik), eksik veri tamamlama (ortalama, medyan, mod, sabit değer), tip dönüşümleri, Z-Score/IQR aykırı değer temizleme ve 7 farklı interaktif grafik görselleştirmesi yapılabilir.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 5 -->
+                        <div class="border border-border-subtle rounded-xl overflow-hidden transition-all bg-surface-container-lowest">
+                            <button type="button" class="guide-toggle w-full flex items-center justify-between p-4 text-left font-semibold text-xs text-on-surface hover:bg-surface-container transition-colors cursor-pointer">
+                                <span data-i18n="support.faq.q5">Dil ve tema nasıl değiştirilir?</span>
+                                <span class="material-symbols-outlined text-on-surface-variant transition-transform text-base">expand_more</span>
+                            </button>
+                            <div class="accordion-content px-4 text-xs text-on-surface-variant border-t border-border-subtle/50 bg-surface-container-low">
+                                <div class="py-3 leading-relaxed" data-i18n="support.faq.a5">
+                                    Ayarlar sayfasından veya üst sağ köşedeki Profil Menüsü içerisinden tek tıklamayla Koyu/Açık Tema ve Türkçe/İngilizce dil seçimi yapabilirsiniz.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION C: TICKET OLUŞTUR & TICKET LİSTESİ -->
+                <div id="ticketFormSection" class="bg-surface border border-border-subtle rounded-2xl p-6 shadow-xs space-y-6">
+                    <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-2xl">confirmation_number</span>
+                        </div>
+                        <div>
+                            <h3 class="font-headline text-base font-bold text-on-surface" data-i18n="support.contact">İletişim & Destek Talebi</h3>
+                            <p class="text-xs text-on-surface-variant" data-i18n="support.contactSub">Sorununuzu bize bildirin veya geçmiş taleplerinizi takip edin.</p>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Form -->
+                    <form id="supportTicketForm" class="space-y-4 bg-surface-container-low p-4 rounded-xl border border-border-subtle">
+                        <h4 class="text-xs font-bold text-on-surface flex items-center gap-2" data-i18n="support.ticket.create">
+                            <span class="material-symbols-outlined text-base text-primary">add_circle</span>
+                            <span>Yeni Destek Talebi Oluştur</span>
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Subject -->
+                            <div class="md:col-span-2">
+                                <label for="ticketTitleInput" class="block text-xs font-bold text-on-surface mb-1" data-i18n="support.ticket.title">Talep Başlığı</label>
+                                <input type="text" id="ticketTitleInput" required class="w-full bg-surface-container-lowest border border-border-subtle rounded-lg px-3 py-2 text-xs font-body text-on-surface focus:outline-none focus:border-primary transition-colors" placeholder="Örn: PDF dışa aktarma hatası alıyorum" data-i18n-placeholder="support.ticket.titlePlaceholder">
+                            </div>
+
+                            <!-- Category -->
+                            <div>
+                                <label for="ticketCategorySelect" class="block text-xs font-bold text-on-surface mb-1" data-i18n="support.ticket.category">Kategori</label>
+                                <select id="ticketCategorySelect" class="w-full bg-surface-container-lowest border border-border-subtle rounded-lg px-3 py-2 text-xs font-body text-on-surface focus:outline-none focus:border-primary transition-colors">
+                                    <option value="Hata Bildirimi" data-i18n="support.ticket.catBug">Hata Bildirimi</option>
+                                    <option value="Veri Yükleme Sorunu" data-i18n="support.ticket.catUpload">Veri Yükleme Sorunu</option>
+                                    <option value="Raporlama Hatası" data-i18n="support.ticket.catReport">Raporlama Hatası</option>
+                                    <option value="Görselleştirme Sorunu" data-i18n="support.ticket.catViz">Görselleştirme Sorunu</option>
+                                    <option value="Diğer" data-i18n="support.ticket.catOther">Diğer / Genel Soru</option>
+                                </select>
+                            </div>
+
+                            <!-- Priority -->
+                            <div>
+                                <label for="ticketPrioritySelect" class="block text-xs font-bold text-on-surface mb-1" data-i18n="support.ticket.priority">Önem Derecesi</label>
+                                <select id="ticketPrioritySelect" class="w-full bg-surface-container-lowest border border-border-subtle rounded-lg px-3 py-2 text-xs font-body text-on-surface focus:outline-none focus:border-primary transition-colors">
+                                    <option value="Düşük" data-i18n="support.ticket.priLow">Düşük</option>
+                                    <option value="Orta" selected data-i18n="support.ticket.priMed">Orta</option>
+                                    <option value="Yüksek" data-i18n="support.ticket.priHigh">Yüksek</option>
+                                    <option value="Kritik" data-i18n="support.ticket.priCrit">Kritik</option>
+                                </select>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="md:col-span-2">
+                                <label for="ticketDescInput" class="block text-xs font-bold text-on-surface mb-1" data-i18n="support.ticket.description">Açıklama</label>
+                                <textarea id="ticketDescInput" rows="3" required class="w-full bg-surface-container-lowest border border-border-subtle rounded-lg px-3 py-2 text-xs font-body text-on-surface focus:outline-none focus:border-primary transition-colors resize-none" placeholder="Karşılaştığınız sorunu veya adımları detaylıca açıklayın..." data-i18n-placeholder="support.ticket.descPlaceholder"></textarea>
+                            </div>
+
+                            <!-- Attach Image -->
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-on-surface mb-1" data-i18n="support.ticket.attach">Ekran Görüntüsü Ekle (İsteğe Bağlı)</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="file" id="ticketFileInput" accept="image/*" class="hidden">
+                                    <button type="button" id="triggerTicketFileBtn" class="px-3 py-1.5 bg-surface-container-lowest hover:bg-surface-container border border-border-subtle rounded-lg text-xs font-semibold text-on-surface transition-colors flex items-center gap-1.5 cursor-pointer">
+                                        <span class="material-symbols-outlined text-sm">attach_file</span>
+                                        <span data-i18n="support.ticket.attachBtn">Görsel Seç</span>
+                                    </button>
+                                    <div id="ticketImgPreviewContainer" class="hidden items-center gap-2">
+                                        <img id="ticketImgPreview" class="w-10 h-10 object-cover rounded-lg border border-border-subtle shadow-xs" alt="Preview">
+                                        <button type="button" id="removeTicketImgBtn" class="text-error text-xs hover:underline cursor-pointer" data-i18n="support.ticket.removeAttach">Görseli Kaldır</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 flex justify-end">
+                            <button type="submit" id="submitTicketBtn" class="px-5 py-2.5 bg-primary text-on-primary font-semibold text-xs rounded-xl hover:bg-primary-container transition-all shadow-xs flex items-center gap-2 cursor-pointer">
+                                <span class="material-symbols-outlined text-base">send</span>
+                                <span data-i18n="support.ticket.submit">Destek Talebini Gönder</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Tickets List Section -->
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-on-surface flex items-center gap-2" data-i18n="support.ticket.myTickets">
+                                <span class="material-symbols-outlined text-base text-primary">view_list</span>
+                                <span>Destek Taleplerim</span>
+                            </h4>
+                            <span id="ticketCountBadge" class="text-[11px] px-2 py-0.5 bg-primary/10 text-primary font-bold rounded-full">3 Talep</span>
+                        </div>
+
+                        <!-- Ticket Container -->
+                        <div id="ticketsListContainer" class="space-y-2.5">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT 1 COL: SYSTEM STATUS, EMAIL, FEEDBACK -->
+            <div class="space-y-8">
+
+                <!-- SECTION E: SİSTEM & ALTYAPI DURUMU (STATUS PAGE) -->
+                <div class="bg-surface border border-border-subtle rounded-2xl p-6 shadow-xs space-y-5">
+                    <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-2xl">dns</span>
+                        </div>
+                        <div>
+                            <h3 class="font-headline text-base font-bold text-on-surface" data-i18n="support.status">Sistem & Altyapı Durumu</h3>
+                            <p class="text-xs text-on-surface-variant" data-i18n="support.statusSub">trex DataLab mikro servislerinin anlık çalışma durumu.</p>
+                        </div>
+                    </div>
+
+                    <!-- Overall Operational Status Banner -->
+                    <div class="p-3.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300" data-i18n="support.status.allOperational">Tüm servisler sorunsuz çalışıyor</span>
+                        </div>
+                        <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-lg">check_circle</span>
+                    </div>
+
+                    <!-- Services List -->
+                    <div class="space-y-3 text-xs">
+                        <!-- Service 1 -->
+                        <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl border border-border-subtle/50">
+                            <div>
+                                <div class="font-semibold text-on-surface" data-i18n="support.status.service1">Analiz & Kalite Motoru</div>
+                                <div class="text-[10px] text-slate-gray font-mono">Gecikme: <span class="service-ping text-emerald-600 font-bold">18 ms</span></div>
+                            </div>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">Aktif</span>
+                        </div>
+
+                        <!-- Service 2 -->
+                        <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl border border-border-subtle/50">
+                            <div>
+                                <div class="font-semibold text-on-surface" data-i18n="support.status.service2">Görselleştirme & Grafik Servisi</div>
+                                <div class="text-[10px] text-slate-gray font-mono">Gecikme: <span class="service-ping text-emerald-600 font-bold">24 ms</span></div>
+                            </div>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">Aktif</span>
+                        </div>
+
+                        <!-- Service 3 -->
+                        <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl border border-border-subtle/50">
+                            <div>
+                                <div class="font-semibold text-on-surface" data-i18n="support.status.service3">PDF & Raporlama Modülü</div>
+                                <div class="text-[10px] text-slate-gray font-mono">Gecikme: <span class="service-ping text-emerald-600 font-bold">12 ms</span></div>
+                            </div>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">Aktif</span>
+                        </div>
+
+                        <!-- Service 4 -->
+                        <div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl border border-border-subtle/50">
+                            <div>
+                                <div class="font-semibold text-on-surface" data-i18n="support.status.service4">FastAPI Web & API Sunucusu</div>
+                                <div class="text-[10px] text-slate-gray font-mono">Gecikme: <span class="service-ping text-emerald-600 font-bold">8 ms</span></div>
+                            </div>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">Aktif</span>
+                        </div>
+                    </div>
+
+                    <div class="text-[11px] text-on-surface-variant text-right font-mono flex items-center justify-end gap-1.5" data-i18n="support.status.lastCheck">
+                        <span class="material-symbols-outlined text-xs">sync</span>
+                        <span>Son kontrol: az önce</span>
+                    </div>
+                </div>
+
+                <!-- DIRECT EMAIL CONTACT -->
+                <div class="bg-surface border border-border-subtle rounded-2xl p-6 shadow-xs space-y-4">
+                    <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-2xl">mail</span>
+                        </div>
+                        <div>
+                            <h3 class="font-headline text-base font-bold text-on-surface" data-i18n="support.email">Doğrudan E-posta Desteği</h3>
+                            <p class="text-xs text-on-surface-variant" data-i18n="support.emailSub">Daha kapsamlı teknik sorularınız için ekibimize e-posta gönderin.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-surface-container-low rounded-xl border border-border-subtle text-xs space-y-3">
+                        <div class="flex items-center gap-2 text-on-surface font-semibold">
+                            <span class="material-symbols-outlined text-primary text-base">alternate_email</span>
+                            <span>destek@trexdatalab.com</span>
+                        </div>
+                        <p class="text-slate-gray text-[11px] leading-relaxed">
+                            Müşteri destek ve mühendislik ekibimiz hafta içi 09:00 - 18:00 saatleri arasında taleplerinizi ortalama 2 saat içinde yanıtlar.
+                        </p>
+                        <a href="mailto:destek@trexdatalab.com?subject=trex%20DataLab%20Destek%20Talebi" class="w-full py-2 bg-surface-container-lowest hover:bg-surface-container border border-border-subtle rounded-lg font-semibold text-on-surface flex items-center justify-center gap-2 transition-colors cursor-pointer">
+                            <span class="material-symbols-outlined text-sm">outgoing_mail</span>
+                            <span data-i18n="support.emailBtn">E-posta Gönder</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SECTION D: GERİ BİLDİRİM & İYİLEŞTİRME -->
+                <div class="bg-surface border border-border-subtle rounded-2xl p-6 shadow-xs space-y-4">
+                    <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-2xl">rate_review</span>
+                        </div>
+                        <div>
+                            <h3 class="font-headline text-base font-bold text-on-surface" data-i18n="support.feedback">Geri Bildirim & İyileştirme</h3>
+                            <p class="text-xs text-on-surface-variant" data-i18n="support.feedbackSub">Görüşleriniz trex DataLab platformunu geliştirmemize yardımcı olur.</p>
+                        </div>
+                    </div>
+
+                    <form id="feedbackQuickForm" class="space-y-3 text-xs">
+                        <div>
+                            <label for="feedbackInput" class="block font-bold text-on-surface mb-1" data-i18n="support.feedback.feature">Özellik / İyileştirme Önerisi</label>
+                            <textarea id="feedbackInput" rows="3" required class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary resize-none" placeholder="Görmek istediğiniz yeni bir özellik veya analiz türü..." data-i18n-placeholder="support.feedback.featurePlaceholder"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-2 bg-primary text-on-primary rounded-lg font-semibold hover:bg-primary-container transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span class="material-symbols-outlined text-sm">send</span>
+                            <span data-i18n="support.feedback.sendFeature">Öneri Gönder</span>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Global Toast Notification -->
+    <div id="trexSupportToast" class="fixed bottom-5 right-5 z-[99999] flex items-center gap-2.5 px-4 py-3 bg-[#1c1b1b] text-white text-xs font-body rounded-xl shadow-2xl transition-all duration-300 transform translate-y-10 opacity-0 pointer-events-none">
+        <span class="material-symbols-outlined text-emerald-400 text-base">check_circle</span>
+        <span id="trexSupportToastMsg" class="font-medium">İşlem başarıyla gerçekleştirildi.</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/components/export-pdf.js"></script>
+    <script src="/static/components/settings.js"></script>
+    <script src="/static/components/i18n.js"></script>
+    <script src="/static/components/notifications.js"></script>
+    <script src="/static/components/profile-menu.js"></script>
+
+    <!-- Support Page Logic -->
+    <script>
+        (function () {
+            'use strict';
+
+            const TICKETS_STORAGE_KEY = 'trex_datalab_tickets';
+
+            // Sample preloaded tickets
+            const DEFAULT_TICKETS = [
+                {
+                    id: 'T-1001',
+                    title: 'PDF raporu Türkçe karakter sorunu',
+                    category: 'Raporlama Hatası',
+                    priority: 'Orta',
+                    status: 'cozuldu',
+                    description: 'Dışa aktarılan PDF raporlarında font uyumsuzluğu giderildi.',
+                    screenshot: null,
+                    created_at: new Date(Date.now() - 3 * 24 * 3600 * 1000).toISOString()
+                },
+                {
+                    id: 'T-1002',
+                    title: 'Büyük CSV yüklemesinde donma',
+                    category: 'Veri Yükleme Sorunu',
+                    priority: 'Yüksek',
+                    status: 'inceleniyor',
+                    description: '45MB boyutundaki sensör veri setinde satır sayısı hesaplanırken gecikme oluşuyor.',
+                    screenshot: null,
+                    created_at: new Date(Date.now() - 1 * 24 * 3600 * 1000).toISOString()
+                },
+                {
+                    id: 'T-1003',
+                    title: 'Korelasyon matrisinde yeni renk paleti talebi',
+                    category: 'Diğer',
+                    priority: 'Düşük',
+                    status: 'yanit_bekleniyor',
+                    description: 'Görselleştirme adımında viridis ve magma renk skalaları eklenebilir mi?',
+                    screenshot: null,
+                    created_at: new Date(Date.now() - 5 * 3600 * 1000).toISOString()
+                }
+            ];
+
+            // Helpers
+            function showToast(msg) {
+                const toast = document.getElementById('trexSupportToast');
+                const toastMsg = document.getElementById('trexSupportToastMsg');
+                if (!toast || !toastMsg) return;
+
+                toastMsg.textContent = msg;
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                });
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+                }, 3000);
+            }
+
+            function getTickets() {
+                try {
+                    const raw = localStorage.getItem(TICKETS_STORAGE_KEY);
+                    if (!raw) {
+                        localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(DEFAULT_TICKETS));
+                        return DEFAULT_TICKETS;
+                    }
+                    return JSON.parse(raw);
+                } catch (e) {
+                    return DEFAULT_TICKETS;
+                }
+            }
+
+            function saveTickets(tickets) {
+                localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(tickets));
+            }
+
+            function formatTimeAgo(isoString) {
+                try {
+                    const diffMs = Date.now() - new Date(isoString).getTime();
+                    const diffMin = Math.floor(diffMs / 60000);
+                    if (diffMin < 2) return 'Az önce';
+                    if (diffMin < 60) return `${diffMin} dakika önce`;
+                    const diffHours = Math.floor(diffMin / 60);
+                    if (diffHours < 24) return `${diffHours} saat önce`;
+                    const diffDays = Math.floor(diffHours / 24);
+                    if (diffDays === 1) return 'Dün';
+                    return `${diffDays} gün önce`;
+                } catch (e) {
+                    return 'Geçmişte';
+                }
+            }
+
+            function getStatusBadge(status) {
+                const t = window.t || ((k, f) => f || k);
+                if (status === 'cozuldu') {
+                    return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">${t('support.ticket.status.cozuldu', 'Çözüldü')}</span>`;
+                } else if (status === 'yanit_bekleniyor') {
+                    return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-300 dark:border-blue-800">${t('support.ticket.status.yanitBekleniyor', 'Yanıt Bekleniyor')}</span>`;
+                } else {
+                    return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">${t('support.ticket.status.inceleniyor', 'İnceleniyor')}</span>`;
+                }
+            }
+
+            function renderTickets() {
+                const container = document.getElementById('ticketsListContainer');
+                const countBadge = document.getElementById('ticketCountBadge');
+                if (!container) return;
+
+                const tickets = getTickets();
+                if (countBadge) {
+                    countBadge.textContent = `${tickets.length} Talep`;
+                }
+
+                if (tickets.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-6 text-xs text-on-surface-variant bg-surface-container-low rounded-xl border border-border-subtle" data-i18n="support.ticket.empty">
+                            Henüz oluşturulmuş bir destek talebi bulunmuyor.
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = tickets.map(item => `
+                    <div class="p-3.5 bg-surface-container-low hover:bg-surface-container rounded-xl border border-border-subtle transition-all space-y-2">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono text-[11px] font-bold text-primary">${item.id}</span>
+                                    <span class="font-semibold text-xs text-on-surface">${item.title}</span>
+                                </div>
+                                <div class="text-[11px] text-on-surface-variant flex items-center gap-2 mt-0.5">
+                                    <span>${item.category}</span>
+                                    <span>•</span>
+                                    <span>Önem: <strong class="${item.priority === 'Kritik' ? 'text-error' : item.priority === 'Yüksek' ? 'text-warning-orange' : 'text-on-surface'}">${item.priority}</strong></span>
+                                    <span>•</span>
+                                    <span>${formatTimeAgo(item.created_at)}</span>
+                                </div>
+                            </div>
+                            <div class="shrink-0">
+                                ${getStatusBadge(item.status)}
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-gray line-clamp-2">${item.description}</p>
+                        ${item.screenshot ? `
+                            <div class="pt-1">
+                                <img src="${item.screenshot}" alt="Ticket attachment" class="w-16 h-16 object-cover rounded-lg border border-border-subtle shadow-xs cursor-pointer hover:opacity-90" onclick="window.open('${item.screenshot}')">
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+
+            // Accordion Toggles
+            function initAccordions() {
+                document.querySelectorAll('.guide-toggle').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const content = btn.nextElementSibling;
+                        const icon = btn.querySelector('.material-symbols-outlined:last-child');
+                        if (!content) return;
+
+                        const isExpanded = content.classList.contains('expanded');
+                        // Close other accordions in the same group if desired, or toggle individually
+                        content.classList.toggle('expanded', !isExpanded);
+                        if (icon) {
+                            icon.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+                        }
+                    });
+                });
+            }
+
+            // Image Upload in Ticket Form
+            let currentScreenshotBase64 = null;
+
+            function initTicketImageUpload() {
+                const fileInput = document.getElementById('ticketFileInput');
+                const triggerBtn = document.getElementById('triggerTicketFileBtn');
+                const previewContainer = document.getElementById('ticketImgPreviewContainer');
+                const previewImg = document.getElementById('ticketImgPreview');
+                const removeBtn = document.getElementById('removeTicketImgBtn');
+
+                if (!fileInput || !triggerBtn) return;
+
+                triggerBtn.addEventListener('click', () => fileInput.click());
+
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        currentScreenshotBase64 = ev.target.result;
+                        if (previewImg) previewImg.src = currentScreenshotBase64;
+                        if (previewContainer) previewContainer.classList.remove('hidden');
+                        if (previewContainer) previewContainer.classList.add('flex');
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', () => {
+                        currentScreenshotBase64 = null;
+                        fileInput.value = '';
+                        if (previewContainer) {
+                            previewContainer.classList.add('hidden');
+                            previewContainer.classList.remove('flex');
+                        }
+                    });
+                }
+            }
+
+            // Ticket Form Submission & Notification Integration
+            function initTicketForm() {
+                const form = document.getElementById('supportTicketForm');
+                if (!form) return;
+
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const title = document.getElementById('ticketTitleInput').value.trim();
+                    const category = document.getElementById('ticketCategorySelect').value;
+                    const priority = document.getElementById('ticketPrioritySelect').value;
+                    const description = document.getElementById('ticketDescInput').value.trim();
+
+                    if (!title || !description) return;
+
+                    const tickets = getTickets();
+                    const nextIdNumber = tickets.length > 0 ? (Math.max(...tickets.map(t => parseInt((t.id || 'T-1000').replace('T-', '')) || 1000)) + 1) : 1001;
+                    const newId = `T-${nextIdNumber}`;
+
+                    const newTicket = {
+                        id: newId,
+                        title: title,
+                        category: category,
+                        priority: priority,
+                        status: 'inceleniyor',
+                        description: description,
+                        screenshot: currentScreenshotBase64,
+                        created_at: new Date().toISOString()
+                    };
+
+                    tickets.unshift(newTicket);
+                    saveTickets(tickets);
+                    renderTickets();
+
+                    // Integrate notification into trex_datalab_notifications
+                    try {
+                        const notifStorageKey = 'trex_datalab_notifications';
+                        const existingNotifs = JSON.parse(localStorage.getItem(notifStorageKey) || '[]');
+                        const newNotif = {
+                            id: 'notif_' + Date.now(),
+                            title: 'Destek Talebi Oluşturuldu',
+                            message: `${newId} - ${title} başlıklı destek talebiniz alındı ve inceleniyor.`,
+                            type: 'info',
+                            category: 'islem',
+                            time: 'Az önce',
+                            read: false,
+                            created_at: new Date().toISOString()
+                        };
+                        existingNotifs.unshift(newNotif);
+                        localStorage.setItem(notifStorageKey, JSON.stringify(existingNotifs));
+
+                        // Refresh notifications component if active
+                        if (window.TrexNotifications && typeof window.TrexNotifications.refresh === 'function') {
+                            window.TrexNotifications.refresh();
+                        }
+                    } catch (err) {
+                        console.error('Error adding notification:', err);
+                    }
+
+                    // Reset form
+                    form.reset();
+                    currentScreenshotBase64 = null;
+                    const previewContainer = document.getElementById('ticketImgPreviewContainer');
+                    if (previewContainer) {
+                        previewContainer.classList.add('hidden');
+                        previewContainer.classList.remove('flex');
+                    }
+
+                    const t = window.t || ((k, f) => f || k);
+                    showToast(t('support.demoTicketCreated', 'Destek talebiniz başarıyla oluşturuldu ✓'));
+                });
+            }
+
+            // Quick Feedback Form
+            function initFeedbackForm() {
+                const feedbackForm = document.getElementById('feedbackQuickForm');
+                if (!feedbackForm) return;
+
+                feedbackForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const text = document.getElementById('feedbackInput').value.trim();
+                    if (!text) return;
+
+                    feedbackForm.reset();
+                    const t = window.t || ((k, f) => f || k);
+                    showToast(t('support.demoFeedbackSent', 'Geri bildiriminiz başarıyla iletildi ✓'));
+                });
+            }
+
+            // Live Latency Ping Simulation
+            function initLiveStatusSimulator() {
+                setInterval(() => {
+                    document.querySelectorAll('.service-ping').forEach(el => {
+                        const randomLatency = Math.floor(Math.random() * 18) + 8;
+                        el.textContent = `${randomLatency} ms`;
+                    });
+                }, 10000);
+            }
+
+            // Init on DOM ready
+            document.addEventListener('DOMContentLoaded', () => {
+                renderTickets();
+                initAccordions();
+                initTicketImageUpload();
+                initTicketForm();
+                initFeedbackForm();
+                initLiveStatusSimulator();
+            });
+
+            // Expose
+            window.TrexSupport = {
+                getTickets,
+                renderTickets,
+                showToast
+            };
+        })();
+    </script>
+</body>
+
+</html>

@@ -109,6 +109,18 @@ async def serve_portfolio():
     return FileResponse("static/portfolio.html")
 
 
+@app.get("/settings")
+@app.get("/settings.html")
+async def serve_settings():
+    return FileResponse("static/settings.html")
+
+
+@app.get("/support")
+@app.get("/support.html")
+async def serve_support():
+    return FileResponse("static/support.html")
+
+
 @app.post("/api/upload")
 async def upload_csv(file: UploadFile = File(...)):
     global active_dataset, active_df_cache

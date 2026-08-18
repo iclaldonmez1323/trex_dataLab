@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>trex DataLab - Ayarlar (Settings)</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "var(--c-error, #ba1a1a)",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "var(--c-on-background, #1c1b1b)",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "var(--c-surface-faint, #F8FAFC)",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "var(--c-outline-variant, #bdcabc)",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "var(--c-slate-gray, #4A5568)",
+                        "error-container": "var(--c-error-container, #ffdad6)",
+                        "secondary-container": "#bfeac7",
+                        "background": "var(--c-background, #fcf9f8)",
+                        "on-surface-variant": "var(--c-on-surface-variant, #3e4a3f)",
+                        "on-error-container": "var(--c-on-error-container, #93000a)",
+                        "warning-orange": "var(--c-warning-orange, #F5B054)",
+                        "surface-container-highest": "var(--c-surface-container-highest, #e5e2e1)",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "var(--c-primary, #006b33)",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "var(--c-success-green, #19924B)",
+                        "primary-fixed": "var(--c-primary-fixed, #8bf9a6)",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "var(--c-outline, #6e7a6e)",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "var(--c-on-primary, #ffffff)",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "var(--c-surface-container-high, #ebe7e7)",
+                        "on-surface": "var(--c-on-surface, #1c1b1b)",
+                        "surface-container-lowest": "var(--c-surface-container-lowest, #ffffff)",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "var(--c-surface-container, #f0edec)",
+                        "border-subtle": "var(--c-border-subtle, #E2E8F0)",
+                        "on-primary-fixed": "var(--c-on-primary-fixed, #00210b)",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "var(--c-surface-container-low, #f6f3f2)",
+                        "primary-container": "var(--c-primary-container, #008742)",
+                        "surface": "var(--c-surface, #fcf9f8)",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Modern toggle switch styling */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: var(--c-primary, #006b33);
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: var(--c-primary, #006b33);
+        }
+        .theme-card.active, .palette-card.active {
+            border-color: var(--c-primary, #006b33);
+            background-color: rgba(0, 107, 51, 0.04);
+        }
+        html.dark .theme-card.active, html.dark .palette-card.active {
+            background-color: rgba(52, 209, 123, 0.08);
+        }
+    </style>
+</head>
+
+<body class="bg-surface-faint min-h-screen text-on-surface font-body-md text-body-md overflow-x-hidden flex">
+
+    <!-- SideNavBar -->
+    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant flat no shadows flex flex-col py-6 px-4 z-20">
+        <div class="mb-10 px-2">
+            <div>
+                <h1 class="font-headline-md text-headline-md text-white m-0 leading-tight">trex DataLab</h1>
+                <p class="font-label-mono text-label-mono text-white/70 uppercase" data-i18n="brand.tagline">PRECISION DATA PLATFORM</p>
+            </div>
+        </div>
+
+        <a href="index.html" class="w-full mb-8 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
+            <span class="material-symbols-outlined">upload</span>
+            <span data-i18n="nav.newUpload">Yeni Veri Yükle</span>
+        </a>
+
+        <ul class="flex flex-col gap-2 flex-grow">
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="index.html">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="font-body-md text-body-md" data-i18n="nav.dashboard">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="data-quality.html">
+                    <span class="material-symbols-outlined">analytics</span>
+                    <span class="font-body-md text-body-md" data-i18n="nav.dataQuality">Data Quality</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="preprocessing.html">
+                    <span class="material-symbols-outlined">construction</span>
+                    <span class="font-body-md text-body-md" data-i18n="nav.preprocessing">Preprocessing</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="visualization.html">
+                    <span class="material-symbols-outlined">insights</span>
+                    <span class="font-body-md text-body-md" data-i18n="nav.visualization">Visualization</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
+                    <span class="material-symbols-outlined">folder_shared</span>
+                    <span class="font-body-md text-body-md" data-i18n="nav.portfolio">Portfolio</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="mt-auto pt-6 border-t border-white/10">
+            <ul class="flex flex-col gap-2">
+                <li>
+                    <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90" href="settings.html">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+                        <span class="font-body-md text-body-md font-medium" data-i18n="nav.settings">Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="support.html">
+                        <span class="material-symbols-outlined">help</span>
+                        <span class="font-body-md text-body-md" data-i18n="nav.support">Support</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Top Header -->
+    <header class="fixed top-0 left-0 right-0 z-40 bg-surface/80 backdrop-blur-md border-b border-border-subtle h-16 flex items-center justify-between px-8 pl-[284px]">
+        <div class="flex items-center gap-4">
+            <h2 class="font-headline-md text-lg font-bold text-on-surface" data-i18n="settings.pageTitle">Uygulama Ayarları</h2>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="notificationsBtn" class="relative text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler" data-i18n-title="nav.notifications">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button id="profileBtn" class="text-on-surface-variant hover:text-primary transition-colors ml-2 flex items-center gap-2 cursor-pointer p-1" title="Kullanıcı Profili" data-i18n-title="nav.profile">
+                <div id="headerAvatarContainer" class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden">
+                    <span id="headerAvatarIcon" class="material-symbols-outlined text-primary text-xl">account_circle</span>
+                    <img id="headerAvatarImg" class="w-full h-full object-cover hidden" alt="Avatar">
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Canvas -->
+    <main class="ml-sidebar-width pt-24 px-gutter pb-16 max-w-container-max mx-auto w-full">
+
+        <!-- Page Header & Action Bar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-4 border-b border-border-subtle">
+            <div>
+                <h1 class="font-headline-lg text-2xl md:text-3xl font-bold text-on-surface" data-i18n="settings.pageTitle">Uygulama Ayarları</h1>
+                <p class="text-on-surface-variant text-sm mt-1" data-i18n="settings.pageSubtitle">Görünüm, analiz parametreleri, dışa aktarma ve bildirim tercihlerinizi yönetin.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-gray flex items-center gap-1.5 bg-surface-container px-3 py-1.5 rounded-lg border border-border-subtle">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span data-i18n="settings.autoSaved">Tüm değişiklikler anında kaydedilir</span>
+                </span>
+                <button id="resetDefaultsBtn" type="button" class="px-4 py-2 text-xs font-semibold text-error hover:bg-error/10 border border-error/30 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">restart_alt</span>
+                    <span data-i18n="settings.resetDefaultsBtn">Varsayılanlara Sıfırla</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- SECTION A: GENEL GÖRÜNÜM & ARAYÜZ -->
+            <div class="bg-white border border-border-subtle rounded-2xl p-6 shadow-xs flex flex-col gap-6">
+                <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-2xl">palette</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-base font-bold text-on-surface" data-i18n="settings.appearanceTitle">Genel Görünüm & Arayüz</h3>
+                        <p class="text-xs text-on-surface-variant" data-i18n="settings.appearanceSub">Tema, sistem dili ve görsel önizleme ayarları.</p>
+                    </div>
+                </div>
+
+                <!-- Tema Seçimi -->
+                <div>
+                    <label class="block text-xs font-bold text-on-surface mb-2.5" data-i18n="settings.theme">Tema Seçimi</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <!-- Açık Mod -->
+                        <button type="button" data-theme-val="light" class="theme-btn theme-card border border-border-subtle rounded-xl p-3.5 flex flex-col items-center gap-2 transition-all hover:border-primary/50 text-center cursor-pointer">
+                            <span class="material-symbols-outlined text-2xl text-amber-500">light_mode</span>
+                            <div>
+                                <div class="text-xs font-bold text-on-surface" data-i18n="settings.themeLight">Açık Mod</div>
+                                <div class="text-[10px] text-on-surface-variant" data-i18n="settings.themeLightDesc">Klasik aydınlık</div>
+                            </div>
+                        </button>
+                        <!-- Koyu Mod -->
+                        <button type="button" data-theme-val="dark" class="theme-btn theme-card border border-border-subtle rounded-xl p-3.5 flex flex-col items-center gap-2 transition-all hover:border-primary/50 text-center cursor-pointer">
+                            <span class="material-symbols-outlined text-2xl text-emerald-500">dark_mode</span>
+                            <div>
+                                <div class="text-xs font-bold text-on-surface" data-i18n="settings.themeDark">Koyu Mod</div>
+                                <div class="text-[10px] text-on-surface-variant" data-i18n="settings.themeDarkDesc">Göz yormayan</div>
+                            </div>
+                        </button>
+                        <!-- Sistem -->
+                        <button type="button" data-theme-val="system" class="theme-btn theme-card border border-border-subtle rounded-xl p-3.5 flex flex-col items-center gap-2 transition-all hover:border-primary/50 text-center cursor-pointer">
+                            <span class="material-symbols-outlined text-2xl text-blue-500">settings_brightness</span>
+                            <div>
+                                <div class="text-xs font-bold text-on-surface" data-i18n="settings.themeSystem">Sistem</div>
+                                <div class="text-[10px] text-on-surface-variant" data-i18n="settings.themeSystemDesc">Otomatik takip</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dil Seçimi -->
+                <div>
+                    <label class="block text-xs font-bold text-on-surface mb-2" data-i18n="settings.language">Arayüz Dili</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" data-lang-val="tr" class="lang-btn border border-border-subtle rounded-xl p-3 flex items-center justify-center gap-2 font-medium text-xs transition-all hover:border-primary/50 cursor-pointer">
+                            <span class="text-base">🇹🇷</span>
+                            <span data-i18n="settings.langTr">Türkçe (TR)</span>
+                        </button>
+                        <button type="button" data-lang-val="en" class="lang-btn border border-border-subtle rounded-xl p-3 flex items-center justify-center gap-2 font-medium text-xs transition-all hover:border-primary/50 cursor-pointer">
+                            <span class="text-base">🇬🇧</span>
+                            <span data-i18n="settings.langEn">English (EN)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Renk Paleti -->
+                <div>
+                    <label class="block text-xs font-bold text-on-surface mb-2" data-i18n="settings.palette">Vurgu Renk Paleti</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button type="button" data-palette-val="default" class="palette-btn palette-card border border-border-subtle rounded-xl p-3 flex items-center gap-2.5 transition-all text-left cursor-pointer">
+                            <span class="w-4 h-4 rounded-full bg-[#006b33] shrink-0 shadow-xs"></span>
+                            <span class="text-xs font-semibold truncate" data-i18n="settings.paletteDefault">Standart Zümrüt</span>
+                        </button>
+                        <button type="button" data-palette-val="ocean" class="palette-btn palette-card border border-border-subtle rounded-xl p-3 flex items-center gap-2.5 transition-all text-left cursor-pointer">
+                            <span class="w-4 h-4 rounded-full bg-[#0284c7] shrink-0 shadow-xs"></span>
+                            <span class="text-xs font-semibold truncate" data-i18n="settings.paletteOcean">Okyanus Mavisi</span>
+                        </button>
+                        <button type="button" data-palette-val="forest" class="palette-btn palette-card border border-border-subtle rounded-xl p-3 flex items-center gap-2.5 transition-all text-left cursor-pointer">
+                            <span class="w-4 h-4 rounded-full bg-[#1b4332] shrink-0 shadow-xs"></span>
+                            <span class="text-xs font-semibold truncate" data-i18n="settings.paletteForest">Derin Orman</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tablo Önizleme Satır Sayısı -->
+                <div>
+                    <label for="tableRowsSelect" class="block text-xs font-bold text-on-surface mb-1.5" data-i18n="settings.tableRows">Tablo Önizleme Satır Sayısı</label>
+                    <select id="tableRowsSelect" class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs font-body-md text-on-surface focus:outline-none focus:border-primary transition-colors">
+                        <option value="10">10 Satır</option>
+                        <option value="25">25 Satır</option>
+                        <option value="50">50 Satır</option>
+                        <option value="100">100 Satır</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SECTION B: VERİ & ANALİZ VARSAYILANLARI -->
+            <div class="bg-white border border-border-subtle rounded-2xl p-6 shadow-xs flex flex-col gap-6">
+                <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-2xl">tune</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-base font-bold text-on-surface" data-i18n="settings.dataTitle">Veri & Analiz Varsayılanları</h3>
+                        <p class="text-xs text-on-surface-variant" data-i18n="settings.dataSub">CSV ayracı, kalite eşikleri ve önbellek yönetimi.</p>
+                    </div>
+                </div>
+
+                <!-- CSV Ayracı -->
+                <div>
+                    <label class="block text-xs font-bold text-on-surface mb-2" data-i18n="settings.csvDelimiter">Varsayılan CSV Ayracı</label>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <label class="delimiter-label flex items-center justify-center gap-2 p-2.5 border border-border-subtle rounded-lg text-xs font-medium cursor-pointer transition-all hover:bg-surface-container">
+                            <input type="radio" name="csvDelimiter" value="," class="text-primary focus:ring-primary">
+                            <span data-i18n="settings.delimiterComma">Virgül (,)</span>
+                        </label>
+                        <label class="delimiter-label flex items-center justify-center gap-2 p-2.5 border border-border-subtle rounded-lg text-xs font-medium cursor-pointer transition-all hover:bg-surface-container">
+                            <input type="radio" name="csvDelimiter" value=";" class="text-primary focus:ring-primary">
+                            <span data-i18n="settings.delimiterSemicolon">Noktalı Virgül (;)</span>
+                        </label>
+                        <label class="delimiter-label flex items-center justify-center gap-2 p-2.5 border border-border-subtle rounded-lg text-xs font-medium cursor-pointer transition-all hover:bg-surface-container">
+                            <input type="radio" name="csvDelimiter" value="\t" class="text-primary focus:ring-primary">
+                            <span data-i18n="settings.delimiterTab">Sekme (\t)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Kritik Eksik Veri Eşiği -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="thresholdRange" class="text-xs font-bold text-on-surface" data-i18n="settings.missingThreshold">Kritik Eksik Veri Eşik Değeri (%)</label>
+                        <span id="thresholdValBadge" class="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded">%20</span>
+                    </div>
+                    <input id="thresholdRange" type="range" min="5" max="50" step="5" value="20" class="w-full accent-primary cursor-pointer">
+                    <p class="text-[11px] text-on-surface-variant mt-1" data-i18n="settings.missingThresholdHelp">Bu oranın üzerindeki eksik veriler kritik uyarı olarak işaretlenir.</p>
+                </div>
+
+                <!-- Geçmiş Saklama Süresi -->
+                <div>
+                    <label for="retentionDaysInput" class="block text-xs font-bold text-on-surface mb-1.5" data-i18n="settings.retentionDays">İşlem Geçmişi Saklama Süresi (Gün)</label>
+                    <input id="retentionDaysInput" type="number" min="7" max="180" value="30" class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs font-body-md text-on-surface focus:outline-none focus:border-primary transition-colors">
+                </div>
+
+                <!-- Önbellek Temizleme -->
+                <div class="p-4 bg-error/5 border border-error/20 rounded-xl flex items-center justify-between gap-4">
+                    <div>
+                        <div class="text-xs font-bold text-error" data-i18n="settings.clearCache">Önbelleği ve Geçici Verileri Temizle</div>
+                        <div class="text-[11px] text-on-surface-variant mt-0.5" data-i18n="settings.clearCacheDesc">Tüm yerel oturum verilerini, yüklenmiş veri setlerini ve ayarları temizler.</div>
+                    </div>
+                    <button id="clearCacheBtn" type="button" class="px-3.5 py-2 bg-error text-white text-xs font-semibold rounded-lg hover:bg-red-700 transition-colors shrink-0 cursor-pointer" data-i18n="settings.clearCacheBtn">
+                        Önbelleği Temizle
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECTION C: DIŞA AKTARMA & RAPOR TERCİHLERİ -->
+            <div class="bg-white border border-border-subtle rounded-2xl p-6 shadow-xs flex flex-col gap-6">
+                <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-2xl">picture_as_pdf</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-base font-bold text-on-surface" data-i18n="settings.exportTitle">Dışa Aktarma & Rapor Tercihleri</h3>
+                        <p class="text-xs text-on-surface-variant" data-i18n="settings.exportSub">PDF ve tablo dışa aktarma bölümleri, başlık ve kurumsal logo.</p>
+                    </div>
+                </div>
+
+                <!-- Rapor Başlığı -->
+                <div>
+                    <label for="exportTitleInput" class="block text-xs font-bold text-on-surface mb-1.5" data-i18n="settings.exportReportTitle">Varsayılan Rapor Başlığı</label>
+                    <input id="exportTitleInput" type="text" value="trex DataLab Raporu" class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs font-body-md text-on-surface focus:outline-none focus:border-primary transition-colors">
+                </div>
+
+                <!-- Rapor Bölümleri Checkbox -->
+                <div>
+                    <label class="block text-xs font-bold text-on-surface mb-2" data-i18n="settings.exportSections">Varsayılan Rapora Dahil Edilecek Bölümler</label>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <label class="flex items-center gap-2 p-2 bg-surface-container-low rounded-lg text-xs cursor-pointer">
+                            <input type="checkbox" data-export-sec="summary" checked class="rounded text-primary focus:ring-primary">
+                            <span data-i18n="settings.secSummary">Özet Kartlar</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-surface-container-low rounded-lg text-xs cursor-pointer">
+                            <input type="checkbox" data-export-sec="missing" checked class="rounded text-primary focus:ring-primary">
+                            <span data-i18n="settings.secMissing">Eksik Değer Analizi</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-surface-container-low rounded-lg text-xs cursor-pointer">
+                            <input type="checkbox" data-export-sec="duplicates" checked class="rounded text-primary focus:ring-primary">
+                            <span data-i18n="settings.secDuplicates">Tekrar Eden Kayıtlar</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-surface-container-low rounded-lg text-xs cursor-pointer">
+                            <input type="checkbox" data-export-sec="dtypes" checked class="rounded text-primary focus:ring-primary">
+                            <span data-i18n="settings.secDtypes">Veri Tipi Kontrolü</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-surface-container-low rounded-lg text-xs cursor-pointer">
+                            <input type="checkbox" data-export-sec="outliers" checked class="rounded text-primary focus:ring-primary">
+                            <span data-i18n="settings.secOutliers">Aykırı Değerler</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-surface-container-low rounded-lg text-xs cursor-pointer">
+                            <input type="checkbox" data-export-sec="score" checked class="rounded text-primary focus:ring-primary">
+                            <span data-i18n="settings.secScore">Kalite Skoru & Dağılımı</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Logo Yükleme -->
+                <div>
+                    <label class="block text-xs font-bold text-on-surface mb-2" data-i18n="settings.exportLogo">Rapor Kurumsal Logosu</label>
+                    <div class="flex items-center gap-4">
+                        <div id="logoPreviewBox" class="w-24 h-14 bg-surface-container-low border border-border-subtle rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                            <span id="logoPlaceholder" class="text-[10px] text-slate-400 font-medium">Logo Yok</span>
+                            <img id="logoImg" class="max-h-full max-w-full object-contain hidden" alt="Rapor Logosu">
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/svg+xml" class="hidden">
+                            <button id="uploadLogoBtn" type="button" class="px-3 py-1.5 bg-surface-container hover:bg-surface-container-high border border-border-subtle rounded-lg text-xs font-semibold text-on-surface transition-colors flex items-center gap-1.5 cursor-pointer">
+                                <span class="material-symbols-outlined text-sm">cloud_upload</span>
+                                <span data-i18n="settings.exportLogoUpload">Logo Yükle</span>
+                            </button>
+                            <button id="removeLogoBtn" type="button" class="text-left text-[11px] text-error hover:underline hidden cursor-pointer" data-i18n="settings.exportLogoRemove">Logoyu Kaldır</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Format -->
+                <div>
+                    <label class="block text-xs font-bold text-on-surface mb-2" data-i18n="settings.exportFormat">Varsayılan Dışa Aktarma Formatı</label>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <label class="flex items-center justify-center gap-2 p-2.5 border border-border-subtle rounded-lg text-xs font-medium cursor-pointer transition-all hover:bg-surface-container">
+                            <input type="radio" name="exportFormat" value="pdf" class="text-primary focus:ring-primary">
+                            <span>PDF (.pdf)</span>
+                        </label>
+                        <label class="flex items-center justify-center gap-2 p-2.5 border border-border-subtle rounded-lg text-xs font-medium cursor-pointer transition-all hover:bg-surface-container">
+                            <input type="radio" name="exportFormat" value="xlsx" class="text-primary focus:ring-primary">
+                            <span>Excel (.xlsx)</span>
+                        </label>
+                        <label class="flex items-center justify-center gap-2 p-2.5 border border-border-subtle rounded-lg text-xs font-medium cursor-pointer transition-all hover:bg-surface-container">
+                            <input type="radio" name="exportFormat" value="csv" class="text-primary focus:ring-primary">
+                            <span>CSV (.csv)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION D: BİLDİRİM TERCİHLERİ -->
+            <div class="bg-white border border-border-subtle rounded-2xl p-6 shadow-xs flex flex-col gap-6">
+                <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-2xl">notifications_active</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-base font-bold text-on-surface" data-i18n="settings.notifyTitle">Bildirim Tercihleri</h3>
+                        <p class="text-xs text-on-surface-variant" data-i18n="settings.notifySub">Bildirim merkezinin ve sistem uyarılarının çalışma kuralları.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <!-- Toggle 1: Analiz Tamamlandı -->
+                    <div class="flex items-center justify-between gap-4 p-3 bg-surface-container-low rounded-xl">
+                        <div class="flex-1">
+                            <div class="text-xs font-bold text-on-surface" data-i18n="settings.notifyAnalysis">Analiz tamamlandığında bildirim gönder</div>
+                            <div class="text-[11px] text-on-surface-variant">Veri kalitesi ve görselleştirme önerileri hazır olduğunda uyar.</div>
+                        </div>
+                        <input id="notifyAnalysisToggle" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary cursor-pointer">
+                    </div>
+
+                    <!-- Toggle 2: Rapor Hazır -->
+                    <div class="flex items-center justify-between gap-4 p-3 bg-surface-container-low rounded-xl">
+                        <div class="flex-1">
+                            <div class="text-xs font-bold text-on-surface" data-i18n="settings.notifyExport">PDF veya rapor dışa aktarma hazır olduğunda bildir</div>
+                            <div class="text-[11px] text-on-surface-variant">Dışa aktarma işlemi tamamlandığında indirme linki ile uyar.</div>
+                        </div>
+                        <input id="notifyExportToggle" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary cursor-pointer">
+                    </div>
+
+                    <!-- Toggle 3: Sistem Hataları -->
+                    <div class="flex items-center justify-between gap-4 p-3 bg-surface-container-low rounded-xl">
+                        <div class="flex-1">
+                            <div class="text-xs font-bold text-on-surface" data-i18n="settings.notifyErrors">Sistem ve kritik veri uyumsuzluklarında uyar</div>
+                            <div class="text-[11px] text-on-surface-variant">Eksik sütun veya yüksek anomali tespit edildiğinde bildirim üret.</div>
+                        </div>
+                        <input id="notifyErrorsToggle" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary cursor-pointer">
+                    </div>
+
+                    <!-- Toggle 4: Ses -->
+                    <div class="flex items-center justify-between gap-4 p-3 bg-surface-container-low rounded-xl">
+                        <div class="flex-1">
+                            <div class="text-xs font-bold text-on-surface" data-i18n="settings.notifySound">Bildirim seslerini etkinleştir</div>
+                            <div class="text-[11px] text-on-surface-variant">Yeni bildirim düştüğünde hafif uyarı sesi çal.</div>
+                        </div>
+                        <input id="notifySoundToggle" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION E: HESAP & GÜVENLİK (DEMO) -->
+            <div id="accountSection" class="bg-white border border-border-subtle rounded-2xl p-6 shadow-xs flex flex-col gap-6 lg:col-span-2">
+                <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-2xl">shield_person</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-base font-bold text-on-surface" data-i18n="settings.accountTitle">Hesap & Güvenlik (Demo)</h3>
+                        <p class="text-xs text-on-surface-variant" data-i18n="settings.accountSub">Kullanıcı profili ve güvenlik yönetimi görsel demosu.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Profil Bilgileri & Fotoğraf -->
+                    <div id="profile" class="flex flex-col gap-3 rounded-xl p-2 transition-all">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div id="profileAvatarBox" class="w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center overflow-hidden shrink-0">
+                                <span id="profileAvatarPlaceholder" class="material-symbols-outlined text-primary text-3xl">account_circle</span>
+                                <img id="profileAvatarImg" class="w-full h-full object-cover hidden" alt="Avatar">
+                            </div>
+                            <div>
+                                <input type="file" id="avatarFileInput" accept="image/png,image/jpeg" class="hidden">
+                                <button id="uploadAvatarBtn" type="button" class="px-3 py-1.5 bg-surface-container hover:bg-surface-container-high border border-border-subtle rounded-lg text-xs font-semibold text-on-surface transition-colors cursor-pointer" data-i18n="settings.avatarUpload">
+                                    Fotoğraf Yükle
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="profileNameInput" class="block text-xs font-bold text-on-surface mb-1" data-i18n="settings.name">Ad</label>
+                            <input id="profileNameInput" type="text" value="İclal" class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary">
+                        </div>
+                        <div>
+                            <label for="profileSurnameInput" class="block text-xs font-bold text-on-surface mb-1" data-i18n="settings.surname">Soyad</label>
+                            <input id="profileSurnameInput" type="text" value="Dönmez" class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary">
+                        </div>
+                        <div>
+                            <label for="profileEmailInput" class="block text-xs font-bold text-on-surface mb-1" data-i18n="settings.email">E-posta</label>
+                            <input id="profileEmailInput" type="email" value="iclal@trex.io" class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary">
+                        </div>
+                    </div>
+
+                    <!-- Şifre Değiştir -->
+                    <div id="security" class="flex flex-col gap-3 md:border-l md:border-r border-border-subtle md:px-6 rounded-xl p-2 transition-all">
+                        <h4 class="text-xs font-bold text-on-surface" data-i18n="settings.changePassword">Şifre Değiştir</h4>
+                        <div>
+                            <label for="currPasswordInput" class="block text-[11px] text-on-surface-variant mb-1" data-i18n="settings.currentPassword">Mevcut Şifre</label>
+                            <input id="currPasswordInput" type="password" value="••••••••" class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs text-on-surface">
+                        </div>
+                        <div>
+                            <label for="newPasswordInput" class="block text-[11px] text-on-surface-variant mb-1" data-i18n="settings.newPassword">Yeni Şifre</label>
+                            <input id="newPasswordInput" type="password" placeholder="En az 8 karakter" class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs text-on-surface">
+                        </div>
+                        <div>
+                            <label for="confirmPasswordInput" class="block text-[11px] text-on-surface-variant mb-1" data-i18n="settings.confirmPassword">Yeni Şifre (Tekrar)</label>
+                            <input id="confirmPasswordInput" type="password" placeholder="Şifreyi onaylayın" class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 text-xs text-on-surface">
+                        </div>
+                        <button id="updatePasswordBtn" type="button" class="mt-1 py-2 bg-primary text-on-primary text-xs font-semibold rounded-lg hover:bg-primary-container transition-colors cursor-pointer" data-i18n="settings.updatePasswordBtn">
+                            Şifreyi Güncelle
+                        </button>
+                    </div>
+
+                    <!-- Tehlikeli Alan / Hesap Durumu -->
+                    <div class="flex flex-col gap-4">
+                        <h4 class="text-xs font-bold text-error" data-i18n="settings.dangerZone">Hesap Durumu & Tehlikeli Alan</h4>
+                        <div class="p-3 bg-slate-50 border border-border-subtle rounded-xl text-xs">
+                            <div class="font-semibold text-slate-800">Oturum Durumu</div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">Yerel Demo Kullanıcı Oturumu (Admin)</div>
+                            <button id="logoutBtn" type="button" class="mt-3 w-full py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-lg text-xs font-semibold transition-colors cursor-pointer" data-i18n="settings.logoutBtn">
+                                Oturumu Kapat
+                            </button>
+                        </div>
+                        <div class="p-3 bg-red-50/50 border border-red-200/60 rounded-xl text-xs">
+                            <div class="font-semibold text-error">Hesap İptali</div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">Hesap verilerini ve kişisel tercihleri kalıcı olarak siler.</div>
+                            <button id="deleteAccountBtn" type="button" class="mt-3 w-full py-1.5 bg-error text-white hover:bg-red-700 rounded-lg text-xs font-semibold transition-colors cursor-pointer" data-i18n="settings.deleteAccountBtn">
+                                Hesabı Sil
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="/static/components/export-pdf.js"></script>
+    <script src="/static/components/settings.js"></script>
+    <script src="/static/components/i18n.js"></script>
+    <script src="/static/components/notifications.js"></script>
+    <script src="/static/components/profile-menu.js"></script>
+
+    <!-- Page Logic Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const store = window.SettingsStore;
+            if (!store) return;
+
+            // Toast helper
+            function showToast(msg) {
+                let toast = document.getElementById('trexSettingsToast');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.id = 'trexSettingsToast';
+                    toast.className = 'fixed bottom-5 right-5 z-[9999] flex items-center gap-2.5 px-4 py-3 bg-[#1c1b1b] text-white text-xs font-body-md rounded-xl shadow-2xl transition-all duration-300 transform translate-y-10 opacity-0 pointer-events-none';
+                    document.body.appendChild(toast);
+                }
+                toast.innerHTML = `
+                    <span class="material-symbols-outlined text-emerald-400 text-base">check_circle</span>
+                    <span class="font-medium">${msg}</span>
+                `;
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                });
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+                }, 2500);
+            }
+
+            // Sync UI with stored values
+            function syncUI() {
+                const s = store.get();
+
+                // 1. Theme Buttons
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    const val = btn.getAttribute('data-theme-val');
+                    if (val === s.theme) {
+                        btn.classList.add('active', 'border-primary', 'ring-2', 'ring-primary/20');
+                    } else {
+                        btn.classList.remove('active', 'border-primary', 'ring-2', 'ring-primary/20');
+                    }
+                });
+
+                // 2. Lang Buttons
+                document.querySelectorAll('.lang-btn').forEach(btn => {
+                    const val = btn.getAttribute('data-lang-val');
+                    if (val === s.language) {
+                        btn.classList.add('bg-primary', 'text-white', 'border-primary');
+                        btn.classList.remove('bg-surface-container-low', 'text-on-surface');
+                    } else {
+                        btn.classList.remove('bg-primary', 'text-white', 'border-primary');
+                        btn.classList.add('bg-surface-container-low', 'text-on-surface');
+                    }
+                });
+
+                // 3. Palette Buttons
+                document.querySelectorAll('.palette-btn').forEach(btn => {
+                    const val = btn.getAttribute('data-palette-val');
+                    if (val === s.color_palette) {
+                        btn.classList.add('active', 'border-primary', 'ring-2', 'ring-primary/20');
+                    } else {
+                        btn.classList.remove('active', 'border-primary', 'ring-2', 'ring-primary/20');
+                    }
+                });
+
+                // 4. Table Rows
+                const tableRowsSelect = document.getElementById('tableRowsSelect');
+                if (tableRowsSelect) tableRowsSelect.value = String(s.table_preview_rows || 10);
+
+                // 5. CSV Delimiter
+                document.querySelectorAll('input[name="csvDelimiter"]').forEach(r => {
+                    r.checked = (r.value === s.csv_delimiter);
+                });
+
+                // 6. Threshold
+                const thresholdRange = document.getElementById('thresholdRange');
+                const thresholdBadge = document.getElementById('thresholdValBadge');
+                if (thresholdRange && thresholdBadge) {
+                    thresholdRange.value = s.quality_missing_threshold || 20;
+                    thresholdBadge.textContent = `%${thresholdRange.value}`;
+                }
+
+                // 7. Retention Days
+                const retentionInput = document.getElementById('retentionDaysInput');
+                if (retentionInput) retentionInput.value = s.history_retention_days || 30;
+
+                // 8. Export Title
+                const exportTitleInput = document.getElementById('exportTitleInput');
+                if (exportTitleInput) exportTitleInput.value = s.export_title || 'trex DataLab Raporu';
+
+                // 9. Export Sections
+                const sections = Array.isArray(s.export_sections) ? s.export_sections : [];
+                document.querySelectorAll('[data-export-sec]').forEach(chk => {
+                    const sec = chk.getAttribute('data-export-sec');
+                    chk.checked = sections.includes(sec);
+                });
+
+                // 10. Export Format
+                document.querySelectorAll('input[name="exportFormat"]').forEach(r => {
+                    r.checked = (r.value === (s.export_format || 'pdf'));
+                });
+
+                // 11. Logo Preview
+                const logoImg = document.getElementById('logoImg');
+                const logoPlaceholder = document.getElementById('logoPlaceholder');
+                const removeLogoBtn = document.getElementById('removeLogoBtn');
+                if (s.export_logo) {
+                    if (logoImg) {
+                        logoImg.src = s.export_logo;
+                        logoImg.classList.remove('hidden');
+                    }
+                    if (logoPlaceholder) logoPlaceholder.classList.add('hidden');
+                    if (removeLogoBtn) removeLogoBtn.classList.remove('hidden');
+                } else {
+                    if (logoImg) logoImg.classList.add('hidden');
+                    if (logoPlaceholder) logoPlaceholder.classList.remove('hidden');
+                    if (removeLogoBtn) removeLogoBtn.classList.add('hidden');
+                }
+
+                // 12. Notification Toggles
+                const nAnalysis = document.getElementById('notifyAnalysisToggle');
+                const nExport = document.getElementById('notifyExportToggle');
+                const nErrors = document.getElementById('notifyErrorsToggle');
+                const nSound = document.getElementById('notifySoundToggle');
+
+                if (nAnalysis) nAnalysis.checked = !!s.notify_analysis_complete;
+                if (nExport) nExport.checked = !!s.notify_export_ready;
+                if (nErrors) nErrors.checked = !!s.notify_system_errors;
+                if (nSound) nSound.checked = !!s.notification_sound;
+
+                // 13. Profile
+                const profile = s.user_profile || {};
+                const nameInp = document.getElementById('profileNameInput');
+                const surnameInp = document.getElementById('profileSurnameInput');
+                const emailInp = document.getElementById('profileEmailInput');
+                if (nameInp) nameInp.value = profile.name || '';
+                if (surnameInp) surnameInp.value = profile.surname || '';
+                if (emailInp) emailInp.value = profile.email || '';
+
+                const pAvatarImg = document.getElementById('profileAvatarImg');
+                const pAvatarPlh = document.getElementById('profileAvatarPlaceholder');
+                const hAvatarImg = document.getElementById('headerAvatarImg');
+                const hAvatarIcn = document.getElementById('headerAvatarIcon');
+
+                if (profile.avatar) {
+                    if (pAvatarImg) { pAvatarImg.src = profile.avatar; pAvatarImg.classList.remove('hidden'); }
+                    if (pAvatarPlh) pAvatarPlh.classList.add('hidden');
+                    if (hAvatarImg) { hAvatarImg.src = profile.avatar; hAvatarImg.classList.remove('hidden'); }
+                    if (hAvatarIcn) hAvatarIcn.classList.add('hidden');
+                } else {
+                    if (pAvatarImg) pAvatarImg.classList.add('hidden');
+                    if (pAvatarPlh) pAvatarPlh.classList.remove('hidden');
+                    if (hAvatarImg) hAvatarImg.classList.add('hidden');
+                    if (hAvatarIcn) hAvatarIcn.classList.remove('hidden');
+                }
+            }
+
+            // Event Listeners
+
+            // 1. Theme Buttons
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const themeVal = btn.getAttribute('data-theme-val');
+                    store.set({ theme: themeVal });
+                    syncUI();
+                    showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                });
+            });
+
+            // 2. Language Buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const langVal = btn.getAttribute('data-lang-val');
+                    window.setLanguage(langVal);
+                    syncUI();
+                    showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                });
+            });
+
+            // 3. Palette Buttons
+            document.querySelectorAll('.palette-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const paletteVal = btn.getAttribute('data-palette-val');
+                    store.set({ color_palette: paletteVal });
+                    syncUI();
+                    showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                });
+            });
+
+            // 4. Table Rows Select
+            const tableRowsSelect = document.getElementById('tableRowsSelect');
+            if (tableRowsSelect) {
+                tableRowsSelect.addEventListener('change', (e) => {
+                    store.set({ table_preview_rows: parseInt(e.target.value, 10) });
+                    showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                });
+            }
+
+            // 5. Delimiter Radio
+            document.querySelectorAll('input[name="csvDelimiter"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        store.set({ csv_delimiter: e.target.value });
+                        showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                    }
+                });
+            });
+
+            // 6. Threshold Slider
+            const thresholdRange = document.getElementById('thresholdRange');
+            const thresholdBadge = document.getElementById('thresholdValBadge');
+            if (thresholdRange) {
+                thresholdRange.addEventListener('input', (e) => {
+                    if (thresholdBadge) thresholdBadge.textContent = `%${e.target.value}`;
+                });
+                thresholdRange.addEventListener('change', (e) => {
+                    store.set({ quality_missing_threshold: parseInt(e.target.value, 10) });
+                    showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                });
+            }
+
+            // 7. Retention Days
+            const retentionInput = document.getElementById('retentionDaysInput');
+            if (retentionInput) {
+                retentionInput.addEventListener('change', (e) => {
+                    store.set({ history_retention_days: parseInt(e.target.value, 10) || 30 });
+                    showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                });
+            }
+
+            // 8. Export Title
+            const exportTitleInput = document.getElementById('exportTitleInput');
+            if (exportTitleInput) {
+                exportTitleInput.addEventListener('change', (e) => {
+                    store.set({ export_title: e.target.value });
+                    showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                });
+            }
+
+            // 9. Export Sections
+            document.querySelectorAll('[data-export-sec]').forEach(chk => {
+                chk.addEventListener('change', () => {
+                    const activeSecs = [];
+                    document.querySelectorAll('[data-export-sec]').forEach(el => {
+                        if (el.checked) activeSecs.push(el.getAttribute('data-export-sec'));
+                    });
+                    store.set({ export_sections: activeSecs });
+                    showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                });
+            });
+
+            // 10. Export Format Radio
+            document.querySelectorAll('input[name="exportFormat"]').forEach(r => {
+                r.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        store.set({ export_format: e.target.value });
+                        showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                    }
+                });
+            });
+
+            // 11. Logo Upload & Remove
+            const logoFileInput = document.getElementById('logoFileInput');
+            const uploadLogoBtn = document.getElementById('uploadLogoBtn');
+            const removeLogoBtn = document.getElementById('removeLogoBtn');
+
+            if (uploadLogoBtn && logoFileInput) {
+                uploadLogoBtn.addEventListener('click', () => logoFileInput.click());
+                logoFileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (re) => {
+                        store.set({ export_logo: re.target.result });
+                        syncUI();
+                        showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+            if (removeLogoBtn) {
+                removeLogoBtn.addEventListener('click', () => {
+                    store.set({ export_logo: null });
+                    syncUI();
+                    showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                });
+            }
+
+            // 12. Notification Toggles
+            ['notifyAnalysisToggle', 'notifyExportToggle', 'notifyErrorsToggle', 'notifySoundToggle'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', () => {
+                        store.set({
+                            notify_analysis_complete: document.getElementById('notifyAnalysisToggle').checked,
+                            notify_export_ready: document.getElementById('notifyExportToggle').checked,
+                            notify_system_errors: document.getElementById('notifyErrorsToggle').checked,
+                            notification_sound: document.getElementById('notifySoundToggle').checked
+                        });
+                        showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                    });
+                }
+            });
+
+            // 13. Profile Fields
+            ['profileNameInput', 'profileSurnameInput', 'profileEmailInput'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', () => {
+                        store.set({
+                            user_profile: {
+                                name: document.getElementById('profileNameInput').value,
+                                surname: document.getElementById('profileSurnameInput').value,
+                                email: document.getElementById('profileEmailInput').value
+                            }
+                        });
+                        showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                    });
+                }
+            });
+
+            // 14. Avatar Upload
+            const avatarFileInput = document.getElementById('avatarFileInput');
+            const uploadAvatarBtn = document.getElementById('uploadAvatarBtn');
+            if (uploadAvatarBtn && avatarFileInput) {
+                uploadAvatarBtn.addEventListener('click', () => avatarFileInput.click());
+                avatarFileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (re) => {
+                        const cur = store.get();
+                        store.set({
+                            user_profile: {
+                                ...cur.user_profile,
+                                avatar: re.target.result
+                            }
+                        });
+                        syncUI();
+                        showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // 15. Password Update (Demo)
+            const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+            if (updatePasswordBtn) {
+                updatePasswordBtn.addEventListener('click', () => {
+                    showToast(window.t('settings.demoAlert', 'Demo Modu: Bu uygulamada gerçek hesap sistemi bulunmuyor.'));
+                });
+            }
+
+            // 16. Logout & Delete Account (Demo)
+            const logoutBtn = document.getElementById('logoutBtn');
+            const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    showToast(window.t('settings.demoAlert', 'Demo Modu: Bu uygulamada gerçek hesap sistemi bulunmuyor.'));
+                });
+            }
+            if (deleteAccountBtn) {
+                deleteAccountBtn.addEventListener('click', () => {
+                    showToast(window.t('settings.demoAlert', 'Demo Modu: Bu uygulamada gerçek hesap sistemi bulunmuyor.'));
+                });
+            }
+
+            // 17. Reset to Defaults
+            const resetDefaultsBtn = document.getElementById('resetDefaultsBtn');
+            if (resetDefaultsBtn) {
+                resetDefaultsBtn.addEventListener('click', () => {
+                    if (confirm(window.t('settings.resetConfirm', 'Tüm ayarları varsayılan değerlerine döndürmek istediğinize emin misiniz?'))) {
+                        store.reset();
+                        syncUI();
+                        showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                    }
+                });
+            }
+
+            // 18. Clear Cache
+            const clearCacheBtn = document.getElementById('clearCacheBtn');
+            if (clearCacheBtn) {
+                clearCacheBtn.addEventListener('click', () => {
+                    if (confirm(window.t('settings.clearCacheConfirm', 'Tüm önbellek ve oturum verileri silinecek. Onaylıyor musunuz?'))) {
+                        store.clearCache();
+                        syncUI();
+                        showToast(window.t('settings.savedToast', 'Ayarlar kaydedildi ✓'));
+                        setTimeout(() => window.location.reload(), 600);
+                    }
+                });
+            }
+
+            // 19. Hash Navigation (e.g. #profile, #security)
+            function handleHash() {
+                if (window.location.hash) {
+                    const target = document.querySelector(window.location.hash);
+                    if (target) {
+                        setTimeout(() => {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            target.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+                            setTimeout(() => target.classList.remove('ring-2', 'ring-primary', 'ring-offset-2'), 2500);
+                        }, 150);
+                    }
+                }
+            }
+            window.addEventListener('hashchange', handleHash);
+            handleHash();
+
+            // Initialize UI
+            syncUI();
+        });
+    </script>
+</body>
+
+</html>
