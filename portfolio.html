@@ -446,7 +446,7 @@
                     </div>
 
                     <!-- Right Column: Model Results Table (8/12) -->
-                    <div class="col-span-12 lg:col-span-8 flex flex-col items-start">
+                    <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
                         <section data-export-section="models" data-export-title="Model Sonuçları (AI4I 2020)" class="bg-surface border border-border-subtle rounded-xl shadow-sm overflow-hidden w-full self-start">
                             <div>
                                 <div class="p-4 border-b border-border-subtle bg-surface-container-lowest flex justify-between items-center">
@@ -557,6 +557,95 @@
                                 <span class="font-label-mono text-[11px]">Metrikler: Test Seti</span>
                             </div>
                         </section>
+
+                        <!-- Alt Bileşenler: Feature Importance + Staj İstatistik Özeti -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                            <!-- 1. Feature Importance -->
+                            <section data-export-section="feature-importance" data-export-title="Özellik Önemi (Feature Importance)" class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col">
+                                <h3 class="font-label-mono text-xs text-on-surface-variant uppercase mb-4 flex items-center gap-2 font-bold">
+                                    <span class="material-symbols-outlined text-primary text-[18px]">tune</span>
+                                    <span>Özellik Önemi (Random Forest)</span>
+                                </h3>
+                                <div class="space-y-4 flex-1 flex flex-col justify-center">
+                                    <!-- Torque -->
+                                    <div>
+                                        <div class="flex justify-between items-center text-xs mb-1.5">
+                                            <span class="text-on-surface font-medium">Torque</span>
+                                            <span class="font-label-mono font-bold text-primary">0.28</span>
+                                        </div>
+                                        <div class="h-2.5 w-full bg-surface-container rounded-full overflow-hidden">
+                                            <div class="h-full bg-primary rounded-full" style="width:70%"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Tool Wear -->
+                                    <div>
+                                        <div class="flex justify-between items-center text-xs mb-1.5">
+                                            <span class="text-on-surface font-medium">Tool Wear</span>
+                                            <span class="font-label-mono font-bold text-on-surface-variant">0.24</span>
+                                        </div>
+                                        <div class="h-2.5 w-full bg-surface-container rounded-full overflow-hidden">
+                                            <div class="h-full bg-primary/80 rounded-full" style="width:60%"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Rotational Speed -->
+                                    <div>
+                                        <div class="flex justify-between items-center text-xs mb-1.5">
+                                            <span class="text-on-surface font-medium">Rotational Speed</span>
+                                            <span class="font-label-mono font-bold text-on-surface-variant">0.16</span>
+                                        </div>
+                                        <div class="h-2.5 w-full bg-surface-container rounded-full overflow-hidden">
+                                            <div class="h-full bg-primary/60 rounded-full" style="width:40%"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Air Temperature -->
+                                    <div>
+                                        <div class="flex justify-between items-center text-xs mb-1.5">
+                                            <span class="text-on-surface font-medium">Air Temperature</span>
+                                            <span class="font-label-mono font-bold text-on-surface-variant">0.11</span>
+                                        </div>
+                                        <div class="h-2.5 w-full bg-surface-container rounded-full overflow-hidden">
+                                            <div class="h-full bg-primary/40 rounded-full" style="width:27%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="mt-4 pt-3 border-t border-border-subtle text-[11px] text-slate-gray leading-relaxed">
+                                    Random Forest modelinde arıza tahminini en güçlü etkileyen sensörler; Torque ve Tool Wear öne çıkar.
+                                </p>
+                            </section>
+
+                            <!-- 2. Staj İstatistik Özeti -->
+                            <section data-export-section="stats-summary" data-export-title="Staj İstatistik Özeti" class="bg-surface border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col">
+                                <h3 class="font-label-mono text-xs text-on-surface-variant uppercase mb-4 flex items-center gap-2 font-bold">
+                                    <span class="material-symbols-outlined text-primary text-[18px]">summarize</span>
+                                    <span>Staj İstatistik Özeti</span>
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3 flex-1 content-center">
+                                    <!-- 635 Duruş -->
+                                    <div class="bg-surface-container-low rounded-xl p-4 text-center flex flex-col items-center justify-center">
+                                        <span class="font-headline-md text-2xl font-bold text-primary">635</span>
+                                        <span class="text-[11px] text-slate-gray mt-1 uppercase tracking-wider font-semibold">Kayıt Altı Duruş</span>
+                                    </div>
+                                    <!-- 5 Arıza Tipi -->
+                                    <div class="bg-surface-container-low rounded-xl p-4 text-center flex flex-col items-center justify-center">
+                                        <span class="font-headline-md text-2xl font-bold text-primary">5</span>
+                                        <span class="text-[11px] text-slate-gray mt-1 uppercase tracking-wider font-semibold">AI4I Arıza Tipi</span>
+                                    </div>
+                                    <!-- 12 Grafik -->
+                                    <div class="bg-surface-container-low rounded-xl p-4 text-center flex flex-col items-center justify-center">
+                                        <span class="font-headline-md text-2xl font-bold text-primary">12</span>
+                                        <span class="text-[11px] text-slate-gray mt-1 uppercase tracking-wider font-semibold">Analiz Grafiği</span>
+                                    </div>
+                                    <!-- OEE Ortalama -->
+                                    <div class="bg-surface-container-low rounded-xl p-4 text-center flex flex-col items-center justify-center">
+                                        <span class="font-headline-md text-2xl font-bold text-primary">0.59</span>
+                                        <span class="text-[11px] text-slate-gray mt-1 uppercase tracking-wider font-semibold">OEE Ortalama</span>
+                                    </div>
+                                </div>
+                                <p class="mt-4 pt-3 border-t border-border-subtle text-[11px] text-slate-gray leading-relaxed">
+                                    OEE ve duruş analiziyle ekipman kayıpları haritalandı; AI4I ile makine arızaları sınıflandırıldı.
+                                </p>
+                            </section>
+                        </div>
                     </div>
                 </div>
 
@@ -885,6 +974,7 @@
             window.addEventListener('resize', removeTooltip);
         })();
     </script>
+    <script src="/static/components/ai-assistant.js"></script>
     <script src="/static/components/settings.js"></script>
     <script src="/static/components/i18n.js"></script>
     <script src="/static/components/notifications.js"></script>

@@ -1,5 +1,7 @@
 import io
 import os
+import json
+import requests
 from typing import Dict, Any, Optional
 from fastapi import FastAPI, File, UploadFile, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,6 +9,17 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import pandas as pd
 import numpy as np
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
+user_gemini_api_key: str = GEMINI_API_KEY
 
 app = FastAPI(title="trex DataLab API", version="1.0.0")
 
@@ -534,6 +547,7 @@ async def get_quality_report():
             "overall_rate": outlier_rate,
             "method": "IQR"
         },
+        "numeric_columns": [str(c) for c in df.select_dtypes(include=[np.number]).columns],
         "dtypes": dtypes_list
     })
 
@@ -1254,7 +1268,14 @@ async def get_visualization_chart(
 
         return JSONResponse(content={
             "box": [round(whisker_min, 2), round(q1, 2), round(med, 2), round(q3, 2), round(whisker_max, 2)],
-            "outliers": outliers[:100]
+            "outliers": outliers[:100],
+            "q1": round(q1, 2),
+            "q3": round(q3, 2),
+            "iqr": round(iqr, 2),
+            "lower_bound": round(low_bound, 2),
+            "upper_bound": round(high_bound, 2),
+            "outlier_count": len(outliers),
+            "total": int(len(series))
         })
 
     elif type == "bar":
@@ -1335,6 +1356,125 @@ async def get_visualization_chart(
 
     else:
         raise HTTPException(status_code=400, detail=f"Desteklenmeyen grafik tipi: {type}")
+
+
+def build_ai_context(page: str) -> dict:
+    global processed_df_cache, active_df_cache, active_dataset, dropped_columns
+    df = processed_df_cache if processed_df_cache is not None else (active_df_cache if active_df_cache is not None else None)
+    active_cols = [c for c in df.columns if c not in dropped_columns] if df is not None else []
+    context = {
+        "page": page,
+        "dataset_loaded": df is not None,
+        "dataset": None,
+    }
+    if df is not None:
+        summary = {
+            "filename": active_dataset.get("filename", "bilinmiyor"),
+            "rows": int(len(df)),
+            "columns": [str(c) for c in active_cols],
+            "col_count": len(active_cols),
+        }
+        context["dataset"] = summary
+    return context
+
+
+def rule_based_reply(question: str, context: dict) -> str:
+    q = question.lower()
+    ds = context.get("dataset")
+
+    if not context.get("dataset_loaded") or ds is None:
+        return ("Henüz bir veri seti yüklenmemiş. 'Yeni Veri Yükle' butonundan bir CSV dosyası "
+                "yükleyin; ardından veri kalitesi, görselleştirme ve model analizi sorularınızı yanıtlayabilirim.")
+
+    rows, cols = ds["rows"], ds["col_count"]
+
+    if "kalite" in q or "özet" in q or "quality" in q:
+        return (f"Şu an '{ds['filename']}' veri seti yüklü ({rows} satır, {cols} sütun). "
+                "Veri kalitesi detayları için Data Quality sayfasını inceleyebilirsiniz; "
+                "kalite skoru ve eksik veri oranları orada listelenir.")
+    if "değişken" in q or "önemli" in q or "sütun" in q or "variable" in q:
+        col_sample = ', '.join(ds['columns'][:12])
+        return (f"Veri setinde şu sütunlar var: {col_sample}"
+                + (" ..." if cols > 12 else "")
+                + ". En önemli değişkenleri belirlemek için Visualization sayfasındaki korelasyon "
+                  "matrisi ve model metriklerine bakabilirsiniz.")
+    if "aykırı" in q or "outlier" in q:
+        return "Aykırı değer analizi için Data Quality sayfasındaki 'Aykırı Değer Analizi (IQR)' bölümüne ve Visualization'daki kutu grafiklerine bakabilirsiniz."
+    if "model" in q or "başarı" in q or "f1" in q or "accuracy" in q:
+        return ("Model sonuçları için Portfolio sayfasındaki 'Model Sonuçları (AI4I 2020)' tablosuna "
+                "bakabilirsiniz. En iyi performans Random Forest modelinde görülmektedir.")
+    if "sayfa" in q or "nerede" in q:
+        return f"Şu an '{context.get('page')}' sayfasındasınız. Veri kalitesi için Data Quality, ön işleme için Preprocessing, grafikler için Visualization sekmelerini kullanabilirsiniz."
+    return (f"Bu soruya veri bağlamından kural tabanlı yanıt verebildim: şu an '{ds['filename']}' "
+            f"yüklü ({rows} satır, {cols} sütun). Daha akıllı yanıtlar için Ayarlar sayfasından Gemini API anahtarı girebilirsiniz.")
+
+
+@app.post("/api/ai-assistant/settings")
+async def set_ai_settings(payload: dict):
+    global user_gemini_api_key
+    key = (payload.get("apiKey") or "").strip()
+    if key:
+        user_gemini_api_key = key
+        return JSONResponse(content={"ok": True, "message": "Gemini API anahtarı kaydedildi."})
+    return JSONResponse(status_code=400, content={"ok": False, "message": "API anahtarı boş olamaz."})
+
+
+@app.get("/api/ai-assistant/settings")
+async def get_ai_settings():
+    global user_gemini_api_key
+    has_key = bool(user_gemini_api_key)
+    masked_key = ""
+    if has_key:
+        masked_key = user_gemini_api_key[:4] + "..." + user_gemini_api_key[-4:] if len(user_gemini_api_key) > 8 else "***"
+    return JSONResponse(content={"has_key": has_key, "masked_key": masked_key})
+
+
+@app.post("/api/ai-assistant/chat")
+async def ai_assistant_chat(payload: dict):
+    global user_gemini_api_key
+    question = (payload.get("message") or "").strip()
+    page = (payload.get("page") or "index.html").strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="Soru boş olamaz.")
+
+    context = build_ai_context(page)
+
+    system_prompt = (
+        "Sen trex DataLab uygulamasının AI Veri Asistanısın. Kullanıcıya Türkçe, net ve teknik "
+        "fakat anlaşılır cevaplar ver. Aktif sayfa ve yüklenen veri seti hakkında şu bağlamı kullan:\n"
+        + json.dumps(context, ensure_ascii=False, default=str)
+        + "\n\nCevaplarını verirken yüklü veri setine ve aktif sayfaya doğrudan referans ver. "
+          "Veri seti yüklü değilse, kullanıcıya önce CSV yüklemesi gerektiğini söyle."
+    )
+
+    # 1) Gemini deneme
+    if user_gemini_api_key:
+        try:
+            headers = {"Authorization": f"Bearer {user_gemini_api_key}", "Content-Type": "application/json"}
+            body = {
+                "model": GEMINI_MODEL,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": question},
+                ],
+                "temperature": 0.4,
+                "max_tokens": 800,
+            }
+            r = requests.post(
+                GEMINI_OPENAI_BASE + "chat/completions",
+                headers=headers, json=body, timeout=30,
+            )
+            if r.status_code == 200:
+                data = r.json()
+                reply = data["choices"][0]["message"]["content"].strip()
+                return JSONResponse(content={"reply": reply, "source": "gemini", "context": context})
+
+            print("[AI] Gemini hatası:", r.status_code, r.text[:300])
+        except Exception as e:
+            print("[AI] Gemini isteği başarısız:", e)
+
+    # 2) Kural tabanlı fallback
+    return JSONResponse(content={"reply": rule_based_reply(question, context), "source": "fallback", "context": context})
 
 
 @app.post("/api/reset")

@@ -145,6 +145,18 @@ def test_api():
     assert r_hist.status_code == 200
     assert "bins" in r_hist.json()
 
+    r_boxplot = client.get(f"/api/visualization/chart?type=boxplot&column={viz_data['numeric_columns'][0]}")
+    assert r_boxplot.status_code == 200
+    bp_json = r_boxplot.json()
+    assert "box" in bp_json
+    assert "q1" in bp_json
+    assert "q3" in bp_json
+    assert "iqr" in bp_json
+    assert "lower_bound" in bp_json
+    assert "upper_bound" in bp_json
+    assert "outlier_count" in bp_json
+    assert "total" in bp_json
+
     r_bar = client.get(f"/api/visualization/chart?type=bar&column={viz_data['categorical_columns'][0]}")
     assert r_bar.status_code == 200
     assert "items" in r_bar.json()
@@ -156,7 +168,7 @@ def test_api():
     r_box = client.get(f"/api/visualization/chart?type=grouped_boxplot&cat={viz_data['categorical_columns'][0]}&num={viz_data['numeric_columns'][0]}")
     assert r_box.status_code == 200
     assert "groups" in r_box.json()
-    print("[OK] GET /api/visualization/chart types OK")
+    print("[OK] GET /api/visualization/chart types OK (including boxplot metrics)")
 
     print("Testing GET /api/visualization/focus (numeric and categorical) ...")
     num_col = viz_data['numeric_columns'][0]
@@ -207,6 +219,38 @@ def test_api():
     assert r_support_html.status_code == 200
     print("[OK] GET /support and /support.html OK")
 
+    print("Testing AI Assistant endpoints (with active dataset) ...")
+    r_ai_sett_get = client.get("/api/ai-assistant/settings")
+    assert r_ai_sett_get.status_code == 200
+    assert "has_key" in r_ai_sett_get.json()
+
+    r_ai_sett_post = client.post("/api/ai-assistant/settings", json={"apiKey": "AIzaSyFakeKey123456789"})
+    assert r_ai_sett_post.status_code == 200
+    assert r_ai_sett_post.json()["ok"] is True
+
+    r_ai_sett_empty = client.post("/api/ai-assistant/settings", json={"apiKey": ""})
+    assert r_ai_sett_empty.status_code == 400
+
+    # Test chat with active dataset
+    r_chat_quality = client.post("/api/ai-assistant/chat", json={"message": "Veri kalitesini özetle", "page": "data-quality.html"})
+    assert r_chat_quality.status_code == 200
+    res_q = r_chat_quality.json()
+    assert "reply" in res_q
+    assert res_q["context"]["dataset_loaded"] is True
+    assert "test_data.csv" in res_q["context"]["dataset"]["filename"]
+
+    r_chat_cols = client.post("/api/ai-assistant/chat", json={"message": "En önemli değişkenler hangileri?", "page": "visualization.html"})
+    assert r_chat_cols.status_code == 200
+    assert "reply" in r_chat_cols.json()
+
+    r_chat_outliers = client.post("/api/ai-assistant/chat", json={"message": "Aykırı değerler var mı?", "page": "data-quality.html"})
+    assert r_chat_outliers.status_code == 200
+    assert "reply" in r_chat_outliers.json()
+
+    r_chat_empty = client.post("/api/ai-assistant/chat", json={"message": ""})
+    assert r_chat_empty.status_code == 400
+    print("[OK] AI Assistant endpoints validated OK")
+
     print("Testing DELETE /api/reset ...")
     r = client.delete("/api/reset")
     assert r.status_code == 200
@@ -216,6 +260,18 @@ def test_api():
     r_empty_viz = client.get("/api/visualization/overview")
     assert r_empty_viz.status_code == 409
     print("[OK] DELETE /api/reset OK and /api/visualization/overview returns 409 on empty")
+
+    print("Testing AI Assistant chat (after reset / empty dataset) ...")
+    # Reset API key to force fallback test
+    client.post("/api/ai-assistant/settings", json={"apiKey": " "})
+    from main import user_gemini_api_key
+    import main
+    main.user_gemini_api_key = ""
+
+    r_chat_no_ds = client.post("/api/ai-assistant/chat", json={"message": "Veri kalitesini özetle", "page": "index.html"})
+    assert r_chat_no_ds.status_code == 200
+    assert "yüklenmemiş" in r_chat_no_ds.json()["reply"]
+    print("[OK] AI Assistant empty dataset fallback OK")
 
     print("\nALL BACKEND TESTS PASSED SUCCESSFULLY!")
 

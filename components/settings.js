@@ -26,6 +26,7 @@
         notify_export_ready: true,
         notify_system_errors: true,
         notification_sound: false,
+        geminiApiKey: '',
         user_profile: {
             name: 'İclal',
             surname: 'Dönmez',

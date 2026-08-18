@@ -618,11 +618,41 @@
                 </div>
             </div>
 
+            <!-- SECTION F: AI ASİSTANI (GEMINI) -->
+            <div id="aiSection" class="bg-white border border-border-subtle rounded-2xl p-6 shadow-xs flex flex-col gap-6 lg:col-span-2">
+                <div class="flex items-center gap-3 pb-3 border-b border-border-subtle">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-2xl">smart_toy</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-base font-bold text-on-surface">AI Asistanı (Google Gemini)</h3>
+                        <p class="text-xs text-on-surface-variant">Yapay zeka asistanının veri odaklı akıllı yanıtlar vermesi için Google Gemini API anahtarınızı girin. Girilmezse yerleşik kural tabanlı yanıtlar kullanılır.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-4">
+                    <div class="flex-1">
+                        <label for="geminiApiKeyInput" class="block text-xs font-bold text-on-surface mb-1.5">Google Gemini API Anahtarı (API Key)</label>
+                        <div class="relative">
+                            <input id="geminiApiKeyInput" type="password" placeholder="AIzaSy..." class="w-full bg-surface-container-low border border-border-subtle rounded-lg px-3 py-2 pr-10 text-xs font-body-md text-on-surface focus:outline-none focus:border-primary transition-colors">
+                            <button type="button" id="toggleApiKeyVisibility" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer">
+                                <span class="material-symbols-outlined text-base">visibility</span>
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1">Anahtarınız güvenli bir şekilde tarayıcınızda ve oturum boyunca sunucu belleğinde saklanır.</p>
+                    </div>
+                    <button id="saveAiApiKeyBtn" type="button" class="px-5 py-2 bg-primary text-on-primary rounded-lg text-xs font-semibold hover:bg-primary-container transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+                        <span class="material-symbols-outlined text-base">save</span>
+                        <span>Anahtarı Kaydet</span>
+                    </button>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <!-- Scripts -->
-    <script src="/static/components/export-pdf.js"></script>
+    <script src="/static/components/ai-assistant.js"></script>
     <script src="/static/components/settings.js"></script>
     <script src="/static/components/i18n.js"></script>
     <script src="/static/components/notifications.js"></script>
@@ -783,6 +813,12 @@
                     if (pAvatarPlh) pAvatarPlh.classList.remove('hidden');
                     if (hAvatarImg) hAvatarImg.classList.add('hidden');
                     if (hAvatarIcn) hAvatarIcn.classList.remove('hidden');
+                }
+
+                // 14. Gemini API Key
+                const apiKeyInp = document.getElementById('geminiApiKeyInput');
+                if (apiKeyInp && s.geminiApiKey) {
+                    apiKeyInp.value = s.geminiApiKey;
                 }
             }
 
@@ -993,6 +1029,42 @@
             if (deleteAccountBtn) {
                 deleteAccountBtn.addEventListener('click', () => {
                     showToast(window.t('settings.demoAlert', 'Demo Modu: Bu uygulamada gerçek hesap sistemi bulunmuyor.'));
+                });
+            }
+
+            // 16b. Gemini API Key Actions
+            const saveAiApiKeyBtn = document.getElementById('saveAiApiKeyBtn');
+            const apiKeyInpEl = document.getElementById('geminiApiKeyInput');
+            const toggleApiKeyVisibility = document.getElementById('toggleApiKeyVisibility');
+
+            if (toggleApiKeyVisibility && apiKeyInpEl) {
+                toggleApiKeyVisibility.addEventListener('click', () => {
+                    const isPassword = apiKeyInpEl.type === 'password';
+                    apiKeyInpEl.type = isPassword ? 'text' : 'password';
+                    const icon = toggleApiKeyVisibility.querySelector('span');
+                    if (icon) icon.textContent = isPassword ? 'visibility_off' : 'visibility';
+                });
+            }
+
+            if (saveAiApiKeyBtn && apiKeyInpEl) {
+                saveAiApiKeyBtn.addEventListener('click', async () => {
+                    const key = apiKeyInpEl.value.trim();
+                    store.set({ geminiApiKey: key });
+                    try {
+                        const res = await fetch('/api/ai-assistant/settings', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ apiKey: key })
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.ok) {
+                            showToast('Gemini API anahtarı kaydedildi ✓');
+                        } else {
+                            showToast('API anahtarı yerel olarak kaydedildi ✓');
+                        }
+                    } catch (e) {
+                        showToast('API anahtarı yerel olarak kaydedildi ✓');
+                    }
                 });
             }
 
