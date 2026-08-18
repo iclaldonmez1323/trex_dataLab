@@ -19,7 +19,7 @@ except ImportError:
     pass
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash-latest")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 user_gemini_api_key: str = GEMINI_API_KEY
 
 # Sohbet oturumları (in-memory): session_id -> history listesi
