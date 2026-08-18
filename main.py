@@ -1016,6 +1016,184 @@ async def get_visualization_overview():
     })
 
 
+@app.get("/api/visualization/focus")
+async def get_visualization_focus(column: str):
+    global processed_df_cache, active_df_cache, original_df_cache, active_dataset, dropped_columns
+    df = processed_df_cache if processed_df_cache is not None else (active_df_cache if active_df_cache is not None else original_df_cache)
+    if df is None or not active_dataset:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Veri seti bulunamadı. Lütfen önce bir CSV dosyası yükleyin."
+        )
+
+    active_cols = [c for c in df.columns if c not in dropped_columns]
+    curr_df = df[active_cols]
+    if column not in curr_df.columns:
+        raise HTTPException(status_code=400, detail="Geçersiz odak değişkeni.")
+
+    numeric_cols = [c for c in active_cols if pd.api.types.is_numeric_dtype(curr_df[c])]
+    categorical_cols = [c for c in active_cols if c not in numeric_cols]
+    is_numeric = column in numeric_cols
+
+    suggestions = []
+    univariate = None
+    note = None
+
+    if is_numeric:
+        # --- Galeri: odak merkezli ---
+        # 1. Histogram (odak sütunu)
+        suggestions.append({
+            "type": "histogram",
+            "column": str(column),
+            "title": f"{column} Dağılımı",
+            "reason": "Sayısal Dağılım (Odak)"
+        })
+        # 2. Diğer sayısal sütunlarla scatter (max 3)
+        others = [c for c in numeric_cols if c != column]
+        for other in others[:3]:
+            suggestions.append({
+                "type": "scatter",
+                "x": str(column),
+                "y": str(other),
+                "title": f"{column} × {other}",
+                "reason": "Odak Değişkeni İlişkisi"
+            })
+        # 3. Boxplot (odak sütunu)
+        suggestions.append({
+            "type": "boxplot",
+            "column": str(column),
+            "title": f"{column} Kutu Grafiği",
+            "reason": "Uç Değer ve Çeyreklikler"
+        })
+
+        # --- Univariate: istatistikler + histogram + boxplot ---
+        series = pd.to_numeric(curr_df[column], errors="coerce").dropna()
+        stats = {}
+        if len(series) > 0:
+            stats = {
+                "count": int(len(series)),
+                "mean": round(float(series.mean()), 2),
+                "median": round(float(series.median()), 2),
+                "std": round(float(series.std()), 2) if len(series) > 1 else 0.0,
+                "min": round(float(series.min()), 2),
+                "max": round(float(series.max()), 2)
+            }
+        else:
+            stats = {"count": 0, "mean": 0.0, "median": 0.0, "std": 0.0, "min": 0.0, "max": 0.0}
+
+        histogram = None
+        if len(series) > 0:
+            counts, bin_edges = np.histogram(series, bins=min(15, max(5, int(np.sqrt(len(series))))))
+            histogram = {
+                "bins": [round(float(b), 2) for b in bin_edges],
+                "bin_labels": [f"{bin_edges[i]:.1f} - {bin_edges[i+1]:.1f}" for i in range(len(counts))],
+                "counts": [int(c) for c in counts]
+            }
+        else:
+            histogram = {"bins": [0, 1], "bin_labels": ["0 - 1"], "counts": [0]}
+
+        boxplot = {"box": [0, 0, 0, 0, 0], "outliers": []}
+        if len(series) > 0:
+            q1 = float(series.quantile(0.25))
+            med = float(series.median())
+            q3 = float(series.quantile(0.75))
+            iqr = q3 - q1
+            low_bound = q1 - 1.5 * iqr
+            high_bound = q3 + 1.5 * iqr
+            non_outliers = series[(series >= low_bound) & (series <= high_bound)]
+            outliers = [round(float(v), 2) for v in series[(series < low_bound) | (series > high_bound)].tolist()]
+            boxplot = {
+                "box": [
+                    round(float(non_outliers.min()), 2) if len(non_outliers) > 0 else round(float(series.min()), 2),
+                    round(q1, 2), round(med, 2), round(q3, 2),
+                    round(float(non_outliers.max()), 2) if len(non_outliers) > 0 else round(float(series.max()), 2)
+                ],
+                "outliers": outliers[:100]
+            }
+
+        univariate = {
+            "is_numeric": True,
+            "stats": stats,
+            "histogram": histogram,
+            "boxplot": boxplot
+        }
+
+    else:
+        # --- Kategorik odak: bar + grouped boxplot + not ---
+        # 1. Bar (odak sütunu)
+        suggestions.append({
+            "type": "bar",
+            "column": str(column),
+            "title": f"{column} Kategorileri",
+            "reason": "Kategori Sayıları (Odak)"
+        })
+        # 2. Kategorilere göre sayısal dağılım (max 3 sayısal sütun)
+        for num in numeric_cols[:3]:
+            suggestions.append({
+                "type": "grouped_boxplot",
+                "cat": str(column),
+                "num": str(num),
+                "title": f"{column}'a Göre {num}",
+                "reason": "Kategori Bazlı Dağılım"
+            })
+
+        # Bar verisi
+        series = curr_df[column].dropna()
+        total_cnt = max(1, len(series))
+        val_counts = series.value_counts().head(15)
+        items = []
+        for val, count in val_counts.items():
+            items.append({
+                "value": str(val),
+                "count": int(count),
+                "ratio": round((count / total_cnt) * 100, 1)
+            })
+        univariate = {"is_numeric": False, "bar": {"items": items}}
+
+        note = (f"'{column}' kategorik bir değişkendir; histogram/boxplot yerine kategori "
+                f"sayıları (bar) ve kategorilere göre sayısal dağılım (kutu grafiği) gösterilmektedir. "
+                f"Korelasyon yalnızca sayısal değişkenler arasında hesaplanır.")
+
+    # --- Korelasyon: heatmap tüm matris + liste odak sütununa göre ---
+    corr_matrix = []
+    strongest = []
+    corr_cols = [str(c) for c in numeric_cols]
+    if len(numeric_cols) >= 2:
+        corr_df = curr_df[[c for c in numeric_cols]]
+        corr_np = corr_df.corr()
+        corr_matrix = [[round(float(v), 2) for v in row] for row in corr_np.values.tolist()]
+
+        if is_numeric and column in corr_cols:
+            # Odak sütununun diğerleriyle korelasyonu (liste odaklı)
+            col_row = corr_np[column].drop(labels=[column])
+            sorted_pairs = col_row.abs().sort_values(ascending=False)
+            for other, r in sorted_pairs.head(5).items():
+                strongest.append({"a": str(column), "b": str(other), "corr": round(float(r), 2)})
+        else:
+            # Tüm çiftler arasında en güçlü
+            pairs = []
+            n = len(corr_cols)
+            for i in range(n):
+                for j in range(i + 1, n):
+                    v = float(corr_np.iloc[i, j])
+                    if not np.isnan(v):
+                        pairs.append((abs(v), corr_cols[i], corr_cols[j], v))
+            pairs.sort(key=lambda x: x[0], reverse=True)
+            for _, a, b, v in pairs[:5]:
+                strongest.append({"a": a, "b": b, "corr": round(v, 2)})
+    else:
+        corr_matrix = []
+
+    return JSONResponse(content={
+        "column": str(column),
+        "is_numeric": is_numeric,
+        "suggestions": suggestions,
+        "univariate": univariate,
+        "correlation": {"columns": corr_cols, "matrix": corr_matrix, "strongest": strongest},
+        "note": note
+    })
+
+
 @app.get("/api/visualization/chart")
 async def get_visualization_chart(
     type: str,

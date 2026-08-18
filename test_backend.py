@@ -158,6 +158,28 @@ def test_api():
     assert "groups" in r_box.json()
     print("[OK] GET /api/visualization/chart types OK")
 
+    print("Testing GET /api/visualization/focus (numeric and categorical) ...")
+    num_col = viz_data['numeric_columns'][0]
+    r_focus_num = client.get(f"/api/visualization/focus?column={num_col}")
+    assert r_focus_num.status_code == 200
+    focus_num_data = r_focus_num.json()
+    assert focus_num_data["is_numeric"] is True
+    assert len(focus_num_data["suggestions"]) > 0
+    assert "stats" in focus_num_data["univariate"]
+    assert "histogram" in focus_num_data["univariate"]
+
+    cat_col = viz_data['categorical_columns'][0]
+    r_focus_cat = client.get(f"/api/visualization/focus?column={cat_col}")
+    assert r_focus_cat.status_code == 200
+    focus_cat_data = r_focus_cat.json()
+    assert focus_cat_data["is_numeric"] is False
+    assert "bar" in focus_cat_data["univariate"]
+    assert focus_cat_data["note"] is not None
+
+    r_focus_inv = client.get("/api/visualization/focus?column=NON_EXISTENT_COL")
+    assert r_focus_inv.status_code == 400
+    print("[OK] GET /api/visualization/focus OK")
+
     print("Testing GET /portfolio ...")
     r = client.get("/portfolio")
     assert r.status_code == 200

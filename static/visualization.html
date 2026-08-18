@@ -12,6 +12,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <!-- html2pdf.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Apache ECharts 5 CDN -->
@@ -127,6 +129,30 @@
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
+        }
+        /* --- Karışma/taşma önleme kuralları --- */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        * {
+            min-width: 0;
+        }
+        h1, h2, h3, h4, h5, h6, p, span, button, a, td, th {
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+        .overflow-visible-important {
+            overflow: visible !important;
+        }
+        .table-fixed-layout table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .table-fixed-layout th, .table-fixed-layout td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -271,7 +297,7 @@
                 </div>
 
                 <!-- 1. Page Header + Focus Column Selector -->
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
+                <div data-export-section="header" data-export-title="Görselleştirme Başlığı ve Odak Değişkeni" class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 bg-surface border border-border-subtle rounded-xl p-6 shadow-sm">
                     <div>
                         <h2 class="font-headline-md text-headline-md text-on-surface mb-1">Görselleştirme ve Keşif</h2>
                         <p class="text-on-surface-variant font-body-md">Veri setindeki desenleri, dağılımları ve değişken ilişkilerini analiz edin.</p>
@@ -286,7 +312,7 @@
                 </div>
 
                 <!-- 2. Automatic Suggestions Gallery -->
-                <div class="space-y-4">
+                <div data-export-section="gallery" data-export-title="Otomatik Grafik Galerisi" class="space-y-4">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="font-headline-md text-[18px] font-semibold text-on-surface flex items-center gap-2">
@@ -302,7 +328,7 @@
                 </div>
 
                 <!-- 3. Univariate Analysis (Odak Değişkeni) -->
-                <div class="space-y-4">
+                <div data-export-section="univariate" data-export-title="Tek Değişkenli Analiz (Odak Değişkeni)" class="space-y-4">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="font-headline-md text-[18px] font-semibold text-on-surface flex items-center gap-2">
@@ -320,6 +346,9 @@
                                 <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold" id="univariateChartTitle">Dağılım Analizi</h4>
                                 <div class="flex items-center gap-1.5">
                                     <span id="univariateColumnBadge" class="text-xs font-label-mono bg-surface-container px-2.5 py-1 rounded text-on-surface-variant font-medium">Sütun: -</span>
+                                    <button onclick="resetChartZoom('univariateChartContainer')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Yakınlaştırmayı Sıfırla">
+                                        <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+                                    </button>
                                     <button onclick="openChartZoom('univariateChartContainer', 'Tek Değişkenli Analiz')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Grafiği Büyüt">
                                         <span class="material-symbols-outlined text-[18px]">zoom_in</span>
                                     </button>
@@ -346,7 +375,7 @@
                 </div>
 
                 <!-- 4. Bivariate Comparison (İki Değişkenli Karşılaştırma) -->
-                <div class="space-y-4">
+                <div data-export-section="bivariate" data-export-title="İki Değişkenli Karşılaştırma" class="space-y-4">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
                             <h3 class="font-headline-md text-[18px] font-semibold text-on-surface flex items-center gap-2">
@@ -381,6 +410,9 @@
                             <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold" id="bivariateChartTitle">X × Y Karşılaştırması</h4>
                             <div class="flex items-center gap-1.5">
                                 <span id="bivariateChartBadge" class="text-xs font-label-mono bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-medium">Dağılım Grafiği</span>
+                                <button onclick="resetChartZoom('bivariateChartContainer')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Yakınlaştırmayı Sıfırla">
+                                    <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+                                </button>
                                 <button onclick="openChartZoom('bivariateChartContainer', 'İki Değişkenli Analiz')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Grafiği Büyüt">
                                     <span class="material-symbols-outlined text-[18px]">zoom_in</span>
                                 </button>
@@ -394,7 +426,7 @@
                 </div>
 
                 <!-- 5. Correlation Analysis -->
-                <div class="space-y-4">
+                <div data-export-section="correlation" data-export-title="Korelasyon Analizi" class="space-y-4">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="font-headline-md text-[18px] font-semibold text-on-surface flex items-center gap-2">
@@ -420,6 +452,9 @@
                             <div class="flex justify-between items-center mb-3 border-b border-border-subtle pb-3">
                                 <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold">Korelasyon Isı Haritası (Heatmap)</h4>
                             <div class="flex items-center gap-1.5">
+                                <button onclick="resetChartZoom('correlationHeatmapContainer')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Yakınlaştırmayı Sıfırla">
+                                    <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+                                </button>
                                 <button onclick="openChartZoom('correlationHeatmapContainer', 'Korelasyon Isı Haritası')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Grafiği Büyüt">
                                     <span class="material-symbols-outlined text-[18px]">zoom_in</span>
                                 </button>
@@ -552,6 +587,14 @@
 
             const chart = echarts.init(dom);
             bindChartZoomReset(chart);
+            chart.on('mousedown', () => { if (chart.getDom()) chart.getDom().style.cursor = 'grabbing'; });
+            chart.on('mouseup', () => {
+                const cDom = chart.getDom();
+                if (!cDom) return;
+                const dza = (chart.getOption().dataZoom || []);
+                const active = dza.some(dz => (dz.start !== undefined && dz.start > 0) || (dz.end !== undefined && dz.end < 100));
+                cDom.style.cursor = active ? 'grab' : '';
+            });
             // Grafiğe tıklayınca büyüt (izole tıklama — chart'ın iç etkileşimi bozulmaz)
             dom.addEventListener('click', function openZoomHandler(e) {
                 const cId = dom.id;
@@ -621,21 +664,18 @@
                 }
             }
 
-            // 1. Render Automatic Suggestions Gallery
-            renderSuggestionsGallery(data.suggestions || []);
-
-            // 2. Render Univariate for Default Focus Column
+            // Odak merkezli başlat
             if (focusColumnSelect.value) {
-                loadUnivariateAnalysis(focusColumnSelect.value);
+                updateFocusAnalysis(focusColumnSelect.value);
+            } else {
+                renderSuggestionsGallery(data.suggestions || []);
+                renderCorrelationSection(data.correlation || {});
             }
 
             // 3. Render Bivariate for Default X and Y
             if (bivariateXSelect.value && bivariateYSelect.value) {
                 loadBivariateAnalysis(bivariateXSelect.value, bivariateYSelect.value);
             }
-
-            // 4. Render Correlation Heatmap & Strongest Table
-            renderCorrelationSection(data.correlation || {});
 
             // Show Content View
             loadingView.classList.add('hidden');
@@ -705,6 +745,9 @@
                                 <p class="text-xs text-slate-gray">${escapeHtml(item.reason)}</p>
                             </div>
                             <div class="flex items-center gap-1">
+                                <button onclick="resetChartZoom('${cardId}')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Yakınlaştırmayı Sıfırla">
+                                    <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+                                </button>
                                 <button onclick="openChartZoom('${cardId}', '${escapeHtml(item.title)}')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Grafiği Büyüt">
                                     <span class="material-symbols-outlined text-[18px]">zoom_in</span>
                                 </button>
@@ -751,6 +794,111 @@
                 }
             } catch (err) {
                 console.error(`Error loading suggestion chart ${containerId}:`, err);
+            }
+        }
+
+        // ==========================================
+        // Odak Değişkeni Analizi (Focus Analysis)
+        // ==========================================
+        async function updateFocusAnalysis(colName) {
+            if (!colName || !overviewData) return;
+            if (univariateError) univariateError.classList.add('hidden');
+
+            try {
+                const res = await fetch(API_BASE + `/api/visualization/focus?column=${encodeURIComponent(colName)}`);
+                if (!res.ok) {
+                    throw new Error(`Odak analizi alınamadı (HTTP ${res.status})`);
+                }
+                const data = await res.json();
+
+                // 1) Galeri: odak merkezli yeniden üret
+                renderSuggestionsGallery(data.suggestions || []);
+
+                // 2) Univariate: istatistik + histogram/bar + boxplot
+                renderFocusUnivariate(colName, data.univariate || {});
+
+                // 3) Korelasyon: heatmap (tüm matris) + liste (odak sütununa göre)
+                renderCorrelationSection(data.correlation || {});
+            } catch (err) {
+                console.error('updateFocusAnalysis hatası:', err);
+                if (univariateError) {
+                    univariateError.textContent = `Odak analizi yüklenemedi: ${err.message || err}`;
+                    univariateError.classList.remove('hidden');
+                }
+            }
+        }
+
+        function renderFocusUnivariate(colName, uni) {
+            const isNumeric = !!uni.is_numeric;
+            if (univariateColumnBadge) univariateColumnBadge.textContent = `Sütun: ${colName}`;
+
+            const univariateSubtitle = document.getElementById('univariateSubtitle');
+            if (univariateSubtitle) {
+                univariateSubtitle.textContent = isNumeric
+                    ? 'Seçili değişkenin dağılımı ve istatistiksel parametreleri'
+                    : 'Kategorik değişken: kategori sayıları gösterilir (korelasyon yalnızca sayısal sütunlar için geçerlidir)';
+            }
+
+            if (isNumeric) {
+                if (univariateChartTitle) univariateChartTitle.textContent = `Histogram Dağılımı (${colName})`;
+                if (univariateStatsTitle) univariateStatsTitle.textContent = `İstatistiksel Özet (${colName})`;
+
+                const stats = uni.stats || {};
+                if (univariateStatsContainer) {
+                    univariateStatsContainer.innerHTML = `
+                        <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                            <span class="font-body-md text-on-surface-variant text-sm">Gözlem Sayısı</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm">${formatNumber(stats.count)}</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                            <span class="font-body-md text-on-surface-variant text-sm">Ortalama (Mean)</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.mean)}</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                            <span class="font-body-md text-on-surface-variant text-sm">Medyan (Median)</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.median)}</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                            <span class="font-body-md text-on-surface-variant text-sm">Standart Sapma</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.std)}</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                            <span class="font-body-md text-on-surface-variant text-sm">Minimum</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.min)}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-body-md text-on-surface-variant text-sm">Maksimum</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.max)}</span>
+                        </div>
+                    `;
+                }
+
+                const chart = getOrCreateChart('univariateChartContainer');
+                if (chart) renderHistogramChart(chart, uni.histogram || {}, colName);
+            } else {
+                if (univariateChartTitle) univariateChartTitle.textContent = `Kategori Dağılımı (${colName})`;
+                if (univariateStatsTitle) univariateStatsTitle.textContent = `Kategori Özeti (${colName})`;
+
+                if (univariateStatsContainer) {
+                    const items = (uni.bar || {}).items || [];
+                    if (items.length > 0) {
+                        let html = '';
+                        items.forEach(it => {
+                            html += `
+                                <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                                    <span class="font-body-md text-on-surface-variant text-sm truncate max-w-[140px]" title="${escapeHtml(it.value)}">${escapeHtml(it.value)}</span>
+                                    <span class="font-label-mono font-bold text-on-surface text-sm">${formatNumber(it.count)} (%${it.ratio})</span>
+                                </div>
+                            `;
+                        });
+                        univariateStatsContainer.innerHTML = html;
+                    } else {
+                        univariateStatsContainer.innerHTML = `<p class="text-sm text-slate-gray">Bu kategoride veri bulunamadı.</p>`;
+                    }
+                }
+
+                const chart = getOrCreateChart('univariateChartContainer');
+                if (chart) renderBarChart(chart, uni.bar || {}, colName);
             }
         }
 
@@ -962,31 +1110,32 @@
                         right: 20,
                         containLabel: true
                     },
-                    xAxis: {
+                    xAxis: applyAxisLabelSafe({
                         type: 'category',
                         data: columns,
                         splitArea: { show: true },
                         axisLabel: {
-                            interval: 0,
+                            interval: 'auto',
                             rotate: columns.length > 5 ? 35 : 0,
                             fontSize: 11,
                             formatter: function(val) {
-                                return val.length > 12 ? val.slice(0, 10) + '...' : val;
+                                return val && val.length > 12 ? val.slice(0, 10) + '…' : val;
                             }
                         }
-                    },
-                    yAxis: {
+                    }),
+                    yAxis: applyAxisLabelSafe({
                         type: 'category',
                         data: columns,
                         splitArea: { show: true },
                         axisLabel: {
-                            interval: 0,
+                            interval: 'auto',
+                            rotate: 0,
                             fontSize: 11,
                             formatter: function(val) {
-                                return val.length > 12 ? val.slice(0, 10) + '...' : val;
+                                return val && val.length > 12 ? val.slice(0, 10) + '…' : val;
                             }
                         }
-                    },
+                    }),
                     visualMap: {
                         min: -1,
                         max: 1,
@@ -1076,31 +1225,56 @@
                 start: 0,
                 end: 100
             }];
-            // Sıfırla (restore) butonu
-            option.toolbox = {
-                right: 5,
-                top: 5,
-                itemSize: 14,
-                itemGap: 6,
-                feature: {
-                    restore: {
-                        show: true,
-                        title: 'Yakınlaştırmayı Sıfırla',
-                        iconStyle: { borderColor: '#4A5568' },
-                        emphasis: { iconStyle: { borderColor: '#006b33' } }
-                    }
-                }
-            };
             return option;
         }
 
         function bindChartZoomReset(chart) {
             if (!chart || chart.__zoomResetBound) return;
             chart.__zoomResetBound = true;
+
+            function zoomActive() {
+                const dza = (chart.getOption().dataZoom || []);
+                return dza.some(dz => (dz.start !== undefined && dz.start > 0) || (dz.end !== undefined && dz.end < 100));
+            }
+
             // Çift tıkla yakınlaştırmayı sıfırla
             chart.on('dblclick', function() {
                 chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
+                if (chart.getDom()) chart.getDom().style.cursor = '';
             });
+
+            chart.on('datazoom', function() {
+                const dom = chart.getDom();
+                if (!dom) return;
+                dom.style.cursor = zoomActive() ? 'grab' : '';
+            });
+        }
+
+        window.resetChartZoom = function(containerId) {
+            const chart = _charts[containerId] || echarts.getInstanceByDom(document.getElementById(containerId));
+            if (!chart || chart.isDisposed()) return;
+            chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
+            if (chart.getDom()) chart.getDom().style.cursor = '';
+        };
+
+        function applyAxisLabelSafe(axis) {
+            if (!axis) return axis;
+            // Kategori eksenlerinde üst üste binen etiketleri gizle + uzun adları kısalt
+            if (axis.type === 'category') {
+                axis.axisLabel = Object.assign({
+                    interval: 'auto',
+                    hideOverlap: true,
+                    rotate: 0,
+                    fontSize: 10,
+                    color: '#4A5568',
+                    formatter: function(val) {
+                        if (!val) return val;
+                        return val.length > 12 ? val.slice(0, 10) + '…' : val;
+                    }
+                }, axis.axisLabel || {});
+                axis.axisLabel.hideOverlap = true;
+            }
+            return axis;
         }
 
         function renderHistogramChart(chart, chartData, colName) {
@@ -1117,24 +1291,32 @@
                     }
                 },
                 grid: {
-                    top: 20,
-                    bottom: 40,
-                    left: 50,
-                    right: 20,
+                    top: 25,
+                    bottom: 45,
+                    left: 55,
+                    right: 25,
                     containLabel: true
                 },
-                xAxis: {
+                xAxis: applyAxisLabelSafe({
                     type: 'category',
+                    name: colName,
+                    nameLocation: 'middle',
+                    nameGap: 28,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     data: binLabels,
                     axisLabel: {
-                        interval: 0,
+                        interval: 'auto',
                         rotate: binLabels.length > 5 ? 30 : 0,
                         fontSize: 10,
                         color: '#4A5568'
                     }
-                },
+                }),
                 yAxis: {
                     type: 'value',
+                    name: 'Frekans',
+                    nameLocation: 'middle',
+                    nameGap: 42,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     axisLabel: {
                         fontSize: 10,
                         color: '#4A5568'
@@ -1176,17 +1358,21 @@
                     }
                 },
                 grid: {
-                    top: 20,
-                    bottom: 40,
-                    left: 50,
-                    right: 20,
+                    top: 25,
+                    bottom: 45,
+                    left: 55,
+                    right: 25,
                     containLabel: true
                 },
-                xAxis: {
+                xAxis: applyAxisLabelSafe({
                     type: 'category',
+                    name: colName,
+                    nameLocation: 'middle',
+                    nameGap: 28,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     data: categories,
                     axisLabel: {
-                        interval: 0,
+                        interval: 'auto',
                         rotate: categories.length > 4 ? 30 : 0,
                         fontSize: 10,
                         color: '#4A5568',
@@ -1194,9 +1380,13 @@
                             return val && val.length > 10 ? val.slice(0, 8) + '...' : val;
                         }
                     }
-                },
+                }),
                 yAxis: {
                     type: 'value',
+                    name: 'Adet',
+                    nameLocation: 'middle',
+                    nameGap: 42,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     axisLabel: {
                         fontSize: 10,
                         color: '#4A5568'
@@ -1248,7 +1438,8 @@
                     type: 'value',
                     name: xName,
                     nameLocation: 'middle',
-                    nameGap: 25,
+                    nameGap: 30,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     axisLabel: { fontSize: 10, color: '#4A5568' },
                     splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
                 },
@@ -1256,7 +1447,8 @@
                     type: 'value',
                     name: yName,
                     nameLocation: 'middle',
-                    nameGap: 35,
+                    nameGap: 45,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     axisLabel: { fontSize: 10, color: '#4A5568' },
                     splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
                 },
@@ -1300,17 +1492,22 @@
                     right: 25,
                     containLabel: true
                 },
-                xAxis: {
+                xAxis: applyAxisLabelSafe({
                     type: 'category',
+                    name: catName,
+                    nameLocation: 'middle',
+                    nameGap: 28,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     data: categories,
                     axisLabel: { fontSize: 10, color: '#4A5568' },
                     splitArea: { show: true }
-                },
+                }),
                 yAxis: {
                     type: 'value',
                     name: numName,
                     nameLocation: 'middle',
-                    nameGap: 35,
+                    nameGap: 45,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     axisLabel: { fontSize: 10, color: '#4A5568' },
                     splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
                 },
@@ -1361,19 +1558,27 @@
                     axisPointer: { type: 'shadow' }
                 },
                 grid: {
-                    top: 20,
-                    bottom: 30,
-                    left: 50,
-                    right: 20,
+                    top: 25,
+                    bottom: 45,
+                    left: 55,
+                    right: 25,
                     containLabel: true
                 },
-                xAxis: {
+                xAxis: applyAxisLabelSafe({
                     type: 'category',
+                    name: colName,
+                    nameLocation: 'middle',
+                    nameGap: 28,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     data: [colName],
                     axisLabel: { fontSize: 10, color: '#4A5568' }
-                },
+                }),
                 yAxis: {
                     type: 'value',
+                    name: 'Değer',
+                    nameLocation: 'middle',
+                    nameGap: 42,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     axisLabel: { fontSize: 10, color: '#4A5568' },
                     splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
                 },
@@ -1447,7 +1652,7 @@
             // Focus Column Select Handlers (change + input)
             function onFocusColumnChanged() {
                 const col = focusColumnSelect.value;
-                if (col) loadUnivariateAnalysis(col);
+                if (col) updateFocusAnalysis(col);
             }
             focusColumnSelect.addEventListener('change', onFocusColumnChanged);
             focusColumnSelect.addEventListener('input', onFocusColumnChanged);

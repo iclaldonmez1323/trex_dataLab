@@ -111,6 +111,30 @@
             border-color: #006b33 !important;
             background-color: #f0fdf4 !important;
         }
+        /* --- Karışma/taşma önleme kuralları --- */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        * {
+            min-width: 0;
+        }
+        h1, h2, h3, h4, h5, h6, p, span, button, a, td, th {
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+        .overflow-visible-important {
+            overflow: visible !important;
+        }
+        .table-fixed-layout table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .table-fixed-layout th, .table-fixed-layout td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
