@@ -17,6 +17,8 @@
         botText: '#1e293b'
     };
 
+    var aiSessionId = null;
+
     // ---------- API anahtarı (settings'ten) ----------
     function getApiKey() {
         try {
@@ -101,7 +103,7 @@
                 </svg>
                 <div>
                     <div id="ai-chat-title">trex AI Asistanı</div>
-                    <div id="ai-chat-subtitle">Veri setinize dair sorularınızı yanıtlar</div>
+                    <div id="ai-chat-subtitle">Veri bilimi ve genel sorularda size eşlik eder</div>
                 </div>
                 <button id="ai-chat-close" title="Kapat">&times;</button>
             </div>
@@ -157,12 +159,22 @@
             var res = await fetch(API_BASE + '/api/ai-assistant/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: question, page: currentPage() })
+                body: JSON.stringify({
+                    message: question,
+                    page: currentPage(),
+                    session_id: aiSessionId,
+                    api_key: getApiKey()
+                })
             });
             var data = await res.json();
+            if (data.session_id) aiSessionId = data.session_id;
             typing.remove();
             if (res.ok && data.reply) {
-                addMessage(data.reply, 'bot');
+                if (data.source === 'error') {
+                    addMessage(data.reply, 'error');
+                } else {
+                    addMessage(data.reply, 'bot');
+                }
             } else {
                 addMessage((data.detail || data.message || 'Bir hata oluştu.'), 'error');
             }
@@ -179,7 +191,15 @@
             modal.style.display = 'none';
         } else {
             modal.style.display = 'flex';
+            var API_BASE = (location.protocol === 'file:' || location.protocol === 'about:') ? 'http://127.0.0.1:8000' : '';
             if (messages.children.length === 0) {
+                aiSessionId = null;
+                fetch(API_BASE + '/api/ai-assistant/reset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: aiSessionId || '' })
+                }).catch(function () {});
+
                 var greet = document.createElement('div');
                 greet.className = 'ai-msg ai-msg-bot';
                 greet.textContent = 'Merhaba! Veri setiniz ve şu anki sayfanız hakkında sorularınızı yanıtlayabilirim. Bir öneriye tıklayın veya sorunuzu yazın.';

@@ -224,32 +224,47 @@ def test_api():
     assert r_ai_sett_get.status_code == 200
     assert "has_key" in r_ai_sett_get.json()
 
-    r_ai_sett_post = client.post("/api/ai-assistant/settings", json={"apiKey": "AIzaSyFakeKey123456789"})
-    assert r_ai_sett_post.status_code == 200
-    assert r_ai_sett_post.json()["ok"] is True
+    # Test chat fallback when no key is set or passed
+    import main
+    main.user_gemini_api_key = ""
+    r_chat_fallback = client.post("/api/ai-assistant/chat", json={"message": "Veri kalitesini özetle", "page": "data-quality.html"})
+    assert r_chat_fallback.status_code == 200
+    res_fb = r_chat_fallback.json()
+    assert res_fb["source"] == "fallback"
+    assert "reply" in res_fb
+    assert "session_id" in res_fb
+    assert res_fb["context"]["dataset_loaded"] is True
+    ds_meta = res_fb["context"]["dataset"]
+    assert "test_data.csv" in ds_meta["filename"]
+    assert "dtypes" in ds_meta
+    assert "preview_first_3_rows" in ds_meta
+    assert "top_correlations" in ds_meta
+    assert "missing_counts" in ds_meta
 
-    r_ai_sett_empty = client.post("/api/ai-assistant/settings", json={"apiKey": ""})
-    assert r_ai_sett_empty.status_code == 400
+    sess_id = res_fb["session_id"]
 
-    # Test chat with active dataset
-    r_chat_quality = client.post("/api/ai-assistant/chat", json={"message": "Veri kalitesini özetle", "page": "data-quality.html"})
-    assert r_chat_quality.status_code == 200
-    res_q = r_chat_quality.json()
-    assert "reply" in res_q
-    assert res_q["context"]["dataset_loaded"] is True
-    assert "test_data.csv" in res_q["context"]["dataset"]["filename"]
+    # Test multi-turn with invalid api_key passed in request -> should return source: "error"
+    r_chat_err = client.post("/api/ai-assistant/chat", json={
+        "message": "En önemli değişkenler hangileri?",
+        "page": "visualization.html",
+        "session_id": sess_id,
+        "api_key": "AIzaSyFakeKey123456789"
+    })
+    assert r_chat_err.status_code == 200
+    res_err = r_chat_err.json()
+    assert res_err["source"] == "error"
+    assert "Gemini API hatası" in res_err["reply"]
+    assert res_err["session_id"] == sess_id
 
-    r_chat_cols = client.post("/api/ai-assistant/chat", json={"message": "En önemli değişkenler hangileri?", "page": "visualization.html"})
-    assert r_chat_cols.status_code == 200
-    assert "reply" in r_chat_cols.json()
-
-    r_chat_outliers = client.post("/api/ai-assistant/chat", json={"message": "Aykırı değerler var mı?", "page": "data-quality.html"})
-    assert r_chat_outliers.status_code == 200
-    assert "reply" in r_chat_outliers.json()
-
+    # Test empty message validation
     r_chat_empty = client.post("/api/ai-assistant/chat", json={"message": ""})
     assert r_chat_empty.status_code == 400
-    print("[OK] AI Assistant endpoints validated OK")
+
+    # Test session reset
+    r_ai_reset = client.post("/api/ai-assistant/reset", json={"session_id": sess_id})
+    assert r_ai_reset.status_code == 200
+    assert r_ai_reset.json()["ok"] is True
+    print("[OK] AI Assistant endpoints validated OK (rich context, request api_key, error capture & reset)")
 
     print("Testing DELETE /api/reset ...")
     r = client.delete("/api/reset")
@@ -262,12 +277,6 @@ def test_api():
     print("[OK] DELETE /api/reset OK and /api/visualization/overview returns 409 on empty")
 
     print("Testing AI Assistant chat (after reset / empty dataset) ...")
-    # Reset API key to force fallback test
-    client.post("/api/ai-assistant/settings", json={"apiKey": " "})
-    from main import user_gemini_api_key
-    import main
-    main.user_gemini_api_key = ""
-
     r_chat_no_ds = client.post("/api/ai-assistant/chat", json={"message": "Veri kalitesini özetle", "page": "index.html"})
     assert r_chat_no_ds.status_code == 200
     assert "yüklenmemiş" in r_chat_no_ds.json()["reply"]

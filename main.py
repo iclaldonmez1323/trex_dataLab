@@ -1,7 +1,9 @@
 import io
 import os
 import json
+import uuid
 import requests
+import google.generativeai as genai
 from typing import Dict, Any, Optional
 from fastapi import FastAPI, File, UploadFile, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,9 +19,12 @@ except ImportError:
     pass
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash-latest")
 user_gemini_api_key: str = GEMINI_API_KEY
+
+# Sohbet oturumları (in-memory): session_id -> history listesi
+_ai_sessions: dict = {}
+_MAX_HISTORY_TURNS = 20
 
 app = FastAPI(title="trex DataLab API", version="1.0.0")
 
@@ -1368,13 +1373,61 @@ def build_ai_context(page: str) -> dict:
         "dataset": None,
     }
     if df is not None:
-        summary = {
-            "filename": active_dataset.get("filename", "bilinmiyor"),
-            "rows": int(len(df)),
-            "columns": [str(c) for c in active_cols],
-            "col_count": len(active_cols),
-        }
-        context["dataset"] = summary
+        try:
+            sub = df[active_cols]
+            dtypes = {str(c): str(sub[c].dtype) for c in active_cols}
+            missing = {str(c): int(sub[c].isna().sum()) for c in active_cols if sub[c].isna().sum() > 0}
+
+            # İlk 3 satır önizleme (okunaklı ve JSON uyumlu)
+            preview_serializable = []
+            for _, r in sub.head(3).iterrows():
+                row_vals = []
+                for c in active_cols:
+                    val = r[c]
+                    if pd.isna(val) or val is None:
+                        row_vals.append(None)
+                    elif isinstance(val, (float, np.floating)):
+                        row_vals.append(None if (np.isnan(val) or np.isinf(val)) else round(float(val), 4))
+                    elif isinstance(val, (int, np.integer)):
+                        row_vals.append(int(val))
+                    else:
+                        row_vals.append(str(val))
+                preview_serializable.append(row_vals)
+
+            # Korelasyon özeti: en güçlü 10 çift (sayısal sütunlar)
+            corr_pairs = []
+            numeric = sub.select_dtypes(include=["number"])
+            if numeric.shape[1] >= 2 and len(numeric) >= 2:
+                corr = numeric.corr()
+                for i, c1 in enumerate(corr.columns):
+                    for c2 in corr.columns[i + 1:]:
+                        v = corr.loc[c1, c2]
+                        if pd.notna(v) and not np.isnan(v) and not np.isinf(v):
+                            corr_pairs.append((str(c1), str(c2), round(float(v), 3)))
+                corr_pairs.sort(key=lambda x: abs(x[2]), reverse=True)
+                corr_pairs = corr_pairs[:10]
+
+            context["dataset"] = {
+                "filename": active_dataset.get("filename", "bilinmiyor"),
+                "rows": int(len(df)),
+                "columns": [str(c) for c in active_cols],
+                "col_count": len(active_cols),
+                "dtypes": dtypes,
+                "missing_counts": missing,
+                "preview_first_3_rows": {
+                    "columns": [str(c) for c in active_cols],
+                    "rows": preview_serializable
+                },
+                "top_correlations": corr_pairs,
+            }
+        except Exception as e:
+            print("[AI] Veri bağlamı oluşturulamadı:", e)
+            context["dataset"] = {
+                "filename": active_dataset.get("filename", "bilinmiyor"),
+                "rows": int(len(df)),
+                "columns": [str(c) for c in active_cols],
+                "col_count": len(active_cols),
+            }
     return context
 
 
@@ -1434,47 +1487,94 @@ async def ai_assistant_chat(payload: dict):
     global user_gemini_api_key
     question = (payload.get("message") or "").strip()
     page = (payload.get("page") or "index.html").strip()
+    session_id = (payload.get("session_id") or "").strip() or uuid.uuid4().hex
     if not question:
         raise HTTPException(status_code=400, detail="Soru boş olamaz.")
 
     context = build_ai_context(page)
 
+    # Anahtar çözümleme: istekle gelen api_key önceliklidir, yoksa global kullanılır.
+    request_api_key = (payload.get("api_key") or "").strip()
+    api_key = request_api_key or user_gemini_api_key
+
+    if not api_key:
+        fallback_reply = rule_based_reply(question, context)
+        fallback_history = _ai_sessions.get(session_id, [])
+        fallback_history.append({"role": "user", "content": question})
+        fallback_history.append({"role": "assistant", "content": fallback_reply})
+        _ai_sessions[session_id] = fallback_history[-_MAX_HISTORY_TURNS * 2:]
+        return JSONResponse(content={
+            "reply": fallback_reply,
+            "source": "fallback",
+            "context": context,
+            "session_id": session_id,
+        })
+
+    # Sistem rolü (prompt): genel danışman kimliği + dinamik veri bağlamı
     system_prompt = (
-        "Sen trex DataLab uygulamasının AI Veri Asistanısın. Kullanıcıya Türkçe, net ve teknik "
-        "fakat anlaşılır cevaplar ver. Aktif sayfa ve yüklenen veri seti hakkında şu bağlamı kullan:\n"
+        "Sen trex DataLab platformunun kıdemli Veri Bilimi ve İstatistik uzmanı yapay zeka asistanısın. "
+        "Kullanıcının soracağı genel istatistik, makine öğrenmesi, kodlama veya günlük her türlü soruya "
+        "Türkçe, son derece akıllı, eğitici, samimi ve detaylı yanıtlar verirsin.\n\n"
+        "Aşağıda kullanıcının şu an yüklediği veri setinin özeti ve aktif sayfa bilgisi var. "
+        "Veriyle ilgili sorularda bu bağlamı doğrudan kullan (sütun adlarına göre cevap ver, örneğin "
+        "'Regionname ne anlama gelir?' gibi sorularda gerçek sütun değerlerine atıfta bulun). "
+        "Veri dışı veya genel bir soru sorulduğunda kendi geniş bilgi dağarcığınla eksiksiz yanıtla. "
+        "Veri seti yüklü değilse, kullanıcıya önce 'Yeni Veri Yükle' ile CSV yüklemesi gerektiğini söyle.\n\n"
         + json.dumps(context, ensure_ascii=False, default=str)
-        + "\n\nCevaplarını verirken yüklü veri setine ve aktif sayfaya doğrudan referans ver. "
-          "Veri seti yüklü değilse, kullanıcıya önce CSV yüklemesi gerektiğini söyle."
     )
 
-    # 1) Gemini deneme
-    if user_gemini_api_key:
-        try:
-            headers = {"Authorization": f"Bearer {user_gemini_api_key}", "Content-Type": "application/json"}
-            body = {
-                "model": GEMINI_MODEL,
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": question},
-                ],
-                "temperature": 0.4,
-                "max_tokens": 800,
-            }
-            r = requests.post(
-                GEMINI_OPENAI_BASE + "chat/completions",
-                headers=headers, json=body, timeout=30,
-            )
-            if r.status_code == 200:
-                data = r.json()
-                reply = data["choices"][0]["message"]["content"].strip()
-                return JSONResponse(content={"reply": reply, "source": "gemini", "context": context})
+    # --- Gemini (google-generativeai SDK) ---
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel(
+            model_name=GEMINI_MODEL,
+            system_instruction=system_prompt,
+            generation_config=genai.types.GenerationConfig(
+                temperature=0.4,
+                max_output_tokens=800,
+            ),
+        )
 
-            print("[AI] Gemini hatası:", r.status_code, r.text[:300])
-        except Exception as e:
-            print("[AI] Gemini isteği başarısız:", e)
+        history = _ai_sessions.get(session_id, [])
+        gemini_history = []
+        for turn in history[-_MAX_HISTORY_TURNS:]:
+            gemini_history.append({
+                "role": "user" if turn["role"] == "user" else "model",
+                "parts": [turn["content"]],
+            })
 
-    # 2) Kural tabanlı fallback
-    return JSONResponse(content={"reply": rule_based_reply(question, context), "source": "fallback", "context": context})
+        chat = model.start_chat(history=gemini_history)
+        response = chat.send_message(question)
+        reply = (response.text or "").strip() or "Yanıt üretilemedi."
+
+        history.append({"role": "user", "content": question})
+        history.append({"role": "assistant", "content": reply})
+        _ai_sessions[session_id] = history[-_MAX_HISTORY_TURNS * 2:]
+
+        return JSONResponse(content={
+            "reply": reply,
+            "source": "gemini",
+            "context": context,
+            "session_id": session_id,
+        })
+    except Exception as e:
+        error_msg = f"Gemini API hatası: {str(e)}"
+        print("[AI]", error_msg)
+        # Kural tabanlıya sessizce düşme; gerçek hata kullanıcıya gösterilir.
+        return JSONResponse(content={
+            "reply": error_msg,
+            "source": "error",
+            "context": context,
+            "session_id": session_id,
+        })
+
+
+@app.post("/api/ai-assistant/reset")
+async def reset_ai_session(payload: dict):
+    session_id = (payload.get("session_id") or "").strip()
+    if session_id and session_id in _ai_sessions:
+        _ai_sessions.pop(session_id, None)
+    return JSONResponse(content={"ok": True})
 
 
 @app.post("/api/reset")
