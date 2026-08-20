@@ -330,7 +330,29 @@
             'support.status.service3': 'PDF & Raporlama Modülü',
             'support.status.service4': 'FastAPI Web & API Sunucusu',
             'support.demoTicketCreated': 'Destek talebiniz başarıyla oluşturuldu ✓',
-            'support.demoFeedbackSent': 'Geri bildiriminiz başarıyla iletildi ✓'
+            'support.demoFeedbackSent': 'Geri bildiriminiz başarıyla iletildi ✓',
+
+            // Machine Learning
+            'ml.pageTitle': 'Makine Öğrenmesi Model Eğitimi',
+            'ml.smallSampleNote': 'Veri seti 50 satırdan az; çapraz doğrulama uygulanmadı.',
+            'ml.cvFixedHint': 'Küçük veri seti: K=3 sabitlendi',
+            'ml.hyperParamsTitle': 'Model Hiperparametreleri',
+            'ml.hyperParams.noModel': 'Seçili modeller için ayarlanabilir hiperparametre bulunmuyor.',
+            'ml.hyperParams.nEstimators': 'Ağaç Sayısı (n_estimators)',
+            'ml.hyperParams.maxDepth': 'Maksimum Derinlik (max_depth)',
+            'ml.hyperParams.c': 'Regülarizasyon Gücü (C)',
+            'ml.hyperParams.autoDepth': 'Otomatik (Sınırsız)',
+            'ml.textColumnsNote': '{count} metin sütunu tespit edildi ve otomatik dışlandı: {cols}',
+            'ml.profileRows': 'satır',
+            'ml.profileNumeric': 'Sayısal',
+            'ml.profileCategorical': 'Kategorik',
+            'ml.profileDatetime': 'Tarih',
+            'ml.profileText': 'Metin',
+            'ml.profileMissing': 'Eksik',
+            'ml.profileTiny': 'Çok Küçük Örneklem (<50)',
+            'ml.profileSmall': 'Küçük Örneklem (50-150)',
+            'ml.profileNormal': 'Normal Örneklem',
+            'ml.profileLarge': 'Geniş Veri Seti (>2000)'
         },
         en: {
             // Brand & Navigation
@@ -655,7 +677,29 @@
             'support.status.service3': 'PDF & Reporting Module',
             'support.status.service4': 'FastAPI Web & API Server',
             'support.demoTicketCreated': 'Support ticket created successfully ✓',
-            'support.demoFeedbackSent': 'Feedback submitted successfully ✓'
+            'support.demoFeedbackSent': 'Feedback submitted successfully ✓',
+
+            // Machine Learning
+            'ml.pageTitle': 'Machine Learning Model Training',
+            'ml.smallSampleNote': 'Dataset has less than 50 rows; cross-validation skipped.',
+            'ml.cvFixedHint': 'Small dataset: K=3 fixed',
+            'ml.hyperParamsTitle': 'Model Hyperparameters',
+            'ml.hyperParams.noModel': 'No adjustable hyperparameters for selected models.',
+            'ml.hyperParams.nEstimators': 'Number of Trees (n_estimators)',
+            'ml.hyperParams.maxDepth': 'Max Depth (max_depth)',
+            'ml.hyperParams.c': 'Regularization Strength (C)',
+            'ml.hyperParams.autoDepth': 'Automatic (Unlimited)',
+            'ml.textColumnsNote': '{count} text column(s) detected and auto-excluded: {cols}',
+            'ml.profileRows': 'rows',
+            'ml.profileNumeric': 'Numeric',
+            'ml.profileCategorical': 'Categorical',
+            'ml.profileDatetime': 'Datetime',
+            'ml.profileText': 'Text',
+            'ml.profileMissing': 'Missing',
+            'ml.profileTiny': 'Tiny Sample (<50)',
+            'ml.profileSmall': 'Small Sample (50-150)',
+            'ml.profileNormal': 'Normal Sample',
+            'ml.profileLarge': 'Large Dataset (>2000)'
         }
     };
 

@@ -22,37 +22,89 @@
             darkMode: "class",
             theme: {
                 extend: {
-                    colors: {
-                        "primary": "#006b33",
-                        "primary-container": "#008740",
-                        "on-primary": "#ffffff",
-                        "on-primary-container": "#ffffff",
-                        "surface": "#ffffff",
-                        "surface-container": "#f8faf9",
-                        "surface-container-low": "#f1f5f3",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-faint": "#f8faf9",
-                        "surface-variant": "#e2e8e5",
-                        "on-surface": "#191c1b",
-                        "on-surface-variant": "#3f4943",
-                        "border-subtle": "#e5e7eb",
-                        "slate-gray": "#64748b",
-                        "success-green": "#006b33",
-                        "warning-orange": "#d97706",
-                        "error": "#dc2626",
-                        "error-container": "#fee2e2",
-                        "on-error-container": "#991b1b",
-                        "secondary-container": "#e0f2fe",
-                        "on-secondary-container": "#0369a1"
+                    "colors": {
+                        "error": "var(--c-error, #ba1a1a)",
+                        "tertiary-fixed": "#ffddb7",
+                        "on-background": "var(--c-on-background, #1c1b1b)",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-faint": "var(--c-surface-faint, #F8FAFC)",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "outline-variant": "var(--c-outline-variant, #bdcabc)",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
+                        "slate-gray": "var(--c-slate-gray, #4A5568)",
+                        "error-container": "var(--c-error-container, #ffdad6)",
+                        "secondary-container": "#bfeac7",
+                        "background": "var(--c-background, #fcf9f8)",
+                        "on-surface-variant": "var(--c-on-surface-variant, #3e4a3f)",
+                        "on-error-container": "var(--c-on-error-container, #93000a)",
+                        "warning-orange": "var(--c-warning-orange, #F5B054)",
+                        "surface-container-highest": "var(--c-surface-container-highest, #e5e2e1)",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "var(--c-primary, #006b33)",
+                        "surface-dim": "#dcd9d9",
+                        "success-green": "var(--c-success-green, #19924B)",
+                        "primary-fixed": "var(--c-primary-fixed, #8bf9a6)",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "var(--c-outline, #6e7a6e)",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "var(--c-on-primary, #ffffff)",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "var(--c-surface-container-high, #ebe7e7)",
+                        "on-surface": "var(--c-on-surface, #1c1b1b)",
+                        "surface-container-lowest": "var(--c-surface-container-lowest, #ffffff)",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "var(--c-surface-container, #f0edec)",
+                        "border-subtle": "var(--c-border-subtle, #E2E8F0)",
+                        "on-primary-fixed": "var(--c-on-primary-fixed, #00210b)",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "var(--c-surface-container-low, #f6f3f2)",
+                        "primary-container": "var(--c-primary-container, #008742)",
+                        "surface": "var(--c-surface, #fcf9f8)",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
                     },
-                    fontFamily: {
-                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
-                        "body-md": ["Inter", "sans-serif"],
-                        "label-mono": ["JetBrains Mono", "monospace"]
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
                     },
-                    spacing: {
+                    "spacing": {
                         "sidebar-width": "260px",
-                        "gutter": "1.5rem"
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
                     }
                 }
             }
@@ -76,68 +128,7 @@
 </head>
 
 <body class="bg-surface-faint text-on-surface font-body-md text-body-md h-screen overflow-hidden flex antialiased">
-    <!-- Sidebar -->
-    <aside class="w-sidebar-width bg-[#002812] flex flex-col shrink-0 h-screen border-r border-white/10 z-30 fixed left-0 top-0 text-white">
-        <!-- Logo -->
-        <div class="h-16 flex items-center gap-3 px-6 border-b border-white/10 shrink-0">
-            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
-                <span class="material-symbols-outlined text-[20px]">dataset</span>
-            </div>
-            <div>
-                <h1 class="font-headline-md font-bold text-sm tracking-wide text-white" data-i18n="brand.name">trex DataLab</h1>
-                <p class="font-label-mono text-[9px] text-white/50 tracking-wider" data-i18n="brand.tagline">PRECISION DATA PLATFORM</p>
-            </div>
-        </div>
 
-        <!-- Action Button -->
-        <div class="p-4 shrink-0">
-            <a href="index.html" class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-container text-on-primary py-2.5 px-4 rounded-lg font-body-md font-medium text-xs transition-colors shadow-sm cursor-pointer">
-                <span class="material-symbols-outlined text-[16px]">upload_file</span>
-                <span data-i18n="nav.newUpload">Yeni Veri Yükle</span>
-            </a>
-        </div>
-
-        <!-- Navigation Menu -->
-        <nav class="flex-1 overflow-y-auto px-3 py-2 space-y-1">
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:bg-white/10 rounded-lg transition-colors" href="index.html">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span data-i18n="nav.dashboard">Analiz Paneli</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:bg-white/10 rounded-lg transition-colors" href="data-quality.html">
-                <span class="material-symbols-outlined">verified</span>
-                <span data-i18n="nav.dataQuality">Veri Kalitesi</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:bg-white/10 rounded-lg transition-colors" href="preprocessing.html">
-                <span class="material-symbols-outlined">auto_fix_high</span>
-                <span data-i18n="nav.preprocessing">Veri Hazırlama</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:bg-white/10 rounded-lg transition-colors" href="visualization.html">
-                <span class="material-symbols-outlined">bar_chart</span>
-                <span data-i18n="nav.visualization">Görselleştirme</span>
-            </a>
-            <!-- Makine Öğrenmesi (Active) -->
-            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90" href="machine-learning.html">
-                <span class="material-symbols-outlined filled" style="font-variation-settings: 'FILL' 1;">model_training</span>
-                <span class="font-medium" data-i18n="nav.machineLearning">Makine Öğrenmesi</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:bg-white/10 rounded-lg transition-colors" href="portfolio.html">
-                <span class="material-symbols-outlined">folder_special</span>
-                <span data-i18n="nav.portfolio">Portföy</span>
-            </a>
-        </nav>
-
-        <!-- Footer Navigation -->
-        <div class="p-3 border-t border-white/10 shrink-0 space-y-1">
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:bg-white/10 rounded-lg transition-colors text-xs" href="settings.html">
-                <span class="material-symbols-outlined text-[18px]">settings</span>
-                <span data-i18n="nav.settings">Settings</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:bg-white/10 rounded-lg transition-colors text-xs" href="support.html">
-                <span class="material-symbols-outlined text-[18px]">help</span>
-                <span data-i18n="nav.support">Support</span>
-            </a>
-        </div>
-    </aside>
 
     <!-- Main Content Area -->
     <div class="ml-[260px] w-[calc(100%-260px)] h-screen overflow-y-auto bg-surface-faint flex flex-col">
@@ -194,6 +185,40 @@
                         <span class="material-symbols-outlined text-[18px]">download</span>
                         <span>Dışa Aktar</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- Veri Profili Özet Şeridi -->
+            <div id="mlProfileStrip" data-export-section="ml-profile" data-export-title="Veri Profili Özeti" class="hidden bg-surface border border-border-subtle rounded-xl p-4 shadow-sm">
+                <div class="flex flex-wrap items-center gap-2.5 text-xs">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-border-subtle font-label-mono" title="Toplam Satır">
+                        <span class="material-symbols-outlined text-[15px] text-primary">table_rows</span>
+                        <span id="profRows">--</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-border-subtle font-label-mono" title="Sayısal Sütun Sayısı">
+                        <span class="material-symbols-outlined text-[15px] text-secondary">pin</span>
+                        <span id="profNum">--</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-border-subtle font-label-mono" title="Kategorik Sütun Sayısı">
+                        <span class="material-symbols-outlined text-[15px] text-tertiary">category</span>
+                        <span id="profCat">--</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-border-subtle font-label-mono" title="Tarih / Zaman Sütun Sayısı">
+                        <span class="material-symbols-outlined text-[15px] text-blue-600">calendar_today</span>
+                        <span id="profDate">--</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-border-subtle font-label-mono" title="Serbest Metin Sütun Sayısı">
+                        <span class="material-symbols-outlined text-[15px] text-purple-600">description</span>
+                        <span id="profText">--</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-border-subtle font-label-mono" title="Genel Eksiklik Oranı">
+                        <span class="material-symbols-outlined text-[15px] text-warning-orange">report_problem</span>
+                        <span id="profMissing">--</span>
+                    </div>
+                    <div id="profSampleBadge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20 font-semibold font-label-mono ml-auto">
+                        <span class="material-symbols-outlined text-[15px]">analytics</span>
+                        <span id="profSampleText">Normal Örneklem</span>
+                    </div>
                 </div>
             </div>
 
@@ -270,10 +295,18 @@
                                     <option value="5" selected>5 Katlı (5-Fold CV - Standart)</option>
                                     <option value="10">10 Katlı (10-Fold CV)</option>
                                 </select>
+                                <p id="mlCvFixedHint" class="hidden text-[11px] text-warning-orange font-label-mono mt-1.5 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">info</span>
+                                    <span data-i18n="ml.cvFixedHint">Küçük veri seti: K=3 sabitlendi</span>
+                                </p>
                                 <label id="mlTsToggleWrap" class="hidden items-center gap-2 mt-3 px-3 py-2 bg-surface-container-low border border-border-subtle rounded-lg cursor-pointer hover:border-primary transition-colors text-xs">
                                     <input type="checkbox" id="mlTsToggle" class="accent-primary w-4 h-4 rounded text-primary focus:ring-primary">
                                     <span><strong>Time Series Split (Rolling Window)</strong> kullan — veriyi zaman sırasına göre böl</span>
                                 </label>
+                            </div>
+                            <div id="mlSmallSampleNote" class="hidden items-start gap-2 bg-warning-orange/15 border border-warning-orange/40 text-on-surface rounded-xl p-3 text-xs">
+                                <span class="material-symbols-outlined text-[16px] text-warning-orange shrink-0 mt-0.5">info</span>
+                                <span data-i18n="ml.smallSampleNote">Veri seti 50 satırdan az; çapraz doğrulama uygulanmadı.</span>
                             </div>
                             <div id="mlTsNote" class="hidden items-start gap-2 bg-tertiary-container/20 border border-tertiary/30 text-on-surface rounded-xl p-3 text-xs">
                                 <span class="material-symbols-outlined text-[16px] text-tertiary shrink-0 mt-0.5">schedule</span>
@@ -286,7 +319,11 @@
                             <h3 class="font-label-mono text-xs text-on-surface-variant uppercase tracking-wider font-bold flex items-center gap-1">
                                 <span class="material-symbols-outlined text-[16px] text-primary">do_not_disturb_on</span> Hariç Tutulacak Sütunlar
                             </h3>
-                            <p class="text-[11px] text-slate-gray mb-2">ID benzeri sütunlar otomatik işaretlenir; kaldırıp ekleyebilirsiniz.</p>
+                            <p class="text-[11px] text-slate-gray mb-2">ID benzeri ve serbest metin sütunları otomatik işaretlenir; kaldırıp ekleyebilirsiniz.</p>
+                            <div id="mlTextNote" class="hidden items-start gap-2 bg-purple-500/10 border border-purple-500/30 text-on-surface rounded-lg p-2.5 text-xs mb-2">
+                                <span class="material-symbols-outlined text-[16px] text-purple-600 shrink-0 mt-0.5">short_text</span>
+                                <span id="mlTextNoteMsg">Metin sütunu tespit edildi ve otomatik dışlandı.</span>
+                            </div>
                             <div id="mlExcludeList" class="space-y-1.5 max-h-44 overflow-y-auto pr-1"></div>
                         </div>
 
@@ -300,6 +337,16 @@
                                     <!-- Dinamik checkbox listesi -->
                                 </div>
                                 <p id="mlModelError" class="text-xs text-error hidden mt-2">Lütfen en az bir model seçin.</p>
+                            </div>
+
+                            <!-- Hiperparametre Paneli -->
+                            <div id="mlHyperParams" class="hidden pt-3 border-t border-border-subtle space-y-3">
+                                <h4 class="font-label-mono text-xs text-on-surface-variant uppercase tracking-wider font-bold flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">tune</span> <span data-i18n="ml.hyperParamsTitle">Model Hiperparametreleri</span>
+                                </h4>
+                                <div id="mlHyperParamsContainer" class="space-y-3">
+                                    <!-- Dinamik model bazlı parametreler -->
+                                </div>
                             </div>
 
                             <button id="mlTrainBtn" type="button" class="w-full bg-primary text-on-primary py-3 rounded-lg font-semibold text-xs flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
@@ -427,6 +474,75 @@
             { id: 'rf_reg', name: 'Random Forest Regressor' }
         ];
 
+        const HYPER_DEFS = {
+            rf_clf: {
+                title: 'Random Forest (Sınıflandırma)',
+                params: [
+                    { key: 'n_estimators', label: 'Ağaç Sayısı (n_estimators)', type: 'range', min: 10, max: 300, step: 10, default: 50 },
+                    { key: 'max_depth', label: 'Maksimum Derinlik (max_depth)', type: 'select', default: '10', options: [
+                        { v: '', t: 'Otomatik (None)' },
+                        { v: '3', t: '3' },
+                        { v: '5', t: '5' },
+                        { v: '10', t: '10 (Varsayılan)' },
+                        { v: '20', t: '20' },
+                        { v: '30', t: '30' },
+                        { v: '50', t: '50' }
+                    ]}
+                ]
+            },
+            rf_reg: {
+                title: 'Random Forest (Regresyon)',
+                params: [
+                    { key: 'n_estimators', label: 'Ağaç Sayısı (n_estimators)', type: 'range', min: 10, max: 300, step: 10, default: 50 },
+                    { key: 'max_depth', label: 'Maksimum Derinlik (max_depth)', type: 'select', default: '10', options: [
+                        { v: '', t: 'Otomatik (None)' },
+                        { v: '3', t: '3' },
+                        { v: '5', t: '5' },
+                        { v: '10', t: '10 (Varsayılan)' },
+                        { v: '20', t: '20' },
+                        { v: '30', t: '30' },
+                        { v: '50', t: '50' }
+                    ]}
+                ]
+            },
+            dtree_clf: {
+                title: 'Decision Tree (Sınıflandırma)',
+                params: [
+                    { key: 'max_depth', label: 'Maksimum Derinlik (max_depth)', type: 'select', default: '', options: [
+                        { v: '', t: 'Otomatik (Sınırsız)' },
+                        { v: '3', t: '3' },
+                        { v: '5', t: '5' },
+                        { v: '10', t: '10' },
+                        { v: '20', t: '20' }
+                    ]}
+                ]
+            },
+            dtree_reg: {
+                title: 'Decision Tree (Regresyon)',
+                params: [
+                    { key: 'max_depth', label: 'Maksimum Derinlik (max_depth)', type: 'select', default: '', options: [
+                        { v: '', t: 'Otomatik (Sınırsız)' },
+                        { v: '3', t: '3' },
+                        { v: '5', t: '5' },
+                        { v: '10', t: '10' },
+                        { v: '20', t: '20' }
+                    ]}
+                ]
+            },
+            logistic: {
+                title: 'Logistic Regression',
+                params: [
+                    { key: 'C', label: 'Regülarizasyon Gücü (C)', type: 'select', default: '1.0', options: [
+                        { v: '0.01', t: '0.01 (Güçlü L2)' },
+                        { v: '0.1', t: '0.1' },
+                        { v: '1.0', t: '1.0 (Standart)' },
+                        { v: '10.0', t: '10.0' },
+                        { v: '100.0', t: '100.0 (Zayıf L2)' }
+                    ]}
+                ]
+            }
+        };
+
         function showMlError(msg, detail, trace) {
             const banner = document.getElementById('mlErrorBanner');
             const txt = document.getElementById('mlErrorMessage');
@@ -472,6 +588,65 @@
             return (col && col.kind === 'numeric') ? 'regression' : 'classification';
         }
 
+        function renderHyperParams() {
+            const container = document.getElementById('mlHyperParamsContainer');
+            const wrap = document.getElementById('mlHyperParams');
+            if (!container || !wrap) return;
+
+            const selectedModels = Array.from(document.querySelectorAll('#mlModelList input[type="checkbox"]:checked')).map(c => c.value);
+            const configurableModels = selectedModels.filter(mid => HYPER_DEFS[mid] && HYPER_DEFS[mid].params && HYPER_DEFS[mid].params.length > 0);
+
+            if (configurableModels.length === 0) {
+                wrap.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+
+            wrap.classList.remove('hidden');
+            container.innerHTML = '';
+
+            configurableModels.forEach(mid => {
+                const def = HYPER_DEFS[mid];
+                const card = document.createElement('div');
+                card.className = 'p-3 bg-surface-container-low border border-border-subtle rounded-lg space-y-2.5';
+
+                let html = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-xs text-on-surface">${def.title}</span>
+                        <span class="text-[10px] font-label-mono text-slate-gray">Hiperparametre</span>
+                    </div>
+                `;
+
+                def.params.forEach(p => {
+                    const i18nLabel = p.key === 'n_estimators' ? (window.t ? window.t('ml.hyperParams.nEstimators', p.label) : p.label)
+                                    : p.key === 'max_depth' ? (window.t ? window.t('ml.hyperParams.maxDepth', p.label) : p.label)
+                                    : p.key === 'C' ? (window.t ? window.t('ml.hyperParams.c', p.label) : p.label) : p.label;
+
+                    if (p.type === 'range') {
+                        html += `
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px]">
+                                <label for="mlHyper_${mid}_${p.key}" class="text-slate-gray font-medium">${i18nLabel}</label>
+                                <span id="mlHyperVal_${mid}_${p.key}" class="font-label-mono text-primary font-bold">${p.default}</span>
+                            </div>
+                            <input type="range" id="mlHyper_${mid}_${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${p.default}" class="w-full accent-primary cursor-pointer" oninput="document.getElementById('mlHyperVal_${mid}_${p.key}').textContent = this.value">
+                        </div>`;
+                    } else if (p.type === 'select') {
+                        html += `
+                        <div class="space-y-1">
+                            <label for="mlHyper_${mid}_${p.key}" class="block text-[11px] text-slate-gray font-medium">${i18nLabel}</label>
+                            <select id="mlHyper_${mid}_${p.key}" class="w-full px-2.5 py-1.5 bg-surface-container border border-border-subtle rounded-lg text-xs text-on-surface focus:ring-1 focus:ring-primary">
+                                ${p.options.map(opt => `<option value="${opt.v}" ${opt.v === p.default ? 'selected' : ''}>${opt.v === '' ? (window.t ? window.t('ml.hyperParams.autoDepth', opt.t) : opt.t) : opt.t}</option>`).join('')}
+                            </select>
+                        </div>`;
+                    }
+                });
+
+                card.innerHTML = html;
+                container.appendChild(card);
+            });
+        }
+
         function renderModelCheckboxes() {
             const pType = getDetectedProblemType();
             const list = document.getElementById('mlModelList');
@@ -480,15 +655,19 @@
             const models = (pType === 'regression') ? REGR_MODEL_OPTIONS : CLASS_MODEL_OPTIONS;
             list.innerHTML = '';
 
-            models.forEach((m, idx) => {
+            models.forEach((m) => {
                 const label = document.createElement('label');
                 label.className = 'flex items-center gap-2.5 px-3 py-2 bg-surface-container-low border border-border-subtle rounded-lg cursor-pointer hover:border-primary transition-colors text-xs text-on-surface';
                 label.innerHTML = `
                     <input type="checkbox" value="${m.id}" checked class="accent-primary w-4 h-4 rounded text-primary focus:ring-primary">
                     <span class="font-medium">${m.name}</span>
                 `;
+                const cb = label.querySelector('input');
+                cb.addEventListener('change', () => { renderHyperParams(); });
                 list.appendChild(label);
             });
+
+            renderHyperParams();
         }
 
         function renderExcludeList() {
@@ -554,24 +733,131 @@
                     rBadge.classList.toggle('inline-flex', !processed);
                 }
 
+                // 1. Veri Profili Özeti
+                const prof = mlConfigData.profile;
+                if (prof) {
+                    const profStrip = document.getElementById('mlProfileStrip');
+                    if (profStrip) profStrip.classList.remove('hidden');
+
+                    const rText = window.t ? window.t('ml.profileRows', 'satır') : 'satır';
+                    const nText = window.t ? window.t('ml.profileNumeric', 'Sayısal') : 'Sayısal';
+                    const cText = window.t ? window.t('ml.profileCategorical', 'Kategorik') : 'Kategorik';
+                    const dText = window.t ? window.t('ml.profileDatetime', 'Tarih') : 'Tarih';
+                    const tText = window.t ? window.t('ml.profileText', 'Metin') : 'Metin';
+                    const mText = window.t ? window.t('ml.profileMissing', 'Eksik') : 'Eksik';
+
+                    const elRows = document.getElementById('profRows');
+                    const elNum = document.getElementById('profNum');
+                    const elCat = document.getElementById('profCat');
+                    const elDate = document.getElementById('profDate');
+                    const elText = document.getElementById('profText');
+                    const elMiss = document.getElementById('profMissing');
+
+                    if (elRows) elRows.textContent = `${Number(prof.total_rows).toLocaleString('tr-TR')} ${rText}`;
+                    if (elNum) elNum.textContent = `${prof.n_numeric} ${nText}`;
+                    if (elCat) elCat.textContent = `${prof.n_categorical} ${cText}`;
+                    if (elDate) elDate.textContent = `${prof.n_datetime} ${dText}`;
+                    if (elText) elText.textContent = `${prof.n_text} ${tText}`;
+                    if (elMiss) elMiss.textContent = `${mText}: %${(prof.missing_ratio * 100).toFixed(1)}`;
+
+                    const sampleBadge = document.getElementById('profSampleBadge');
+                    const sampleText = document.getElementById('profSampleText');
+                    if (sampleBadge && sampleText) {
+                        if (prof.sample_bucket === 'tiny') {
+                            sampleBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-error/10 text-error border border-error/20 font-semibold font-label-mono ml-auto';
+                            sampleText.textContent = window.t ? window.t('ml.profileTiny', 'Çok Küçük Örneklem (<50)') : 'Çok Küçük Örneklem (<50)';
+                        } else if (prof.sample_bucket === 'small') {
+                            sampleBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-warning-orange/15 text-warning-orange border border-warning-orange/30 font-semibold font-label-mono ml-auto';
+                            sampleText.textContent = window.t ? window.t('ml.profileSmall', 'Küçük Örneklem (50-150)') : 'Küçük Örneklem (50-150)';
+                        } else if (prof.sample_bucket === 'large') {
+                            sampleBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-success-green/15 text-success-green border border-success-green/30 font-semibold font-label-mono ml-auto';
+                            sampleText.textContent = window.t ? window.t('ml.profileLarge', 'Geniş Veri Seti (>2000)') : 'Geniş Veri Seti (>2000)';
+                        } else {
+                            sampleBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20 font-semibold font-label-mono ml-auto';
+                            sampleText.textContent = window.t ? window.t('ml.profileNormal', 'Normal Örneklem') : 'Normal Örneklem';
+                        }
+                    }
+                }
+
+                // 2. Çapraz Doğrulama (K-Fold) & Küçük Örneklem Kuralları
+                const cvSection = document.getElementById('mlCvSection');
+                const smallNote = document.getElementById('mlSmallSampleNote');
+                const cvSelect = document.getElementById('mlCvK');
+                const cvFixedHint = document.getElementById('mlCvFixedHint');
+                const rec = (prof && prof.recommended) ? prof.recommended : { cv_visible: true, cv_fixed_k: null };
+
+                if (rec.cv_visible === false) {
+                    if (cvSection) cvSection.classList.add('hidden');
+                    if (smallNote) {
+                        smallNote.classList.remove('hidden');
+                        smallNote.classList.add('flex');
+                    }
+                } else {
+                    if (cvSection) cvSection.classList.remove('hidden');
+                    if (smallNote) {
+                        smallNote.classList.add('hidden');
+                        smallNote.classList.remove('flex');
+                    }
+                    if (rec.cv_fixed_k != null) {
+                        if (cvSelect) {
+                            cvSelect.value = String(rec.cv_fixed_k);
+                            cvSelect.disabled = true;
+                        }
+                        if (cvFixedHint) cvFixedHint.classList.remove('hidden');
+                    } else {
+                        if (cvSelect) cvSelect.disabled = false;
+                        if (cvFixedHint) cvFixedHint.classList.add('hidden');
+                    }
+                }
+
+                // Zaman serisi kontrolleri
                 const tsConfirmed = !!mlConfigData.is_time_series;
                 const tsSuspected = !!mlConfigData.time_series_suspected;
-                // K-Fold her zaman görünür — zorla gizleme YOK
-                document.getElementById('mlCvSection').classList.remove('hidden');
                 const tsWrap = document.getElementById('mlTsToggleWrap');
                 const tsNote = document.getElementById('mlTsNote');
                 if (tsConfirmed || tsSuspected) {
-                    tsWrap.classList.remove('hidden');
-                    tsWrap.classList.add('flex');
-                    document.getElementById('mlTsToggle').checked = tsConfirmed; // doğrulanmışsa işaretli, şüphe ise boş
-                    tsNote.classList.remove('hidden');
-                    tsNote.classList.add('flex');
-                    document.getElementById('mlTsColName').textContent = mlConfigData.time_column || '';
+                    if (tsWrap) {
+                        tsWrap.classList.remove('hidden');
+                        tsWrap.classList.add('flex');
+                    }
+                    const tsToggle = document.getElementById('mlTsToggle');
+                    if (tsToggle) tsToggle.checked = tsConfirmed;
+                    if (tsNote) {
+                        tsNote.classList.remove('hidden');
+                        tsNote.classList.add('flex');
+                    }
+                    const tsColEl = document.getElementById('mlTsColName');
+                    if (tsColEl) tsColEl.textContent = mlConfigData.time_column || '';
                 } else {
-                    tsWrap.classList.add('hidden');
-                    tsWrap.classList.remove('flex');
-                    tsNote.classList.add('hidden');
-                    tsNote.classList.remove('flex');
+                    if (tsWrap) {
+                        tsWrap.classList.add('hidden');
+                        tsWrap.classList.remove('flex');
+                    }
+                    if (tsNote) {
+                        tsNote.classList.add('hidden');
+                        tsNote.classList.remove('flex');
+                    }
+                }
+
+                // 3. Metin Sütunu Notu
+                const textNote = document.getElementById('mlTextNote');
+                const textNoteMsg = document.getElementById('mlTextNoteMsg');
+                if (prof && prof.text_columns && prof.text_columns.length > 0) {
+                    if (textNote) {
+                        textNote.classList.remove('hidden');
+                        textNote.classList.add('flex');
+                    }
+                    const textCols = prof.text_columns;
+                    const displayCols = textCols.slice(0, 5).join(', ') + (textCols.length > 5 ? ', …' : '');
+                    const msgTemplate = window.t ? window.t('ml.textColumnsNote', '{count} metin sütunu tespit edildi ve otomatik dışlandı: {cols}') : '{count} metin sütunu tespit edildi ve otomatik dışlandı: {cols}';
+                    if (textNoteMsg) {
+                        textNoteMsg.textContent = msgTemplate.replace('{count}', textCols.length).replace('{cols}', displayCols);
+                    }
+                } else {
+                    if (textNote) {
+                        textNote.classList.add('hidden');
+                        textNote.classList.remove('flex');
+                    }
                 }
 
                 mlClassRatios = {};
@@ -589,7 +875,7 @@
                 mlConfigData.columns.forEach(col => {
                     const opt = document.createElement('option');
                     opt.value = col.name;
-                    opt.textContent = `${col.name} (${col.dtype})`;
+                    opt.textContent = `${col.name} (${col.kind === 'datetime' ? 'Tarih' : col.kind === 'text' ? 'Metin' : col.dtype})`;
                     if (col.kind === 'numeric') {
                         numGroup.appendChild(opt);
                     } else {
@@ -633,6 +919,26 @@
             }
             if (modelErr) modelErr.classList.add('hidden');
 
+            // Collect Hyperparameters
+            const hyperparams = {};
+            selectedModels.forEach(mid => {
+                const def = HYPER_DEFS[mid];
+                if (def && def.params) {
+                    hyperparams[mid] = {};
+                    def.params.forEach(p => {
+                        const input = document.getElementById(`mlHyper_${mid}_${p.key}`);
+                        if (input) {
+                            const val = input.value;
+                            if (p.key === 'max_depth' && (val === '' || val === 'auto')) {
+                                hyperparams[mid][p.key] = null;
+                            } else if (val !== '') {
+                                hyperparams[mid][p.key] = Number(val);
+                            }
+                        }
+                    });
+                }
+            });
+
             const btn = document.getElementById('mlTrainBtn');
             const btnText = document.getElementById('mlTrainBtnText');
             const spinner = document.getElementById('mlTrainSpinner');
@@ -657,7 +963,8 @@
                         models: selectedModels,
                         cv_k: cvK,
                         cv_mode: cvMode,
-                        exclude_columns: excludeCols
+                        exclude_columns: excludeCols,
+                        hyperparams: hyperparams
                     })
                 });
                 clearTimeout(timer);
@@ -1015,6 +1322,7 @@
     </script>
 
     <!-- Component Scripts -->
+    <script src="/static/components/sidebar.js"></script>
     <script src="/static/components/ai-assistant.js"></script>
     <script src="/static/components/settings.js"></script>
     <script src="/static/components/i18n.js"></script>

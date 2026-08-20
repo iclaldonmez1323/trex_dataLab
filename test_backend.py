@@ -15,7 +15,8 @@ def test_api():
     print("Testing GET /data-quality ...")
     r = client.get("/data-quality")
     assert r.status_code == 200, f"GET /data-quality failed: {r.status_code}"
-    assert "Data Quality" in r.text
+    assert "Veri Kalitesi" in r.text or "Data Quality" in r.text
+    assert "sidebar.js" in r.text
     print("[OK] GET /data-quality OK")
 
     print("Testing POST /api/upload with test_data.csv ...")
@@ -278,16 +279,35 @@ def test_api():
     assert ml_cfg_data["total_rows"] > 0
     assert len(ml_cfg_data["columns"]) > 0
     assert "default_target" in ml_cfg_data
-    print(f"[OK] GET /api/ml/config OK ({len(ml_cfg_data['columns'])} columns)")
+    assert "profile" in ml_cfg_data
+    prof = ml_cfg_data["profile"]
+    assert "total_rows" in prof
+    assert "n_numeric" in prof
+    assert "n_categorical" in prof
+    assert "n_datetime" in prof
+    assert "n_text" in prof
+    assert "n_high_cardinality" in prof
+    assert "missing_ratio" in prof
+    assert "text_columns" in prof
+    assert "datetime_columns" in prof
+    assert "has_imbalance" in prof
+    assert "sample_bucket" in prof
+    assert "recommended" in prof
+    assert "cv_visible" in prof["recommended"]
+    print(f"[OK] GET /api/ml/config OK ({len(ml_cfg_data['columns'])} columns, sample_bucket: {prof['sample_bucket']})")
 
-    print("Testing POST /api/ml/train (Regression) ...")
+    print("Testing POST /api/ml/train (Regression with Hyperparameters) ...")
     r_train_reg = client.post("/api/ml/train", json={
         "target": "Gelir",
         "problem_type": "regression",
         "train_ratio": 0.8,
         "missing_strategy": "fill",
         "models": ["linear", "dtree_reg", "rf_reg"],
-        "cv_k": 3
+        "cv_k": 3,
+        "hyperparams": {
+            "rf_reg": {"n_estimators": 60, "max_depth": 5},
+            "dtree_reg": {"max_depth": 4}
+        }
     })
     assert r_train_reg.status_code == 200
     res_reg = r_train_reg.json()
@@ -296,16 +316,20 @@ def test_api():
     assert "best_model" in res_reg
     assert "actual_vs_predicted" in res_reg["models"][0]
     assert "feature_importance" in res_reg["models"][0]
-    print(f"[OK] POST /api/ml/train (Regression) OK - Best: {res_reg['best_model']}")
+    print(f"[OK] POST /api/ml/train (Regression with Hyperparams) OK - Best: {res_reg['best_model']}")
 
-    print("Testing POST /api/ml/train (Classification) ...")
+    print("Testing POST /api/ml/train (Classification with Hyperparameters) ...")
     r_train_clf = client.post("/api/ml/train", json={
         "target": "Segment",
         "problem_type": "classification",
         "train_ratio": 0.8,
         "missing_strategy": "fill",
         "models": ["logistic", "dtree_clf", "rf_clf"],
-        "cv_k": 3
+        "cv_k": 3,
+        "hyperparams": {
+            "rf_clf": {"n_estimators": 1000, "max_depth": 0},  # test clamping & auto depth
+            "logistic": {"C": 0.5}
+        }
     })
     assert r_train_clf.status_code == 200
     res_clf = r_train_clf.json()
@@ -313,7 +337,7 @@ def test_api():
     assert len(res_clf["models"]) == 3
     assert "confusion" in res_clf["models"][0]
     assert "roc" in res_clf["models"][0]
-    print(f"[OK] POST /api/ml/train (Classification) OK - Best: {res_clf['best_model']}")
+    print(f"[OK] POST /api/ml/train (Classification with Hyperparams) OK - Best: {res_clf['best_model']}")
 
     print("Testing static image serving for portfolio ...")
     r_img = client.get("/portfolio/grafikler/oee_timeseries.png")

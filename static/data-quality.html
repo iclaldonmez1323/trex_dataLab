@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>trex DataLab - Veri Kalitesi Raporu</title>
+    <title>trex DataLab - Veri Kalitesi (Data Quality)</title>
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
     <!-- Google Fonts -->
@@ -137,70 +137,7 @@
 </head>
 
 <body class="bg-surface-faint text-on-surface font-body-md antialiased min-h-screen">
-    <!-- Side Navigation Shell -->
-    <aside class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant z-20 flex flex-col py-6 px-4">
-        <!-- Header -->
-        <div class="mb-stack-lg px-2">
-            <div>
-                <h1 class="font-headline-md text-headline-md text-white m-0 leading-tight">trex DataLab</h1>
-                <p class="font-label-mono text-label-mono text-white/70 uppercase">PRECISION DATA PLATFORM</p>
-            </div>
-        </div>
 
-        <!-- CTA Action -->
-        <div class="mb-6">
-            <a href="index.html" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body-md text-body-md rounded-lg hover:bg-primary-fixed-dim transition-colors shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer">
-                <span class="material-symbols-outlined">upload</span>
-                <span data-i18n="nav.newUpload">Yeni Veri Yükle</span>
-            </a>
-        </div>
-
-        <!-- Main Navigation -->
-        <nav class="flex-1 space-y-2">
-            <!-- Dashboard -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="index.html">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span class="font-body-md text-body-md" data-i18n="nav.dashboard">Dashboard</span>
-            </a>
-            <!-- Data Quality (Active) -->
-            <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="data-quality.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
-                <span class="font-body-md text-body-md font-medium" data-i18n="nav.dataQuality">Data Quality</span>
-            </a>
-            <!-- Preprocessing -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="preprocessing.html">
-                <span class="material-symbols-outlined">construction</span>
-                <span class="font-body-md text-body-md" data-i18n="nav.preprocessing">Preprocessing</span>
-            </a>
-            <!-- Visualization -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="visualization.html">
-                <span class="material-symbols-outlined">insights</span>
-                <span class="font-body-md text-body-md" data-i18n="nav.visualization">Visualization</span>
-            </a>
-            <!-- Machine Learning -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="machine-learning.html">
-                <span class="material-symbols-outlined">model_training</span>
-                <span class="font-body-md text-body-md" data-i18n="nav.machineLearning">Machine Learning</span>
-            </a>
-            <!-- Portfolio -->
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="portfolio.html">
-                <span class="material-symbols-outlined">folder_shared</span>
-                <span class="font-body-md text-body-md" data-i18n="nav.portfolio">Portfolio</span>
-            </a>
-        </nav>
-
-        <!-- Footer Navigation -->
-        <div class="border-t border-white/20 pt-stack-sm space-y-1 mt-auto">
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="settings.html">
-                <span class="material-symbols-outlined">settings</span>
-                <span class="font-body-md text-body-md" data-i18n="nav.settings">Settings</span>
-            </a>
-            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="support.html">
-                <span class="material-symbols-outlined">help</span>
-                <span class="font-body-md text-body-md" data-i18n="nav.support">Support</span>
-            </a>
-        </div>
-    </aside>
 
     <!-- Top Navigation Header -->
     <header class="fixed top-0 right-0 w-[calc(100%-260px)] z-10 border-b border-border-subtle bg-surface flex justify-between items-center h-16 px-gutter">
@@ -1251,6 +1188,7 @@
             _inspectHistogramChart.setOption(option, { notMerge: true });
         }
     </script>
+    <script src="/static/components/sidebar.js"></script>
     <script src="/static/components/ai-assistant.js"></script>
     <script src="/static/components/settings.js"></script>
     <script src="/static/components/i18n.js"></script>

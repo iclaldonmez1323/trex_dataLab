@@ -1,12 +1,14 @@
 import io
 import os
+import csv
 import json
 import uuid
 import re
+import warnings
 import traceback
 import requests
 import google.generativeai as genai
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Tuple
 from fastapi import FastAPI, File, UploadFile, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -57,6 +59,9 @@ dropped_columns: set = set()
 preprocessing_history_stack: list = []
 MAX_FILE_SIZE = 50 * 1024 * 1024
 
+ENCODINGS = ["utf-8-sig", "utf-8", "cp1254", "latin5", "iso-8859-9", "cp1252", "latin-1", "utf-16"]
+DELIMITERS = [",", ";", "\t", "|"]
+
 
 def clean_val_for_json(val: Any) -> Any:
     if pd.isna(val) or val is None:
@@ -72,71 +77,137 @@ def clean_val_for_json(val: Any) -> Any:
     return str(val)
 
 
-def parse_csv_content(content_bytes: bytes, filename: str) -> pd.DataFrame:
-    encodings = ["utf-8-sig", "utf-8", "cp1254", "iso-8859-9", "latin-1"]
+def _make_report(enc: str, sep, skipped: list) -> dict:
+    return {
+        "encoding": enc,
+        "delimiter": ("auto" if sep is None else sep),
+        "skipped_count": len(skipped),
+        "skipped_lines": skipped[:20],
+    }
+
+
+def _short(exc: Exception) -> str:
+    text = str(exc) or exc.__class__.__name__
+    return text[:300]
+
+
+def parse_csv_content(content_bytes: bytes, filename: str) -> Tuple[pd.DataFrame, dict]:
     last_error: Optional[Exception] = None
+    diagnostics: list = []
+
+    # UTF-16 BOM tespiti
+    if content_bytes.startswith(b"\xff\xfe") or content_bytes.startswith(b"\xfe\xff"):
+        enc_list = ["utf-16", "utf-16-le", "utf-16-be"] + [e for e in ENCODINGS if not e.startswith("utf-16")]
+    else:
+        enc_list = ENCODINGS
 
     def _looks_merged(df: pd.DataFrame) -> bool:
         if len(df.columns) != 1:
             return False
         col_name = str(df.columns[0])
-        if "," in col_name or ";" in col_name or "\t" in col_name:
+        if "," in col_name or ";" in col_name or "\t" in col_name or "|" in col_name:
             return True
         if len(df) == 0:
             return False
         sample_vals = df.iloc[:, 0].astype(str).head(20)
         for v in sample_vals:
-            if "," in v or ";" in v:
+            if "," in v or ";" in v or "\t" in v or "|" in v:
                 return True
         return False
 
-    for enc in encodings:
-        try:
-            sample = content_bytes[:8192].decode(enc, errors="strict")
-            delimiter = ","
-            if sample.count(";") > sample.count(","):
-                delimiter = ";"
-            elif sample.count("\t") > sample.count(","):
-                delimiter = "\t"
-
+    def _read(enc: str, sep):
+        # on_bad_lines="warn" → bozuk satırlar atlanır, ParserWarning mesajları toplanır
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
             df = pd.read_csv(
                 io.BytesIO(content_bytes),
                 encoding=enc,
-                sep=delimiter,
-                engine="c",
-                low_memory=False
+                sep=sep,
+                engine="python",   # C motoru yerine her yerde python (cryptic 'bad delimiter value' vb. hataları önler)
+                on_bad_lines="warn",
             )
-            if _looks_merged(df):
-                # Ayraç yanlış algılandı: Python motoruyla otomatik tespit dene
-                df = pd.read_csv(
-                    io.BytesIO(content_bytes),
-                    encoding=enc,
-                    sep=None,
-                    engine="python",
-                    on_bad_lines="skip"
-                )
-            return df
+        skipped_lines = []
+        for w in caught:
+            if isinstance(w.message, pd.errors.ParserWarning):
+                m = re.search(r"line (\d+)", str(w.message))
+                if m:
+                    skipped_lines.append(int(m.group(1)))
+
+        # Sütun isimlerini stringe çevir ve temizle
+        seen = {}
+        new_cols = []
+        for c in df.columns:
+            c_str = str(c).strip() if c is not None else ""
+            if not c_str:
+                c_str = "unnamed"
+            if c_str in seen:
+                seen[c_str] += 1
+                new_cols.append(f"{c_str}_{seen[c_str]}")
+            else:
+                seen[c_str] = 0
+                new_cols.append(c_str)
+        df.columns = new_cols
+
+        return df, sorted(set(skipped_lines))
+
+    # --- Faz 1: otomatik ayraç algılama (sep=None + engine="python", csv.Sniffer) ---
+    for enc in enc_list:
+        try:
+            detected_sep = None
+            sample_text = content_bytes[:8192].decode(enc, errors="ignore")
+            try:
+                detected_sep = csv.Sniffer().sniff(sample_text, delimiters="".join(DELIMITERS)).delimiter
+            except Exception:
+                pass
+
+            if detected_sep is not None:
+                df, skipped = _read(enc, detected_sep)
+                if not _looks_merged(df) and len(df.columns) >= 2:
+                    return df, _make_report(enc, detected_sep, skipped)
+            elif any(d in sample_text for d in DELIMITERS):
+                df, skipped = _read(enc, None)
+                if not _looks_merged(df) and len(df.columns) >= 2:
+                    return df, _make_report(enc, None, skipped)
         except Exception as e:
             last_error = e
+            diagnostics.append(f"kodlama={enc}, ayraç=auto → {_short(e)}")
             continue
 
-    # Son çare: ayraç deneme listesi + python motoru
-    for sep_candidate in [",", ";", "\t", "|"]:
-        try:
-            df = pd.read_csv(
-                io.BytesIO(content_bytes),
-                encoding="utf-8",
-                sep=sep_candidate,
-                engine="python",
-                encoding_errors="replace",
-                on_bad_lines="skip"
-            )
-            if not _looks_merged(df):
-                return df
-        except Exception:
-            continue
+    # --- Faz 2: sabit ayraç denemesi (sırasıyla , ; \t |) x tüm kodlamalar ---
+    for enc in enc_list:
+        for sep in DELIMITERS:
+            try:
+                df, skipped = _read(enc, sep)
+                if not _looks_merged(df) and len(df.columns) >= 2:
+                    return df, _make_report(enc, sep, skipped)
+            except Exception as e:
+                last_error = e
+                diagnostics.append(f"kodlama={enc}, ayraç={sep} → {_short(e)}")
+                continue
 
-    raise ValueError(f"Dosya okunamadı: {str(last_error or 'Bilinmeyen hata')}")
+    # --- Faz 3: tek-sütun kabul (son çare; hiçbir ayraç çalışmadıysa) ---
+    for enc in enc_list:
+        for sep_cand in [",", None]:
+            try:
+                df, skipped = _read(enc, sep_cand)
+                if len(df.columns) == 1 and not _looks_merged(df) and len(df) > 0:
+                    return df, _make_report(enc, None, skipped)
+            except Exception as e:
+                last_error = e
+                continue
+
+    # --- Toplu hata mesajı: satır bilgisi + denenen listeler ---
+    detail = (
+        "Dosya okunamadı. Denenen kodlamalar: "
+        + ", ".join(enc_list)
+        + " | Denenen ayraçlar: "
+        + ", ".join([("\\t" if d == "\t" else d) for d in DELIMITERS])
+    )
+    if last_error is not None:
+        detail += " | Son hata: " + _short(last_error)
+    if diagnostics:
+        detail += " | Ayrıntı: " + " ; ".join(diagnostics[-5:])
+    raise ValueError(detail)
 
 
 @app.get("/")
@@ -213,7 +284,7 @@ async def upload_csv(file: UploadFile = File(...)):
         )
 
     try:
-        df = parse_csv_content(content, file.filename)
+        df, parse_report = parse_csv_content(content, file.filename)
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -223,7 +294,10 @@ async def upload_csv(file: UploadFile = File(...)):
     rows_count = int(len(df))
     cols_count = int(len(df.columns))
     missing_count = int(df.isna().sum().sum())
-    duplicates_count = int(df.duplicated().sum())
+    try:
+        duplicates_count = int(df.duplicated().sum())
+    except Exception:
+        duplicates_count = 0
 
     numeric_df = df.select_dtypes(include=[np.number])
     numeric_cols_count = int(len(numeric_df.columns))
@@ -232,16 +306,16 @@ async def upload_csv(file: UploadFile = File(...)):
     column_types = {}
     for col in df.columns:
         if col in numeric_df.columns:
-            column_types[col] = "numeric"
+            column_types[str(col)] = "numeric"
         else:
-            column_types[col] = "categorical"
+            column_types[str(col)] = "categorical"
 
     preview_df = df.head(10)
     preview_rows = []
     for _, row in preview_df.iterrows():
         row_dict = {}
-        for col in df.columns:
-            row_dict[col] = clean_val_for_json(row[col])
+        for i, col in enumerate(df.columns):
+            row_dict[str(col)] = clean_val_for_json(row.iloc[i])
         preview_rows.append(row_dict)
 
     result_data = {
@@ -256,6 +330,7 @@ async def upload_csv(file: UploadFile = File(...)):
         "columns_list": [str(c) for c in df.columns],
         "column_types": column_types,
         "preview": preview_rows,
+        "parse_report": parse_report if parse_report.get("skipped_count", 0) > 0 else None,
     }
 
     global active_dataset, active_df_cache, original_df_cache, processed_df_cache, dropped_columns, preprocessing_history_stack
@@ -2344,10 +2419,12 @@ def get_ml_dataframe() -> Optional[pd.DataFrame]:
     return df
 
 
-def _auto_exclude_column(name: str, s: pd.Series) -> bool:
+def _auto_exclude_column(name: str, s: pd.Series, kind: Optional[str] = None) -> bool:
     n = len(s.dropna())
     if n == 0:
         return False
+    if kind == "text":
+        return True
     name_low = str(name).lower()
     if re.search(r"(id|cod|no|key|kayıt|numar)", name_low):
         return True
@@ -2368,6 +2445,35 @@ def _ml_data_source() -> str:
 def _top_class_ratio(s: pd.Series) -> float:
     vc = s.dropna().value_counts(normalize=True)
     return float(vc.iloc[0]) if len(vc) else 0.0
+
+
+def _col_kind(s: pd.Series) -> str:
+    if pd.api.types.is_numeric_dtype(s):
+        return "numeric"
+
+    # Datetime tespiti (ilk 200 boş-olmayan örnekte >= %80 dönüşüm)
+    sample = s.dropna().head(200)
+    if len(sample) > 0:
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                parsed = pd.to_datetime(sample, errors="coerce")
+                if float(parsed.notna().sum() / len(sample)) >= 0.8:
+                    return "datetime"
+        except Exception:
+            pass
+
+    # Metin tespiti (ortalama uzunluk >= 30 veya en az bir değer > 80)
+    if s.dtype == object or pd.api.types.is_string_dtype(s):
+        s_str = s.dropna().astype(str)
+        if len(s_str) > 0:
+            lens = s_str.str.len()
+            avg_len = float(lens.mean())
+            max_len = int(lens.max())
+            if avg_len >= 30 or max_len > 80:
+                return "text"
+
+    return "categorical"
 
 
 def _detect_time_series(df: pd.DataFrame) -> tuple:
@@ -2424,27 +2530,73 @@ async def ml_config():
     if df is None or not active_dataset:
         return JSONResponse(status_code=404, content={"error": "Aktif bir veri seti yok. Önce bir CSV yükleyin."})
 
-    def _col_kind(s: pd.Series) -> str:
-        return "numeric" if pd.api.types.is_numeric_dtype(s) else "categorical"
-
     columns = []
     missing_counts = {}
     auto_excluded = []
+    text_cols = []
+    datetime_cols = []
+    n_high_card = 0
+
     for col in df.columns:
         s = df[col]
         kind = _col_kind(s)
-        ex = _auto_exclude_column(col, s)
+        n_non_null = len(s.dropna())
+        avg_len = round(float(s.dropna().astype(str).str.len().mean()), 1) if n_non_null else 0.0
+        uniq_ratio = round(float(s.nunique() / len(s)) if len(s) else 0.0, 3)
+        if uniq_ratio >= 0.95:
+            n_high_card += 1
+
+        if kind == "text":
+            text_cols.append(str(col))
+        elif kind == "datetime":
+            datetime_cols.append(str(col))
+
+        ex = _auto_exclude_column(col, s, kind)
         columns.append({
             "name": str(col),
             "dtype": str(s.dtype),
             "kind": kind,
-            "unique_ratio": round(float(s.nunique() / len(s)) if len(s) else 0, 3),
+            "avg_length": avg_len,
+            "is_datetime": bool(kind == "datetime"),
+            "unique_ratio": uniq_ratio,
             "class_ratio": _top_class_ratio(s) if kind == "categorical" else None,
             "auto_exclude": ex,
         })
         missing_counts[str(col)] = int(s.isna().sum())
         if ex:
             auto_excluded.append(str(col))
+
+    total_rows = int(len(df))
+    if total_rows < 50:
+        sample_bucket = "tiny"
+        cv_rec = {"cv_visible": False, "cv_fixed_k": None, "note": "Çapraz doğrulama için çok az veri (K-Fold kapalı)"}
+    elif total_rows <= 150:
+        sample_bucket = "small"
+        cv_rec = {"cv_visible": True, "cv_fixed_k": 3, "note": "Küçük veri seti: K=3 sabitlendi"}
+    elif total_rows <= 2000:
+        sample_bucket = "normal"
+        cv_rec = {"cv_visible": True, "cv_fixed_k": None, "note": ""}
+    else:
+        sample_bucket = "large"
+        cv_rec = {"cv_visible": True, "cv_fixed_k": None, "note": ""}
+
+    has_imbalance = any(c.get("class_ratio") is not None and c["class_ratio"] >= 0.90 for c in columns)
+    missing_ratio = round(float(df.isna().sum().sum() / (len(df) * len(df.columns))), 4) if len(df) and len(df.columns) else 0.0
+
+    profile = {
+        "total_rows": total_rows,
+        "n_numeric": int(sum(1 for c in columns if c["kind"] == "numeric")),
+        "n_categorical": int(sum(1 for c in columns if c["kind"] == "categorical")),
+        "n_datetime": int(len(datetime_cols)),
+        "n_text": int(len(text_cols)),
+        "n_high_cardinality": int(n_high_card),
+        "missing_ratio": missing_ratio,
+        "text_columns": text_cols,
+        "datetime_columns": datetime_cols,
+        "has_imbalance": has_imbalance,
+        "sample_bucket": sample_bucket,
+        "recommended": cv_rec,
+    }
 
     first_num = next((c["name"] for c in columns if c["kind"] == "numeric"), columns[0]["name"] if columns else "")
     is_ts, ts_suspected, ts_col = _detect_time_series(df)
@@ -2455,12 +2607,13 @@ async def ml_config():
         "time_series_suspected": ts_suspected,
         "time_column": ts_col,
         "filename": active_dataset.get("filename", "veri.csv"),
-        "total_rows": int(len(df)),
+        "total_rows": total_rows,
         "columns": columns,
         "missing_counts": missing_counts,
         "default_target": first_num,
         "auto_excluded": auto_excluded,
         "feature_candidates": [c["name"] for c in columns],
+        "profile": profile,
     })
 
 
@@ -2474,6 +2627,27 @@ REGR_MODELS = {
     "dtree_reg": {"name": "Decision Tree Regressor", "cls": DecisionTreeRegressor, "kwargs": {"random_state": 42}},
     "rf_reg": {"name": "Random Forest Regressor", "cls": RandomForestRegressor, "kwargs": {"random_state": 42, "n_estimators": 50, "max_depth": 10, "n_jobs": -1}},
 }
+
+ALLOWED_HYPERPARAMS = {
+    "rf_clf": ["n_estimators", "max_depth"],
+    "rf_reg": ["n_estimators", "max_depth"],
+    "dtree_clf": ["max_depth"],
+    "dtree_reg": ["max_depth"],
+    "logistic": ["C"],
+    "linear": [],
+}
+
+
+def _coerce_hyper(key: str, val: Any):
+    if key == "max_depth" and (val in (None, "auto", "", 0, "0") or val is None):
+        return None
+    try:
+        f = float(val)
+        if key in ("n_estimators", "max_depth"):
+            return int(f)
+        return f
+    except (ValueError, TypeError):
+        return None
 
 
 @app.post("/api/ml/train")
@@ -2493,6 +2667,12 @@ def _run_ml_training(req: dict) -> JSONResponse:
     df = get_ml_dataframe()
     if df is None or not active_dataset:
         return JSONResponse(status_code=404, content={"error": "Aktif bir veri seti yok."})
+
+    if len(df.columns) < 2:
+        return JSONResponse(status_code=400, content={
+            "error": "Model eğitimi için en az 2 sütun (1 hedef + en az 1 özellik) gereklidir.",
+            "detail": f"Mevcut veri setinde yalnızca 1 sütun bulunmaktadır: {list(df.columns)}. Lütfen ana sayfadan çok sütunlu geçerli bir CSV dosyası yükleyin.",
+        })
 
     target = req.get("target")
     if not target or target not in df.columns:
@@ -2534,10 +2714,16 @@ def _run_ml_training(req: dict) -> JSONResponse:
 
     features = [c for c in df.columns if c != target and c not in excluded]
     if not features:
-        return JSONResponse(status_code=400, content={
-            "error": "Hariç tutma sonrası kullanılabilir özellik sütunu kalmadı.",
-            "detail": f"Hariç tutulan sütunlar: {', '.join(excluded) if excluded else 'yok'}",
-        })
+        # Eğer otomatik hariç tutma yüzünden özellik kalmadıysa kullanıcı seçmediklerini koru
+        user_excluded_set = set(user_exclude)
+        fallback_features = [c for c in df.columns if c != target and c not in user_excluded_set]
+        if fallback_features:
+            features = fallback_features
+        else:
+            return JSONResponse(status_code=400, content={
+                "error": "Hariç tutma sonrası kullanılabilir özellik sütunu kalmadı.",
+                "detail": f"Hariç tutulan sütunlar: {', '.join(excluded) if excluded else 'yok'}. Lütfen hariç tutulan sütun listesinden en az bir özelliği kaldırın.",
+            })
 
     X = df[features].copy()
     y = df[target].copy()
@@ -2624,8 +2810,22 @@ def _run_ml_training(req: dict) -> JSONResponse:
         cfg = models[mid]
         row = {"id": mid, "name": cfg["name"], "metrics": {}, "cv_mean": None, "cv_std": None,
                "model_error": None, "confusion": None, "roc": None, "actual_vs_predicted": None, "feature_importance": []}
+        user_hypers = req.get("hyperparams", {}) or {}
+        model_hypers = user_hypers.get(mid, {}) if isinstance(user_hypers, dict) else {}
+        params = dict(cfg["kwargs"])
+        allowed = ALLOWED_HYPERPARAMS.get(mid, [])
+        for k, v in model_hypers.items():
+            if k in allowed:
+                coerced = _coerce_hyper(k, v)
+                if k == "n_estimators" and coerced is not None:
+                    params[k] = max(10, min(500, coerced))
+                elif k == "max_depth":
+                    params[k] = max(1, min(50, coerced)) if coerced is not None else None
+                elif k == "C" and coerced is not None:
+                    params[k] = max(0.001, min(1000.0, coerced))
+
         try:
-            model = cfg["cls"](**cfg["kwargs"])
+            model = cfg["cls"](**params)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
 

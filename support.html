@@ -15,57 +15,92 @@
             darkMode: "class",
             theme: {
                 extend: {
-                    colors: {
+                    "colors": {
                         "error": "var(--c-error, #ba1a1a)",
-                        "error-container": "var(--c-error-container, #ffdad6)",
-                        "on-error": "#ffffff",
-                        "on-error-container": "var(--c-on-error-container, #93000a)",
-                        "primary": "var(--c-primary, #006b33)",
-                        "primary-container": "var(--c-primary-container, #008742)",
-                        "primary-fixed": "var(--c-primary-fixed, #8bf9a6)",
-                        "on-primary": "var(--c-on-primary, #ffffff)",
-                        "on-primary-container": "#f7fff3",
-                        "on-primary-fixed": "var(--c-on-primary-fixed, #00210b)",
-                        "secondary": "#40674b",
-                        "secondary-container": "#bfeac7",
-                        "on-secondary": "#ffffff",
-                        "tertiary": "#815200",
-                        "tertiary-container": "#a1680d",
-                        "background": "var(--c-background, #fcf9f8)",
+                        "tertiary-fixed": "#ffddb7",
                         "on-background": "var(--c-on-background, #1c1b1b)",
-                        "surface": "var(--c-surface, #fcf9f8)",
-                        "surface-dim": "#dcd9d9",
-                        "surface-bright": "#fcf9f8",
+                        "inverse-on-surface": "#f3f0ef",
                         "surface-faint": "var(--c-surface-faint, #F8FAFC)",
-                        "surface-container-lowest": "var(--c-surface-container-lowest, #ffffff)",
-                        "surface-container-low": "var(--c-surface-container-low, #f6f3f2)",
-                        "surface-container": "var(--c-surface-container, #f0edec)",
-                        "surface-container-high": "var(--c-surface-container-high, #ebe7e7)",
-                        "surface-container-highest": "var(--c-surface-container-highest, #e5e2e1)",
-                        "on-surface": "var(--c-on-surface, #1c1b1b)",
-                        "on-surface-variant": "var(--c-on-surface-variant, #3e4a3f)",
-                        "outline": "var(--c-outline, #6e7a6e)",
+                        "on-tertiary-fixed-variant": "#653e00",
                         "outline-variant": "var(--c-outline-variant, #bdcabc)",
-                        "border-subtle": "var(--c-border-subtle, #E2E8F0)",
+                        "secondary": "#40674b",
+                        "on-secondary-container": "#446b4f",
                         "slate-gray": "var(--c-slate-gray, #4A5568)",
+                        "error-container": "var(--c-error-container, #ffdad6)",
+                        "secondary-container": "#bfeac7",
+                        "background": "var(--c-background, #fcf9f8)",
+                        "on-surface-variant": "var(--c-on-surface-variant, #3e4a3f)",
+                        "on-error-container": "var(--c-on-error-container, #93000a)",
                         "warning-orange": "var(--c-warning-orange, #F5B054)",
+                        "surface-container-highest": "var(--c-surface-container-highest, #e5e2e1)",
+                        "on-secondary-fixed-variant": "#294e35",
+                        "secondary-fixed-dim": "#a6d1af",
+                        "inverse-primary": "#6fdc8c",
+                        "primary": "var(--c-primary, #006b33)",
+                        "surface-dim": "#dcd9d9",
                         "success-green": "var(--c-success-green, #19924B)",
+                        "primary-fixed": "var(--c-primary-fixed, #8bf9a6)",
+                        "primary-fixed-dim": "#6fdc8c",
+                        "surface-tint": "#006d34",
+                        "tertiary": "#815200",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "var(--c-outline, #6e7a6e)",
+                        "secondary-fixed": "#c2edca",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "var(--c-on-primary, #ffffff)",
+                        "inverse-surface": "#313030",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "var(--c-surface-container-high, #ebe7e7)",
+                        "on-surface": "var(--c-on-surface, #1c1b1b)",
+                        "surface-container-lowest": "var(--c-surface-container-lowest, #ffffff)",
+                        "tertiary-container": "#a1680d",
+                        "surface-container": "var(--c-surface-container, #f0edec)",
+                        "border-subtle": "var(--c-border-subtle, #E2E8F0)",
+                        "on-primary-fixed": "var(--c-on-primary-fixed, #00210b)",
+                        "on-secondary-fixed": "#00210e",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#ffb95c",
+                        "surface-container-low": "var(--c-surface-container-low, #f6f3f2)",
+                        "primary-container": "var(--c-primary-container, #008742)",
+                        "surface": "var(--c-surface, #fcf9f8)",
+                        "on-primary-container": "#f7fff3",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005226",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff"
                     },
-                    fontFamily: {
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "data-table": ["Inter", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
                         "headline": ["Plus Jakarta Sans", "sans-serif"],
                         "body": ["Inter", "sans-serif"],
                         "mono": ["JetBrains Mono", "monospace"]
                     },
-                    spacing: {
-                        "sidebar-width": "260px",
-                        "gutter": "2rem",
-                    },
-                    maxWidth: {
-                        "container-max": "1400px",
-                    },
-                    boxShadow: {
-                        "xs": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-                        "card": "0 2px 8px -2px rgba(0,0,0,0.06), 0 1px 4px -1px rgba(0,0,0,0.04)"
+                    "fontSize": {
+                        "data-table": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
                     }
                 }
             }
@@ -107,81 +142,7 @@
 
 <body class="bg-background text-on-surface font-body antialiased flex min-h-screen">
 
-    <!-- Left Side Navigation -->
-    <nav class="fixed left-0 top-0 h-full w-sidebar-width bg-[#002812] border-r border-outline-variant z-30 flex flex-col py-6 px-4">
-        <!-- Brand -->
-        <div class="mb-8 px-2">
-            <h1 class="font-headline text-xl font-bold text-white tracking-tight" data-i18n="brand.name">trex DataLab</h1>
-            <p class="font-mono text-[10px] text-white/70 tracking-wider uppercase mt-0.5" data-i18n="brand.tagline">PRECISION DATA PLATFORM</p>
-        </div>
 
-        <!-- CTA Action -->
-        <div class="mb-6">
-            <a href="index.html" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary-fixed text-on-primary-fixed font-body font-semibold text-sm rounded-lg hover:opacity-90 transition-all shadow-xs cursor-pointer">
-                <span class="material-symbols-outlined text-sm">upload</span>
-                <span data-i18n="nav.newUpload">Yeni Veri Yükle</span>
-            </a>
-        </div>
-
-        <!-- Main Navigation Links -->
-        <ul class="flex flex-col gap-1.5 flex-1">
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="index.html">
-                    <span class="material-symbols-outlined">dashboard</span>
-                    <span class="font-body text-sm" data-i18n="nav.dashboard">Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="data-quality.html">
-                    <span class="material-symbols-outlined">analytics</span>
-                    <span class="font-body text-sm" data-i18n="nav.dataQuality">Data Quality</span>
-                </a>
-            </li>
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="preprocessing.html">
-                    <span class="material-symbols-outlined">construction</span>
-                    <span class="font-body text-sm" data-i18n="nav.preprocessing">Preprocessing</span>
-                </a>
-            </li>
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="visualization.html">
-                    <span class="material-symbols-outlined">insights</span>
-                    <span class="font-body text-sm" data-i18n="nav.visualization">Visualization</span>
-                </a>
-            </li>
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="machine-learning.html">
-                    <span class="material-symbols-outlined">model_training</span>
-                    <span class="font-body text-sm" data-i18n="nav.machineLearning">Machine Learning</span>
-                </a>
-            </li>
-            <li>
-                <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
-                    <span class="material-symbols-outlined">folder_shared</span>
-                    <span class="font-body text-sm" data-i18n="nav.portfolio">Portfolio</span>
-                </a>
-            </li>
-        </ul>
-
-        <!-- Footer Navigation -->
-        <div class="mt-auto pt-4 border-t border-white/10">
-            <ul class="flex flex-col gap-1.5">
-                <li>
-                    <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 transition-all rounded-lg" href="settings.html">
-                        <span class="material-symbols-outlined">settings</span>
-                        <span class="font-body text-sm" data-i18n="nav.settings">Settings</span>
-                    </a>
-                </li>
-                <li>
-                    <!-- Active Support Page -->
-                    <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 font-medium" href="support.html">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">help</span>
-                        <span class="font-body text-sm" data-i18n="nav.support">Support</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
 
     <!-- Top Header -->
     <header class="fixed top-0 left-0 right-0 z-20 bg-surface/80 backdrop-blur-md border-b border-border-subtle h-16 flex items-center justify-between px-8 pl-[284px]">
@@ -667,6 +628,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="/static/components/sidebar.js"></script>
     <script src="/static/components/ai-assistant.js"></script>
     <script src="/static/components/settings.js"></script>
     <script src="/static/components/i18n.js"></script>
