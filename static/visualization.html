@@ -14,6 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Apache ECharts 5 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
@@ -196,6 +198,11 @@
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
                 <span class="font-medium" data-i18n="nav.visualization">Visualization</span>
             </a>
+            <!-- Machine Learning -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="machine-learning.html">
+                <span class="material-symbols-outlined">model_training</span>
+                <span data-i18n="nav.machineLearning">Machine Learning</span>
+            </a>
             <!-- Portfolio -->
             <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
                 <span class="material-symbols-outlined">folder_shared</span>
@@ -292,12 +299,18 @@
                         <h2 class="font-headline-md text-headline-md text-on-surface mb-1">Görselleştirme ve Keşif</h2>
                         <p class="text-on-surface-variant font-body-md">Veri setindeki desenleri, dağılımları ve değişken ilişkilerini analiz edin.</p>
                     </div>
-                    <!-- Focus Column Select -->
-                    <div class="flex items-center gap-3 bg-surface-container-low border border-border-subtle rounded-lg p-2 shadow-sm w-full sm:w-auto">
-                        <span class="font-label-mono text-xs text-on-surface-variant uppercase tracking-wider font-semibold ml-2 whitespace-nowrap">Odak Değişkeni:</span>
-                        <select id="focusColumnSelect" class="bg-surface-container-lowest border border-border-subtle text-on-surface text-sm font-medium rounded-md focus:ring-primary focus:border-primary py-1.5 pl-3 pr-8 w-full sm:w-60 cursor-pointer">
-                            <!-- Populated dynamically with optgroups -->
-                        </select>
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        <!-- Focus Column Select -->
+                        <div class="flex items-center gap-3 bg-surface-container-low border border-border-subtle rounded-lg p-2 shadow-sm flex-1 sm:flex-none">
+                            <span class="font-label-mono text-xs text-on-surface-variant uppercase tracking-wider font-semibold ml-2 whitespace-nowrap">Odak Değişkeni:</span>
+                            <select id="focusColumnSelect" class="bg-surface-container-lowest border border-border-subtle text-on-surface text-sm font-medium rounded-md focus:ring-primary focus:border-primary py-1.5 pl-3 pr-8 w-full sm:w-60 cursor-pointer">
+                                <!-- Populated dynamically with optgroups -->
+                            </select>
+                        </div>
+                        <button type="button" onclick="openExportModal()" class="bg-primary text-on-primary px-3.5 py-2.5 rounded-lg font-body text-xs font-semibold flex items-center gap-1.5 hover:bg-primary-container transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                            <span class="material-symbols-outlined text-[18px]">download</span>
+                            <span>Dışa Aktar</span>
+                        </button>
                     </div>
                 </div>
 
@@ -1736,6 +1749,7 @@
     <script src="/static/components/i18n.js"></script>
     <script src="/static/components/notifications.js"></script>
     <script src="/static/components/profile-menu.js"></script>
+    <script src="/static/components/export-manager.js"></script>
 </body>
 
 </html>

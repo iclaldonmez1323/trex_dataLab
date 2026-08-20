@@ -101,25 +101,43 @@ def test_api():
     assert "processed" in prep_data
     assert "schema" in prep_data
     assert "history" in prep_data
-    print(f"[OK] GET /api/preprocessing OK (Processed rows: {prep_data['processed']['rows']}, missing: {prep_data['processed']['missing']})")
+    assert "outliers" in prep_data
+    assert "total_outliers" in prep_data["outliers"]
+    assert "columns" in prep_data["outliers"]
+    print(f"[OK] GET /api/preprocessing OK (Processed rows: {prep_data['processed']['rows']}, missing: {prep_data['processed']['missing']}, outliers: {prep_data['outliers']['total_outliers']})")
 
     print("Testing POST /api/preprocessing/apply (fill_missing) ...")
     r = client.post("/api/preprocessing/apply", json={"op": "fill_missing", "method": "median"})
     assert r.status_code == 200
     assert r.json()["after"]["missing"] == 0
-    print("[OK] POST /api/preprocessing/apply OK")
+    print("[OK] POST /api/preprocessing/apply (fill_missing) OK")
 
-    print("Testing POST /api/preprocessing/undo ...")
-    r = client.post("/api/preprocessing/undo")
+    print("Testing POST /api/preprocessing/apply (outlier_management - remove_iqr & undo) ...")
+    r = client.post("/api/preprocessing/apply", json={"op": "outlier_management", "method": "remove_iqr"})
     assert r.status_code == 200
-    assert r.json()["processed"]["missing"] == 3
-    print("[OK] POST /api/preprocessing/undo OK")
+    assert r.json()["history"][0]["op"] == "outlier_management"
+    # Undo outlier operation
+    r_undo = client.post("/api/preprocessing/undo")
+    assert r_undo.status_code == 200
+    # Undo fill missing
+    r_undo2 = client.post("/api/preprocessing/undo")
+    assert r_undo2.status_code == 200
+    assert r_undo2.json()["processed"]["missing"] == 3
+    print("[OK] POST /api/preprocessing/apply (outlier_management) and undo OK")
 
     print("Testing GET /api/preprocessing/download ...")
     r = client.get("/api/preprocessing/download")
     assert r.status_code == 200
     assert "text/csv" in r.headers.get("content-type", "")
     print("[OK] GET /api/preprocessing/download OK")
+
+    print("Testing GET /api/export/csv ...")
+    r_export = client.get("/api/export/csv")
+    assert r_export.status_code == 200
+    assert "text/csv" in r_export.headers.get("content-type", "")
+    assert "test_data_aktarilan.csv" in r_export.headers.get("content-disposition", "")
+    assert len(r_export.content) > 0
+    print("[OK] GET /api/export/csv OK")
 
     print("Testing GET /visualization ...")
     r = client.get("/visualization")
@@ -198,6 +216,59 @@ def test_api():
     assert "Staj Çalışmaları" in r.text
     print("[OK] GET /portfolio OK")
 
+    print("Testing GET /machine-learning and /machine-learning.html ...")
+    r_ml = client.get("/machine-learning")
+    assert r_ml.status_code == 200
+    assert "Makine Öğrenmesi" in r_ml.text
+    r_ml_html = client.get("/machine-learning.html")
+    assert r_ml_html.status_code == 200
+    print("[OK] GET /machine-learning and /machine-learning.html OK")
+
+    print("Testing GET /api/ml/config ...")
+    r_ml_cfg = client.get("/api/ml/config")
+    assert r_ml_cfg.status_code == 200
+    ml_cfg_data = r_ml_cfg.json()
+    assert ml_cfg_data["active"] is True
+    assert ml_cfg_data["total_rows"] > 0
+    assert len(ml_cfg_data["columns"]) > 0
+    assert "default_target" in ml_cfg_data
+    print(f"[OK] GET /api/ml/config OK ({len(ml_cfg_data['columns'])} columns)")
+
+    print("Testing POST /api/ml/train (Regression) ...")
+    r_train_reg = client.post("/api/ml/train", json={
+        "target": "Gelir",
+        "problem_type": "regression",
+        "train_ratio": 0.8,
+        "missing_strategy": "fill",
+        "models": ["linear", "dtree_reg", "rf_reg"],
+        "cv_k": 3
+    })
+    assert r_train_reg.status_code == 200
+    res_reg = r_train_reg.json()
+    assert res_reg["problem_type"] == "regression"
+    assert len(res_reg["models"]) == 3
+    assert "best_model" in res_reg
+    assert "actual_vs_predicted" in res_reg["models"][0]
+    assert "feature_importance" in res_reg["models"][0]
+    print(f"[OK] POST /api/ml/train (Regression) OK - Best: {res_reg['best_model']}")
+
+    print("Testing POST /api/ml/train (Classification) ...")
+    r_train_clf = client.post("/api/ml/train", json={
+        "target": "Segment",
+        "problem_type": "classification",
+        "train_ratio": 0.8,
+        "missing_strategy": "fill",
+        "models": ["logistic", "dtree_clf", "rf_clf"],
+        "cv_k": 3
+    })
+    assert r_train_clf.status_code == 200
+    res_clf = r_train_clf.json()
+    assert res_clf["problem_type"] == "classification"
+    assert len(res_clf["models"]) == 3
+    assert "confusion" in res_clf["models"][0]
+    assert "roc" in res_clf["models"][0]
+    print(f"[OK] POST /api/ml/train (Classification) OK - Best: {res_clf['best_model']}")
+
     print("Testing static image serving for portfolio ...")
     r_img = client.get("/portfolio/grafikler/oee_timeseries.png")
     assert r_img.status_code == 200
@@ -274,7 +345,11 @@ def test_api():
 
     r_empty_viz = client.get("/api/visualization/overview")
     assert r_empty_viz.status_code == 409
-    print("[OK] DELETE /api/reset OK and /api/visualization/overview returns 409 on empty")
+
+    r_empty_export = client.get("/api/export/csv")
+    assert r_empty_export.status_code == 409
+    assert "İndirilecek veri seti bulunamadı." in r_empty_export.json()["detail"]
+    print("[OK] DELETE /api/reset OK and /api/visualization/overview, /api/export/csv return 409 on empty")
 
     print("Testing AI Assistant chat (after reset / empty dataset) ...")
     r_chat_no_ds = client.post("/api/ai-assistant/chat", json={"message": "Veri kalitesini özetle", "page": "index.html"})

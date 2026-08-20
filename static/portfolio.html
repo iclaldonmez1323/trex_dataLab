@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script id="tailwind-config">
         tailwind.config = {
@@ -196,6 +198,11 @@
                 <span class="material-symbols-outlined">insights</span>
                 <span data-i18n="nav.visualization">Visualization</span>
             </a>
+            <!-- Machine Learning -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="machine-learning.html">
+                <span class="material-symbols-outlined">model_training</span>
+                <span data-i18n="nav.machineLearning">Machine Learning</span>
+            </a>
             <!-- Portfolio (Active) -->
             <a class="flex items-center gap-3 px-4 py-2 bg-primary text-on-primary rounded-lg transition-colors opacity-90 transition-opacity" href="portfolio.html">
                 <span class="material-symbols-outlined filled" style="font-variation-settings: 'FILL' 1;">folder_shared</span>
@@ -257,11 +264,15 @@
                             Staj sürecinde <strong>OEE (Overall Equipment Effectiveness)</strong> ve <strong>Predictive Maintenance</strong> veri analizi çalışmaları yapılmış; aşağıda süreç, yöntemler ve elde edilen görseller paylaşılmaktadır.
                         </p>
                     </div>
-                    <div class="flex-shrink-0">
+                    <div class="flex-shrink-0 flex items-center gap-3">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-success-green/10 text-success-green border border-success-green/20 shadow-sm">
                             <span class="w-2 h-2 rounded-full bg-success-green mr-2 animate-pulse"></span>
                             Tamamlandı
                         </span>
+                        <button type="button" onclick="openExportModal()" class="bg-primary text-on-primary px-3.5 py-2 rounded-lg font-body text-xs font-semibold flex items-center gap-1.5 hover:bg-primary-container transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                            <span class="material-symbols-outlined text-[18px]">download</span>
+                            <span>Dışa Aktar</span>
+                        </button>
                     </div>
                 </div>
 
@@ -829,14 +840,14 @@
                             <span class="material-symbols-outlined text-primary text-[16px]">done_all</span>
                             <span>STAJ KAPSAMI:</span>
                         </span>
-                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Veri Temizleme</span>
-                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Exploratory Data Analysis (EDA)</span>
-                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">İstatistiksel Testler</span>
-                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Regresyon</span>
-                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Sınıflandırma (Classification)</span>
-                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Model Değerlendirme</span>
-                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Cross Validation</span>
-                        <span class="px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors">Hiperparametre Optimizasyonu</span>
+                        <span class="method-chip px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors cursor-pointer select-none" data-tooltip="Eksik, hatalı ve tekrarlayan verilerin tespit edilip düzenlenmesi adımı.">Veri Temizleme</span>
+                        <span class="method-chip px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors cursor-pointer select-none" data-tooltip="Veri setinin genel yapısını, dağılımlarını ve değişkenler arası ilişkileri keşfetme süreci.">Exploratory Data Analysis (EDA)</span>
+                        <span class="method-chip px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors cursor-pointer select-none" data-tooltip="Veriler arasındaki anlamlılık ve hipotezleri doğrulamak için yapılan matematiksel testler.">İstatistiksel Testler</span>
+                        <span class="method-chip px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors cursor-pointer select-none" data-tooltip="Sürekli hedef değişkenleri tahmin etmek için kullanılan modelleme yöntemi.">Regresyon</span>
+                        <span class="method-chip px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors cursor-pointer select-none" data-tooltip="Verileri belirli kategorik sınıflara atamak için kullanılan makine öğrenmesi modelleri.">Sınıflandırma (Classification)</span>
+                        <span class="method-chip px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors cursor-pointer select-none" data-tooltip="Confusion Matrix, Accuracy, F1-Score gibi metriklerle model başarımının ölçülmesi.">Model Değerlendirme</span>
+                        <span class="method-chip px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors cursor-pointer select-none" data-tooltip="Modelin genellenebilirliğini ölçmek için veriyi katmanlara bölerek yapılan çapraz doğrulama.">Cross Validation</span>
+                        <span class="method-chip px-3 py-1 bg-surface-container border border-border-subtle rounded-full font-label-mono text-xs text-on-surface hover:border-primary transition-colors cursor-pointer select-none" data-tooltip="Modelin başarımını en üst seviyeye çıkarmak için en uygun parametre kombinasyonlarının bulunması.">Hiperparametre Optimizasyonu</span>
                     </div>
                 </section>
             </div>
@@ -937,6 +948,7 @@
                     const tooltip = document.createElement('div');
                     tooltip.className = 'fixed z-[9999] px-3.5 py-2.5 bg-[#002812] text-white text-xs rounded-xl shadow-2xl border border-white/20 max-w-[260px] leading-relaxed transition-all duration-200 animate-fade-in pointer-events-auto';
                     tooltip.innerHTML = `
+                        <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[7px] border-r-[7px] border-b-[8px] border-l-transparent border-r-transparent border-b-[#002812]" style="filter: drop-shadow(0 -1px 1px rgba(255,255,255,0.2));"></div>
                         <div class="relative">
                             <div>${text}</div>
                         </div>
@@ -979,6 +991,7 @@
     <script src="/static/components/i18n.js"></script>
     <script src="/static/components/notifications.js"></script>
     <script src="/static/components/profile-menu.js"></script>
+    <script src="/static/components/export-manager.js"></script>
 </body>
 
 </html>

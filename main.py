@@ -2,6 +2,8 @@ import io
 import os
 import json
 import uuid
+import re
+import traceback
 import requests
 import google.generativeai as genai
 from typing import Dict, Any, Optional
@@ -11,6 +13,17 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import pandas as pd
 import numpy as np
+
+from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold, KFold, TimeSeriesSplit
+from sklearn.preprocessing import LabelEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score, roc_auc_score,
+    r2_score, mean_absolute_error, mean_squared_error, confusion_matrix, roc_curve
+)
 
 try:
     from dotenv import load_dotenv
@@ -63,6 +76,20 @@ def parse_csv_content(content_bytes: bytes, filename: str) -> pd.DataFrame:
     encodings = ["utf-8-sig", "utf-8", "cp1254", "iso-8859-9", "latin-1"]
     last_error: Optional[Exception] = None
 
+    def _looks_merged(df: pd.DataFrame) -> bool:
+        if len(df.columns) != 1:
+            return False
+        col_name = str(df.columns[0])
+        if "," in col_name or ";" in col_name or "\t" in col_name:
+            return True
+        if len(df) == 0:
+            return False
+        sample_vals = df.iloc[:, 0].astype(str).head(20)
+        for v in sample_vals:
+            if "," in v or ";" in v:
+                return True
+        return False
+
     for enc in encodings:
         try:
             sample = content_bytes[:8192].decode(enc, errors="strict")
@@ -79,22 +106,37 @@ def parse_csv_content(content_bytes: bytes, filename: str) -> pd.DataFrame:
                 engine="c",
                 low_memory=False
             )
+            if _looks_merged(df):
+                # Ayraç yanlış algılandı: Python motoruyla otomatik tespit dene
+                df = pd.read_csv(
+                    io.BytesIO(content_bytes),
+                    encoding=enc,
+                    sep=None,
+                    engine="python",
+                    on_bad_lines="skip"
+                )
             return df
         except Exception as e:
             last_error = e
             continue
 
-    try:
-        df = pd.read_csv(
-            io.BytesIO(content_bytes),
-            encoding="utf-8",
-            sep=None,
-            engine="python",
-            encoding_errors="replace"
-        )
-        return df
-    except Exception as e:
-        raise ValueError(f"Dosya okunamadı: {str(last_error or e)}")
+    # Son çare: ayraç deneme listesi + python motoru
+    for sep_candidate in [",", ";", "\t", "|"]:
+        try:
+            df = pd.read_csv(
+                io.BytesIO(content_bytes),
+                encoding="utf-8",
+                sep=sep_candidate,
+                engine="python",
+                encoding_errors="replace",
+                on_bad_lines="skip"
+            )
+            if not _looks_merged(df):
+                return df
+        except Exception:
+            continue
+
+    raise ValueError(f"Dosya okunamadı: {str(last_error or 'Bilinmeyen hata')}")
 
 
 @app.get("/")
@@ -125,6 +167,12 @@ async def serve_visualization():
 @app.get("/portfolio.html")
 async def serve_portfolio():
     return FileResponse("static/portfolio.html")
+
+
+@app.get("/machine-learning")
+@app.get("/machine-learning.html")
+async def serve_machine_learning():
+    return FileResponse("static/machine-learning.html")
 
 
 @app.get("/settings")
@@ -579,6 +627,28 @@ def build_preprocessing_state_response():
 
     duplicate_count = int(proc_df[active_cols].duplicated().sum()) if active_cols and len(proc_df) > 0 else 0
 
+    # Outliers (IQR method on numeric columns)
+    outlier_cols = []
+    total_outliers = 0
+    for c in active_cols:
+        col_series = pd.to_numeric(proc_df[c], errors="coerce").dropna()
+        if len(col_series) == 0:
+            continue
+        q1 = col_series.quantile(0.25)
+        q3 = col_series.quantile(0.75)
+        iqr = q3 - q1
+        lower = q1 - 1.5 * iqr
+        upper = q3 + 1.5 * iqr
+        cnt = int(((col_series < lower) | (col_series > upper)).sum())
+        if cnt > 0:
+            total_outliers += cnt
+            outlier_cols.append({
+                "name": str(c),
+                "count": cnt,
+                "ratio": round((cnt / max(1, len(col_series))) * 100, 2)
+            })
+    outlier_cols.sort(key=lambda x: x["count"], reverse=True)
+
     schema = []
     for c in orig_df.columns:
         is_kept = (c not in dropped_columns) and (c in proc_df.columns)
@@ -641,6 +711,11 @@ def build_preprocessing_state_response():
             "missing": total_missing_cells
         },
         "duplicates": duplicate_count,
+        "outliers": {
+            "columns": outlier_cols,
+            "total_outliers": total_outliers,
+            "overall_rate": round((total_outliers / max(1, len(proc_df))) * 100, 2)
+        },
         "missing_summary": {
             "total_missing_cells": total_missing_cells,
             "columns_with_missing": columns_with_missing
@@ -772,6 +847,104 @@ async def apply_preprocessing_op(payload: Dict[str, Any]):
                 icon = "transform"
                 icon_bg = "bg-secondary-container"
                 icon_color = "text-on-secondary-container"
+
+        elif op == "outlier_management":
+            method = method or "cap"
+            selected_cols = payload.get("columns") or []
+
+            # 1) Aday sütunlar: sayısal, düşürülmemiş, ID/kategorik değil
+            def _is_id_like(c):
+                low = str(c).lower()
+                if "id" in low or "code" in low or "no" in low or "key" in low:
+                    return True
+                s = processed_df_cache[c]
+                non_na = s.dropna()
+                if len(non_na) == 0:
+                    return False
+                return int(non_na.nunique()) == int(len(non_na)) and pd.api.types.is_numeric_dtype(s)
+
+            candidate_cols = [c for c in processed_df_cache.columns if c not in dropped_columns
+                              if pd.api.types.is_numeric_dtype(processed_df_cache[c])
+                              and not _is_id_like(c)]
+
+            # 2) Seçilen sütunlar filtresi (boşsa: muaf olmayan tüm adaylar)
+            if selected_cols:
+                numeric_cols = [c for c in candidate_cols if c in selected_cols]
+            else:
+                numeric_cols = candidate_cols
+
+            if not numeric_cols:
+                raise ValueError("İşlenecek sayısal sütun bulunamadı; aykırı değer işlemi uygulanamadı.")
+
+            # 3) Sınırlar (remove_iqr için 3.0×IQR; cap/replace_median için 1.5×IQR + %1-%99 clip)
+            iqr_factor = 3.0
+            bounds = {}
+            for c in numeric_cols:
+                series = pd.to_numeric(processed_df_cache[c], errors="coerce").dropna()
+                if len(series) == 0:
+                    continue
+                q1 = series.quantile(0.25)
+                q3 = series.quantile(0.75)
+                iqr = q3 - q1
+                p01 = float(series.quantile(0.01))
+                p99 = float(series.quantile(0.99))
+                bounds[c] = {
+                    "iqr_lower": q1 - iqr_factor * iqr,
+                    "iqr_upper": q3 + iqr_factor * iqr,
+                    "clip_lower": p01,
+                    "clip_upper": p99,
+                    "median": float(series.median())
+                }
+
+            # 4) Her sütun için aykırı işaretleri (IQR 3.0 sınırına göre)
+            outlier_flags = {}
+            for c in numeric_cols:
+                s = pd.to_numeric(processed_df_cache[c], errors="coerce")
+                outlier_flags[c] = (s < bounds[c]["iqr_lower"]) | (s > bounds[c]["iqr_upper"])
+
+            if method == "remove_iqr":
+                # Çoğunluk eşiği: yalnızca 2+ sütunda aşırı aykırı olan satırlar silinir
+                flag_sum = pd.Series(0, index=processed_df_cache.index, dtype=int)
+                for c in numeric_cols:
+                    flag_sum = flag_sum + outlier_flags[c].fillna(False).astype(int)
+                mask = flag_sum < 2
+                removed = int((~mask).sum())
+                processed_df_cache = processed_df_cache[mask].reset_index(drop=True)
+                desc = f"Aykırı değerler temizlendi ({removed} satır silindi, 3.0×IQR, ≥2 sütun eşiği)"
+
+            elif method == "remove_zscore":
+                flag_sum = pd.Series(0, index=processed_df_cache.index, dtype=int)
+                for c in numeric_cols:
+                    s = pd.to_numeric(processed_df_cache[c], errors="coerce")
+                    mean = float(s.mean())
+                    std = float(s.std())
+                    if std == 0 or pd.isna(std):
+                        continue
+                    flag_sum = flag_sum + ((s - mean).abs() > 3 * std).fillna(False).astype(int)
+                mask = flag_sum < 2
+                removed = int((~mask).sum())
+                processed_df_cache = processed_df_cache[mask].reset_index(drop=True)
+                desc = f"Aykırı değerler temizlendi ({removed} satır silindi, Z-Score > 3, ≥2 sütun eşiği)"
+
+            elif method == "cap":
+                for c in numeric_cols:
+                    processed_df_cache[c] = pd.to_numeric(processed_df_cache[c], errors="coerce").clip(
+                        lower=bounds[c]["clip_lower"], upper=bounds[c]["clip_upper"])
+                desc = "Aykırı değerler sınır değerlere eşitlendi (Capping, %1-%99 yüzdelik)"
+
+            elif method == "replace_median":
+                for c in numeric_cols:
+                    s = pd.to_numeric(processed_df_cache[c], errors="coerce").astype(float)
+                    s = s.mask(outlier_flags[c], bounds[c]["median"])
+                    processed_df_cache[c] = s
+                desc = "Aykırı değerler medyan ile değiştirildi (3.0×IQR sınırı)"
+
+            else:
+                raise ValueError(f"Geçersiz aykırı değer yöntemi: {method}")
+
+            icon = "filter_alt"
+            icon_bg = "bg-warning-orange/10"
+            icon_color = "text-[#a1680d]"
         else:
             raise ValueError(f"Geçersiz işlem: {op}")
 
@@ -878,6 +1051,29 @@ async def download_cleaned_csv():
         content=csv_bytes,
         media_type="text/csv",
         headers={"Content-Disposition": f'attachment; filename="{cleaned_name}"'}
+    )
+
+
+@app.get("/api/export/csv")
+async def export_current_csv():
+    global processed_df_cache, active_df_cache, active_dataset, dropped_columns
+    df = processed_df_cache if processed_df_cache is not None else active_df_cache
+    if df is None or not active_dataset:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="İndirilecek veri seti bulunamadı.")
+
+    active_cols = [c for c in df.columns if c not in dropped_columns]
+    download_df = df[active_cols]
+
+    csv_bytes = download_df.to_csv(index=False, encoding="utf-8-sig")
+    orig_name = active_dataset.get("filename", "veri.csv")
+    base = orig_name.rsplit(".", 1)[0]
+    export_name = f"{base}_aktarilan.csv"
+
+    from fastapi.responses import Response
+    return Response(
+        content=csv_bytes,
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{export_name}"'}
     )
 
 
@@ -1575,6 +1771,420 @@ async def reset_ai_session(payload: dict):
     if session_id and session_id in _ai_sessions:
         _ai_sessions.pop(session_id, None)
     return JSONResponse(content={"ok": True})
+
+
+def get_ml_dataframe() -> Optional[pd.DataFrame]:
+    if processed_df_cache is not None:
+        df = processed_df_cache.copy()
+        if dropped_columns:
+            df = df.drop(columns=[c for c in dropped_columns if c in df.columns], errors="ignore")
+    elif active_df_cache is not None:
+        df = active_df_cache.copy()
+    else:
+        return None
+    return df
+
+
+def _auto_exclude_column(name: str, s: pd.Series) -> bool:
+    n = len(s.dropna())
+    if n == 0:
+        return False
+    name_low = str(name).lower()
+    if re.search(r"(id|cod|no|key|kayıt|numar)", name_low):
+        return True
+    # Yüksek kardinaliteli metin: one-hot patlamasını önle (>20 benzersiz değer)
+    if not pd.api.types.is_numeric_dtype(s) and s.nunique() > 20:
+        return True
+    unique_ratio = s.nunique() / n
+    return unique_ratio >= 0.95  # satır başına neredeyse benzersiz (UDI, Product ID vb.)
+
+
+def _ml_data_source() -> str:
+    if processed_df_cache is not None and original_df_cache is not None:
+        if len(preprocessing_history_stack) > 1 or not processed_df_cache.equals(original_df_cache):
+            return "processed"
+    return "raw"
+
+
+def _top_class_ratio(s: pd.Series) -> float:
+    vc = s.dropna().value_counts(normalize=True)
+    return float(vc.iloc[0]) if len(vc) else 0.0
+
+
+def _detect_time_series(df: pd.DataFrame) -> tuple:
+    """
+    (confirmed, suspected, time_column)
+    confirmed : gerçek zaman serisi — tekil zaman değerleri + düzenli aralıklar (örn. günlük/aylık).
+    suspected : yalnızca zaman sütunu varlığı (kesit verideki 'Date' gibi) — bilgi rozeti, K-Fold gizlenmez.
+    """
+    TIME_KEYS = ("date", "time", "tarih", "saat", "timestamp", "datetime")
+
+    for col in df.columns:
+        s = df[col]
+        name_low = str(col).lower()
+        is_time_named = any(k in name_low for k in TIME_KEYS)
+
+        parsed = None
+        if pd.api.types.is_datetime64_any_dtype(s):
+            parsed = s
+        elif s.dtype == object:
+            try:
+                parsed = pd.to_datetime(s, errors="coerce")
+            except Exception:
+                parsed = None
+        parseable = parsed is not None and parsed.notna().mean() >= 0.9
+
+        if not is_time_named and not parseable:
+            continue
+
+        # Zaman benzeri sütun var: önce ŞÜPHE işaretlenir (K-Fold yine açık kalır)
+        confirmed = False
+        if parseable:
+            ts = parsed.dropna()
+            n = len(ts)
+            if n >= 10:
+                unique = ts.nunique() == n                 # tekil zaman değerleri (kesitte aynı tarih tekrarı yok)
+                monotonic = bool(ts.is_monotonic_increasing)
+                if unique and monotonic:
+                    gaps = ts.diff().dropna()
+                    if len(gaps) > 0:
+                        med = gaps.median()
+                        if med is not None and med > pd.Timedelta(0):
+                            # Düzenli aralık: aralıkların çoğu medyandan %25 sapma içinde (aylık 30/31/28 gün uyumlu)
+                            tolerance = med * 0.25
+                            regular = float(((gaps - med).abs() <= tolerance).mean()) >= 0.9
+                            confirmed = regular
+        return bool(confirmed), True, str(col)
+
+    return False, False, None
+
+
+@app.get("/api/ml/config")
+async def ml_config():
+    df = get_ml_dataframe()
+    if df is None or not active_dataset:
+        return JSONResponse(status_code=404, content={"error": "Aktif bir veri seti yok. Önce bir CSV yükleyin."})
+
+    def _col_kind(s: pd.Series) -> str:
+        return "numeric" if pd.api.types.is_numeric_dtype(s) else "categorical"
+
+    columns = []
+    missing_counts = {}
+    auto_excluded = []
+    for col in df.columns:
+        s = df[col]
+        kind = _col_kind(s)
+        ex = _auto_exclude_column(col, s)
+        columns.append({
+            "name": str(col),
+            "dtype": str(s.dtype),
+            "kind": kind,
+            "unique_ratio": round(float(s.nunique() / len(s)) if len(s) else 0, 3),
+            "class_ratio": _top_class_ratio(s) if kind == "categorical" else None,
+            "auto_exclude": ex,
+        })
+        missing_counts[str(col)] = int(s.isna().sum())
+        if ex:
+            auto_excluded.append(str(col))
+
+    first_num = next((c["name"] for c in columns if c["kind"] == "numeric"), columns[0]["name"] if columns else "")
+    is_ts, ts_suspected, ts_col = _detect_time_series(df)
+    return JSONResponse(content={
+        "active": True,
+        "data_source": _ml_data_source(),
+        "is_time_series": is_ts,
+        "time_series_suspected": ts_suspected,
+        "time_column": ts_col,
+        "filename": active_dataset.get("filename", "veri.csv"),
+        "total_rows": int(len(df)),
+        "columns": columns,
+        "missing_counts": missing_counts,
+        "default_target": first_num,
+        "auto_excluded": auto_excluded,
+        "feature_candidates": [c["name"] for c in columns],
+    })
+
+
+CLASS_MODELS = {
+    "logistic": {"name": "Logistic Regression", "cls": LogisticRegression, "kwargs": {"max_iter": 2000}},
+    "dtree_clf": {"name": "Decision Tree", "cls": DecisionTreeClassifier, "kwargs": {"random_state": 42}},
+    "rf_clf": {"name": "Random Forest", "cls": RandomForestClassifier, "kwargs": {"random_state": 42, "n_estimators": 50, "max_depth": 10, "n_jobs": -1}},
+}
+REGR_MODELS = {
+    "linear": {"name": "Linear Regression", "cls": LinearRegression, "kwargs": {}},
+    "dtree_reg": {"name": "Decision Tree Regressor", "cls": DecisionTreeRegressor, "kwargs": {"random_state": 42}},
+    "rf_reg": {"name": "Random Forest Regressor", "cls": RandomForestRegressor, "kwargs": {"random_state": 42, "n_estimators": 50, "max_depth": 10, "n_jobs": -1}},
+}
+
+
+@app.post("/api/ml/train")
+def ml_train(req: dict):
+    try:
+        return _run_ml_training(req)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            "success": False,
+            "error": f"Model eğitimi sırasında hata oluştu: {str(e)}",
+            "detail": str(e),
+            "traceback": traceback.format_exc(),
+        })
+
+
+def _run_ml_training(req: dict) -> JSONResponse:
+    df = get_ml_dataframe()
+    if df is None or not active_dataset:
+        return JSONResponse(status_code=404, content={"error": "Aktif bir veri seti yok."})
+
+    target = req.get("target")
+    if not target or target not in df.columns:
+        return JSONResponse(status_code=400, content={"error": "Geçerli bir hedef değişken seçin."})
+
+    problem_type = req.get("problem_type", "auto")   # auto | classification | regression
+    train_ratio = float(req.get("train_ratio", 0.8))
+    train_ratio = max(0.5, min(0.95, train_ratio))
+    model_ids = req.get("models", [])
+    cv_k = int(req.get("cv_k", 5))
+    cv_mode = req.get("cv_mode", "auto")  # time_series | kfold | auto
+    missing_strategy = req.get("missing_strategy", "fill")  # fill | drop
+    user_exclude = req.get("exclude_columns", []) or []
+    user_exclude = [c for c in user_exclude if c != target]
+
+    if not model_ids:
+        return JSONResponse(status_code=400, content={"error": "En az bir model seçin."})
+
+    target_is_numeric = pd.api.types.is_numeric_dtype(df[target])
+    is_classification = (problem_type == "classification") or (problem_type == "auto" and not target_is_numeric)
+    is_regression = (problem_type == "regression") or (problem_type == "auto" and target_is_numeric)
+
+    is_ts, ts_suspected, ts_col = _detect_time_series(df)
+    use_ts = (cv_mode == "time_series") or (cv_mode == "auto" and is_ts)
+    top_class = _top_class_ratio(df[target]) if is_classification else None
+    imbalanced = bool(is_classification and top_class is not None and top_class >= 0.9)
+
+    if use_ts and ts_col and ts_col in df.columns:
+        df = df.sort_values(ts_col).reset_index(drop=True)
+
+    # --- ID benzeri sütunları otomatik + kullanıcı seçimiyle hariç tut ---
+    auto_excluded = []
+    for c in df.columns:
+        if c == target:
+            continue
+        if _auto_exclude_column(c, df[c]):
+            auto_excluded.append(c)
+    excluded = sorted(set(auto_excluded) | set(user_exclude))
+
+    features = [c for c in df.columns if c != target and c not in excluded]
+    if not features:
+        return JSONResponse(status_code=400, content={
+            "error": "Hariç tutma sonrası kullanılabilir özellik sütunu kalmadı.",
+            "detail": f"Hariç tutulan sütunlar: {', '.join(excluded) if excluded else 'yok'}",
+        })
+
+    X = df[features].copy()
+    y = df[target].copy()
+
+    # --- 1) Eksik değer stratejisi (kodlama ÖNCESİ) ---
+    X = X.dropna(axis=1, how="all")  # tamamen boş sütunları kaldır
+    if missing_strategy == "fill":
+        num_cols = [c for c in X.columns if pd.api.types.is_numeric_dtype(X[c])]
+        cat_cols = [c for c in X.columns if not pd.api.types.is_numeric_dtype(X[c])]
+        if num_cols:
+            X[num_cols] = SimpleImputer(strategy="median").fit_transform(X[num_cols])
+        if cat_cols:
+            X[cat_cols] = SimpleImputer(strategy="most_frequent").fit_transform(X[cat_cols])
+        y = y[X.notna().any(axis=1)]
+        X = X[X.notna().any(axis=1)]
+        y = y[X.index]
+    else:  # drop
+        df_clean = df.dropna(subset=features + [target])
+        X = df_clean[features].copy()
+        y = df_clean[target].copy()
+
+    if len(X) < 5:
+        return JSONResponse(status_code=400, content={"error": "Temizleme sonrası yeterli veri kalmadı."})
+
+    # --- 2) Kategorik (metinsel) özellikleri get_dummies ile one-hot kodla ---
+    cat_cols = [c for c in X.columns if not pd.api.types.is_numeric_dtype(X[c])]
+    if cat_cols:
+        X = pd.get_dummies(X, columns=cat_cols, prefix_sep="_", dtype=int)
+
+    # --- 3) Güvenlik ağı: kalan NaN'ları impute et, hâlâ NaN olan satırları sil ---
+    X = X.fillna(X.median(numeric_only=True)).fillna(0)
+    X = X.dropna()
+    y = y[X.index]
+    y = y.dropna()
+    X = X.loc[y.index]
+
+    if len(X) < 5:
+        return JSONResponse(status_code=400, content={"error": "Temizlik/imputation sonrası yeterli veri kalmadı."})
+
+    # --- Hedef kodlama ---
+    class_names = None
+    if is_classification:
+        y_le = LabelEncoder()
+        y_enc = y_le.fit_transform(y.astype(str))
+        class_names = [str(c) for c in y_le.classes_]
+        y = y_enc
+        if len(class_names) < 2:
+            return JSONResponse(status_code=400, content={"error": "Hedef değişkende en az 2 sınıf olmalı."})
+
+    feature_names = list(X.columns)  # one-hot sonrası gerçek özellik adları
+
+    # --- Train/Test bölme ---
+    stratify = None
+    if not use_ts and is_classification and len(pd.Series(y).value_counts()) > 1 and min(pd.Series(y).value_counts()) >= 2:
+        stratify = y
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, train_size=train_ratio, random_state=42, shuffle=not use_ts, stratify=stratify)
+
+    models = CLASS_MODELS if is_classification else REGR_MODELS
+    n_splits = max(2, min(cv_k, min(pd.Series(y).value_counts().min(), len(X)) if is_classification else len(X)))
+
+    def _safe_float(v) -> Optional[float]:
+        if v is None:
+            return None
+        try:
+            f = float(v)
+            if np.isnan(f) or np.isinf(f):
+                return None
+            return f
+        except Exception:
+            return None
+
+    def _safe_float_list(arr) -> list:
+        res = []
+        for x in arr:
+            sf = _safe_float(x)
+            res.append(sf if sf is not None else 0.0)
+        return res
+
+    results = []
+    for mid in model_ids:
+        if mid not in models:
+            continue
+        cfg = models[mid]
+        row = {"id": mid, "name": cfg["name"], "metrics": {}, "cv_mean": None, "cv_std": None,
+               "model_error": None, "confusion": None, "roc": None, "actual_vs_predicted": None, "feature_importance": []}
+        try:
+            model = cfg["cls"](**cfg["kwargs"])
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_test)
+
+            if is_classification:
+                row["metrics"]["accuracy"] = _safe_float(accuracy_score(y_test, y_pred))
+                row["metrics"]["precision"] = _safe_float(precision_score(y_test, y_pred, average="macro", zero_division=0))
+                row["metrics"]["recall"] = _safe_float(recall_score(y_test, y_pred, average="macro", zero_division=0))
+                row["metrics"]["f1"] = _safe_float(f1_score(y_test, y_pred, average="macro", zero_division=0))
+                try:
+                    if hasattr(model, "predict_proba"):
+                        proba = model.predict_proba(X_test)
+                        row["metrics"]["roc_auc"] = _safe_float(roc_auc_score(y_test, proba, multi_class="ovr", average="macro"))
+                    else:
+                        row["metrics"]["roc_auc"] = None
+                except Exception:
+                    row["metrics"]["roc_auc"] = None
+                try:
+                    if use_ts:
+                        cv = TimeSeriesSplit(n_splits=n_splits)
+                    else:
+                        cv = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
+                    scores = cross_val_score(model, X, y, cv=cv, scoring="accuracy")
+                    row["cv_mean"], row["cv_std"] = _safe_float(scores.mean()), _safe_float(scores.std())
+                except Exception:
+                    pass
+                cm = confusion_matrix(y_test, y_pred, labels=list(range(len(class_names))))
+                row["confusion"] = {"matrix": [[int(val) for val in row_cm] for row_cm in cm], "labels": class_names}
+                if hasattr(model, "predict_proba"):
+                    try:
+                        proba = model.predict_proba(X_test)
+                        roc_curves = []
+                        if len(class_names) == 2:
+                            fpr, tpr, _ = roc_curve(y_test, proba[:, 1])
+                            roc_curves.append({"label": f"{class_names[1]} (AUC)", "fpr": _safe_float_list(fpr), "tpr": _safe_float_list(tpr)})
+                        else:
+                            for i, cls in enumerate(class_names):
+                                y_bin = (y_test == i).astype(int)
+                                fpr, tpr, _ = roc_curve(y_bin, proba[:, i])
+                                roc_curves.append({"label": cls, "fpr": _safe_float_list(fpr), "tpr": _safe_float_list(tpr)})
+                        row["roc"] = roc_curves
+                    except Exception:
+                        row["roc"] = None
+            else:
+                row["metrics"]["r2"] = _safe_float(r2_score(y_test, y_pred))
+                row["metrics"]["mae"] = _safe_float(mean_absolute_error(y_test, y_pred))
+                row["metrics"]["mse"] = _safe_float(mean_squared_error(y_test, y_pred))
+                row["metrics"]["rmse"] = _safe_float(np.sqrt(mean_squared_error(y_test, y_pred)))
+                try:
+                    if use_ts:
+                        cv = TimeSeriesSplit(n_splits=n_splits)
+                    else:
+                        cv = KFold(n_splits=n_splits, shuffle=True, random_state=42)
+                    scores = cross_val_score(model, X, y, cv=cv, scoring="r2")
+                    row["cv_mean"], row["cv_std"] = _safe_float(scores.mean()), _safe_float(scores.std())
+                except Exception:
+                    pass
+                n = len(y_test)
+                idx = list(range(n))
+                if n > 400:
+                    step = n / 400.0
+                    idx = [int(i * step) for i in range(400)]
+                row["actual_vs_predicted"] = {
+                    "actual": _safe_float_list([y_test.iloc[i] for i in idx]),
+                    "predicted": _safe_float_list([y_pred[i] for i in idx]),
+                }
+
+            # Özellik önemi (one-hot sonrası feature_names kullanılır)
+            if hasattr(model, "feature_importances_"):
+                imp = model.feature_importances_
+            elif hasattr(model, "coef_"):
+                coef = model.coef_
+                imp = np.abs(coef).mean(axis=0) if coef.ndim > 1 else np.abs(coef)
+            else:
+                imp = np.zeros(len(feature_names))
+            row["feature_importance"] = sorted(
+                [{"feature": str(f), "importance": _safe_float(v) or 0.0} for f, v in zip(feature_names, imp)],
+                key=lambda x: x["importance"], reverse=True)[:15]
+        except Exception as e:
+            row["model_error"] = f"{cfg['name']}: {str(e)}"
+
+        results.append(row)
+
+    if not results:
+        return JSONResponse(status_code=400, content={"error": "Seçilen modeller geçersiz."})
+
+    healthy = [r for r in results if r["model_error"] is None]
+    if not healthy:
+        return JSONResponse(status_code=500, content={
+            "error": "Seçilen hiçbir model eğitilemedi.",
+            "detail": "; ".join(r["model_error"] for r in results if r.get("model_error")),
+            "traceback": None,
+        })
+
+    if is_classification:
+        def _score(r): return (r["metrics"].get("accuracy") or 0, r["metrics"].get("f1") or 0)
+    else:
+        def _score(r): return (r["metrics"].get("r2") or -999, 0)
+    best = max(healthy, key=_score)
+
+    return JSONResponse(content={
+        "problem_type": "classification" if is_classification else "regression",
+        "target": target,
+        "data_source": _ml_data_source(),
+        "is_time_series": is_ts,
+        "time_series_suspected": ts_suspected,
+        "time_column": ts_col,
+        "cv_method": "time_series_split" if use_ts else ("stratified_kfold" if is_classification else "kfold"),
+        "imbalanced": imbalanced,
+        "imbalance_ratio": top_class,
+        "excluded_columns": excluded,
+        "feature_count": len(feature_names),
+        "total_rows": int(len(X)),
+        "train_rows": int(len(X_train)),
+        "test_rows": int(len(X_test)),
+        "cv_k": n_splits,
+        "models": results,
+        "best_model": best["id"],
+    })
 
 
 @app.post("/api/reset")

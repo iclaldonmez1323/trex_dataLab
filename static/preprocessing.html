@@ -11,6 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -187,6 +189,11 @@
                 <span class="material-symbols-outlined">insights</span>
                 <span data-i18n="nav.visualization">Visualization</span>
             </a>
+            <!-- Machine Learning -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="machine-learning.html">
+                <span class="material-symbols-outlined">model_training</span>
+                <span data-i18n="nav.machineLearning">Machine Learning</span>
+            </a>
             <!-- Portfolio -->
             <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-lg" href="portfolio.html">
                 <span class="material-symbols-outlined">folder_shared</span>
@@ -216,10 +223,18 @@
                 <h2 class="font-headline-md text-[18px] sm:text-[20px] font-semibold text-on-surface">trex DataLab - Veri Hazırlama (Preprocessing)</h2>
             </div>
             <!-- Right: Actions & Profile -->
-            <div class="flex items-center gap-3 sm:gap-4">
-                <button id="downloadCleanedCsvBtn" type="button" class="bg-primary text-on-primary px-3 sm:px-4 py-2 rounded-lg font-body-md text-xs sm:text-body-md font-medium flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm cursor-pointer">
-                    <span class="material-symbols-outlined text-[18px]">download</span>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button id="downloadCleanedCsvBtn" type="button" class="bg-surface text-on-surface border border-border-subtle hover:bg-surface-container-low px-3 sm:px-3.5 py-2 rounded-lg font-body text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                    <span class="material-symbols-outlined text-[18px]">file_download</span>
                     <span data-i18n="preprocessing.downloadCsv">Temizlenmiş CSV'yi İndir</span>
+                </button>
+                <a href="machine-learning.html" class="bg-primary text-on-primary px-3 sm:px-3.5 py-2 rounded-lg font-body text-xs font-semibold flex items-center gap-1.5 hover:bg-primary-container transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                    <span class="material-symbols-outlined text-[18px]">model_training</span>
+                    <span>İşlenmiş Veriyle Makine Öğrenmesine Geç</span>
+                </a>
+                <button type="button" onclick="openExportModal()" class="bg-surface text-on-surface border border-border-subtle hover:bg-surface-container-low px-3 sm:px-3.5 py-2 rounded-lg font-body text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                    <span class="material-symbols-outlined text-[18px]">download</span>
+                    <span>Dışa Aktar</span>
                 </button>
                 <div class="h-6 w-px bg-border-subtle mx-1"></div>
                 <button id="notificationsBtn" class="relative text-on-surface-variant hover:text-primary transition-colors p-1" title="Bildirimler" data-i18n-title="nav.notifications">
@@ -368,6 +383,32 @@
                                         <span id="removeDuplicatesBtnText">Kopyaları Kaldır</span>
                                     </button>
                                 </div>
+
+                                <!-- Outliers -->
+                                <div class="border border-border-subtle rounded-lg p-4 bg-surface-container-low hover:shadow-sm transition-shadow flex flex-col justify-between md:col-span-2">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-[#a1680d] text-[20px]">filter_alt</span>
+                                            <span class="font-body-md text-body-md font-medium text-on-surface">Aykırı Değer Yönetimi</span>
+                                        </div>
+                                        <span id="outliersBadge" class="bg-warning-orange/10 text-[#a1680d] font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium">0 Değer</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <select id="outlierMethodSelect" class="block w-full rounded-md border-border-subtle bg-surface py-2 pl-3 pr-10 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-primary sm:text-sm">
+                                            <option value="">Yöntem seçin...</option>
+                                            <option value="cap" selected>Baskılama / Kırpma (Capping)</option>
+                                            <option value="remove_iqr">IQR ile Aykırı Satırları Sil (3.0×IQR, ≥2 sütun)</option>
+                                            <option value="remove_zscore">Z-Score ile Aykırı Satırları Sil (Z &gt; 3)</option>
+                                            <option value="replace_median">Medyan ile Değiştir</option>
+                                        </select>
+                                        <button id="applyOutliersBtn" type="button" disabled class="bg-primary text-on-primary hover:bg-primary-container px-3 py-2 rounded-md transition-colors border border-transparent disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center" title="Uygula">
+                                            <span class="material-symbols-outlined text-[20px]">play_arrow</span>
+                                        </button>
+                                    </div>
+                                    <div id="outlierColumnsBox" class="hidden mt-2 max-h-36 overflow-y-auto border border-border-subtle rounded-md bg-surface p-2 space-y-1">
+                                        <!-- Dinamik: sayısal sütun checkbox listesi -->
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -457,6 +498,9 @@
         const duplicatesBadge = document.getElementById('duplicatesBadge');
         const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
         const removeDuplicatesBtnText = document.getElementById('removeDuplicatesBtnText');
+        const outliersBadge = document.getElementById('outliersBadge');
+        const outlierMethodSelect = document.getElementById('outlierMethodSelect');
+        const applyOutliersBtn = document.getElementById('applyOutliersBtn');
         const schemaTableBody = document.getElementById('schemaTableBody');
         const schemaSearchInput = document.getElementById('schemaSearchInput');
         const historyList = document.getElementById('historyList');
@@ -538,6 +582,62 @@
                 duplicatesBadge.className = 'bg-surface-variant text-on-surface-variant font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium';
                 removeDuplicatesBtn.disabled = false;
                 removeDuplicatesBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+            }
+
+            // Quick Actions: Outliers
+            const outliers = data.outliers || { total_outliers: 0, columns: [] };
+            outliersBadge.textContent = `${formatNumber(outliers.total_outliers)} Değer`;
+            const outlierColsBox = document.getElementById('outlierColumnsBox');
+            if (outliers.total_outliers === 0) {
+                outliersBadge.className = 'bg-success-green/10 text-success-green font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium';
+                outliersBadge.textContent = 'Aykırı yok';
+                applyOutliersBtn.disabled = true;
+                applyOutliersBtn.classList.add('opacity-40', 'cursor-not-allowed');
+                if (outlierColsBox) outlierColsBox.classList.add('hidden');
+            } else {
+                outliersBadge.className = 'bg-warning-orange/10 text-[#a1680d] font-label-mono text-[11px] px-2 py-0.5 rounded-full font-medium';
+                if (outlierMethodSelect.value) {
+                    applyOutliersBtn.disabled = false;
+                    applyOutliersBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+                    if (outlierColsBox) outlierColsBox.classList.remove('hidden');
+                } else {
+                    applyOutliersBtn.disabled = true;
+                    applyOutliersBtn.classList.add('opacity-40', 'cursor-not-allowed');
+                    if (outlierColsBox) outlierColsBox.classList.add('hidden');
+                }
+            }
+
+            // Quick Actions: Outlier Column Checkboxes
+            if (outlierColsBox) {
+                const schemaList = data.schema || [];
+                const idLike = (name) => {
+                    const low = String(name).toLowerCase();
+                    return /(id|code|no|key)/.test(low);
+                };
+                const numericSchema = schemaList.filter(c =>
+                    c.kept !== false &&
+                    (c.kind === 'numeric') &&
+                    !idLike(c.name)
+                );
+                outlierColsBox.innerHTML = '';
+                if (numericSchema.length === 0) {
+                    outlierColsBox.innerHTML = '<div class="text-[11px] text-slate-gray px-1">İşlenebilir sayısal sütun bulunamadı.</div>';
+                } else {
+                    numericSchema.forEach(col => {
+                        const label = document.createElement('label');
+                        label.className = 'flex items-center gap-2 text-xs text-on-surface cursor-pointer';
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.value = col.name;
+                        cb.checked = true;
+                        cb.dataset.outlierCol = col.name;
+                        label.appendChild(cb);
+                        const span = document.createElement('span');
+                        span.textContent = col.name;
+                        label.appendChild(span);
+                        outlierColsBox.appendChild(label);
+                    });
+                }
             }
 
             // Render Schema Table
@@ -855,6 +955,43 @@
                 applyOperation({ op: 'drop_duplicates' }, 'Tekrarlayan kayıtlar kaldırıldı');
             });
 
+            // Apply Outliers Button
+            applyOutliersBtn.addEventListener('click', () => {
+                const method = outlierMethodSelect.value;
+                if (!method) return;
+                const selectedCols = Array.from(
+                    document.querySelectorAll('#outlierColumnsBox input[type="checkbox"]:checked')
+                ).map(cb => cb.value);
+                if (selectedCols.length === 0) {
+                    showError('Lütfen en az bir sütun seçin.');
+                    return;
+                }
+                const methodNames = {
+                    'cap': 'Aykırı değerler sınırlandırıldı (Capping)',
+                    'remove_iqr': 'Aykırı değerler temizlendi (IQR)',
+                    'remove_zscore': 'Aykırı değerler temizlendi (Z-Score)',
+                    'replace_median': 'Aykırı değerler medyan ile değiştirildi'
+                };
+                applyOperation(
+                    { op: 'outlier_management', method: method, columns: selectedCols },
+                    methodNames[method] || 'Aykırı değer işlemi uygulandı'
+                );
+            });
+
+            // Outlier Method Select enable/disable
+            outlierMethodSelect.addEventListener('change', () => {
+                const outlierColsBox = document.getElementById('outlierColumnsBox');
+                if (outlierMethodSelect.value && (currentPreprocessingData?.outliers?.total_outliers ?? 1) > 0) {
+                    applyOutliersBtn.disabled = false;
+                    applyOutliersBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+                    if (outlierColsBox) outlierColsBox.classList.remove('hidden');
+                } else {
+                    applyOutliersBtn.disabled = true;
+                    applyOutliersBtn.classList.add('opacity-40', 'cursor-not-allowed');
+                    if (outlierColsBox) outlierColsBox.classList.add('hidden');
+                }
+            });
+
             // Undo Button
             undoBtn.addEventListener('click', async () => {
                 if (isProcessing) return;
@@ -920,6 +1057,7 @@
     <script src="/static/components/i18n.js"></script>
     <script src="/static/components/notifications.js"></script>
     <script src="/static/components/profile-menu.js"></script>
+    <script src="/static/components/export-manager.js"></script>
 </body>
 
 </html>

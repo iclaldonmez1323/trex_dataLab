@@ -12,6 +12,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -175,6 +177,11 @@
                 <span class="material-symbols-outlined">insights</span>
                 <span class="font-body-md text-body-md" data-i18n="nav.visualization">Visualization</span>
             </a>
+            <!-- Machine Learning -->
+            <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="machine-learning.html">
+                <span class="material-symbols-outlined">model_training</span>
+                <span class="font-body-md text-body-md" data-i18n="nav.machineLearning">Machine Learning</span>
+            </a>
             <!-- Portfolio -->
             <a class="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors hover:bg-white/10 rounded-lg" href="portfolio.html">
                 <span class="material-symbols-outlined">folder_shared</span>
@@ -254,9 +261,15 @@
                     <h2 id="reportFileName" class="font-headline-md text-headline-md text-on-surface mb-1">—</h2>
                     <p id="reportDatasetMeta" class="font-label-mono text-label-mono text-slate-gray uppercase">YÜKLENİYOR • 0 SATIR, 0 SÜTUN</p>
                 </div>
-                <div class="flex items-center gap-2 text-sm text-slate-gray bg-white px-3 py-1.5 rounded border border-border-subtle shadow-sm self-start sm:self-auto">
-                    <span class="material-symbols-outlined text-sm text-slate-gray">update</span>
-                    <span id="lastAnalysisTime" class="font-label-mono text-xs">Son Analiz: —</span>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-sm text-slate-gray bg-white px-3 py-1.5 rounded border border-border-subtle shadow-sm self-start sm:self-auto">
+                        <span class="material-symbols-outlined text-sm text-slate-gray">update</span>
+                        <span id="lastAnalysisTime" class="font-label-mono text-xs">Son Analiz: —</span>
+                    </div>
+                    <button type="button" onclick="openExportModal()" class="bg-primary text-on-primary px-3.5 py-2 rounded-lg font-body text-xs font-semibold flex items-center gap-1.5 hover:bg-primary-container transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
+                        <span>Dışa Aktar</span>
+                    </button>
                 </div>
             </div>
 
@@ -1243,6 +1256,7 @@
     <script src="/static/components/i18n.js"></script>
     <script src="/static/components/notifications.js"></script>
     <script src="/static/components/profile-menu.js"></script>
+    <script src="/static/components/export-manager.js"></script>
 </body>
 
 </html>
