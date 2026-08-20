@@ -319,12 +319,12 @@
                             <h3 class="font-label-mono text-xs text-on-surface-variant uppercase tracking-wider font-bold flex items-center gap-1">
                                 <span class="material-symbols-outlined text-[16px] text-primary">do_not_disturb_on</span> Hariç Tutulacak Sütunlar
                             </h3>
-                            <p class="text-[11px] text-slate-gray mb-2">ID benzeri ve serbest metin sütunları otomatik işaretlenir; kaldırıp ekleyebilirsiniz.</p>
+                            <p class="text-[11px] text-slate-gray mb-2">Otomatik dışlanan sütunlar turuncu işaretlenir; dilediğiniz gibi kaldırıp ekleyebilirsiniz.</p>
                             <div id="mlTextNote" class="hidden items-start gap-2 bg-purple-500/10 border border-purple-500/30 text-on-surface rounded-lg p-2.5 text-xs mb-2">
                                 <span class="material-symbols-outlined text-[16px] text-purple-600 shrink-0 mt-0.5">short_text</span>
                                 <span id="mlTextNoteMsg">Metin sütunu tespit edildi ve otomatik dışlandı.</span>
                             </div>
-                            <div id="mlExcludeList" class="space-y-1.5 max-h-44 overflow-y-auto pr-1"></div>
+                            <div id="mlExcludeList" class="space-y-1.5 max-h-56 overflow-y-auto pr-1"></div>
                         </div>
 
                         <!-- 4. Model Seçimi & Eğit Butonu -->
@@ -670,25 +670,60 @@
             renderHyperParams();
         }
 
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function renderExcludeList() {
             const target = document.getElementById('mlTargetColumn').value;
             const container = document.getElementById('mlExcludeList');
             if (!container) return;
             container.innerHTML = '';
             if (!mlConfigData || !mlConfigData.columns) return;
-            const autoSet = new Set(mlConfigData.auto_excluded || []);
+
             mlConfigData.columns.forEach(col => {
                 if (col.name === target) return;
+                const isExcluded = (col.should_exclude === true) || (mlConfigData.auto_excluded && mlConfigData.auto_excluded.includes(col.name));
                 const label = document.createElement('label');
-                label.className = 'flex items-center gap-2 px-2.5 py-1.5 bg-surface-container-low border border-border-subtle rounded-lg cursor-pointer hover:border-primary transition-colors text-xs text-on-surface';
+                const bgClass = isExcluded ? 'bg-warning-orange/5 border-warning-orange/30' : 'bg-surface-container-low border-border-subtle';
+                label.className = `flex items-center gap-2.5 px-3 py-2 ${bgClass} border rounded-lg cursor-pointer hover:border-primary transition-colors text-xs text-on-surface`;
+
                 const cb = document.createElement('input');
                 cb.type = 'checkbox';
                 cb.value = col.name;
-                cb.checked = autoSet.has(col.name);
-                cb.className = 'accent-primary w-3.5 h-3.5 rounded text-primary focus:ring-primary';
+                cb.checked = isExcluded;
+                cb.className = 'accent-primary w-4 h-4 rounded text-primary focus:ring-primary flex-shrink-0';
+
+                cb.addEventListener('change', () => {
+                    if (cb.checked) {
+                        label.classList.add('bg-warning-orange/5', 'border-warning-orange/30');
+                        label.classList.remove('bg-surface-container-low', 'border-border-subtle');
+                    } else {
+                        label.classList.remove('bg-warning-orange/5', 'border-warning-orange/30');
+                        label.classList.add('bg-surface-container-low', 'border-border-subtle');
+                    }
+                });
+
+                const reason = col.exclude_reason
+                    ? `<span class="block text-[10px] text-warning-orange font-medium truncate max-w-[210px]" title="${escapeHtml(col.exclude_reason)}">${escapeHtml(col.exclude_reason)}</span>`
+                    : '';
+
                 const span = document.createElement('span');
-                span.className = 'flex-1 flex justify-between items-center gap-2';
-                span.innerHTML = `<span class="truncate" title="${col.name}">${col.name}</span><span class="text-slate-gray font-label-mono text-[10px]">%${Math.round(col.unique_ratio * 100)}</span>`;
+                span.className = 'flex-1 flex justify-between items-center gap-2 min-w-0';
+                span.innerHTML = `
+                    <span class="flex-1 min-w-0">
+                        <span class="block truncate font-medium" title="${escapeHtml(col.name)}">${escapeHtml(col.name)}</span>
+                        ${reason}
+                    </span>
+                    <span class="text-slate-gray font-label-mono text-[10px] flex-shrink-0" title="Tekillik Oranı">%${Math.round((col.unique_ratio || 0) * 100)}</span>
+                `;
+
                 label.appendChild(cb);
                 label.appendChild(span);
                 container.appendChild(label);

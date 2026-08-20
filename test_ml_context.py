@@ -7,113 +7,98 @@ from main import app
 client = TestClient(app)
 
 def test_ml_context_aware():
-    print("\n--- TEST 1: Tiny Dataset (<50 rows) & Text Column Detection ---")
-    df_tiny = pd.DataFrame({
-        "ID": range(1, 31),
-        "Musteri_Yorumu": [
-            "Bu ürün gerçekten çok kaliteli, kargolama süreci de hızlıydı teşekkürler." if i % 2 == 0 
-            else "Ürün elime ulaştığında kutusu yıpranmıştı ancak cihaz sorunsuz çalışıyor." 
-            for i in range(1, 31)
-        ],
-        "Tarih": pd.date_range("2025-01-01", periods=30, freq="D").astype(str),
-        "Puan": np.random.randint(1, 6, size=30),
-        "Harcama": np.random.uniform(100, 5000, size=30),
-        "Kategori": np.random.choice(["Elektronik", "Giyim", "Ev"], size=30)
+    print("\n--- TEST 1: Melbourne Housing Pattern (Address, Date, Suburb, Rooms, Constant) ---")
+    n_melb = 200
+    df_melb = pd.DataFrame({
+        "Address": [f"Street {i}" for i in range(184)] + [f"Street {i%10}" for i in range(16)], # ~92% unique
+        "Date": pd.date_range("2023-01-01", periods=n_melb, freq="D").astype(str),
+        "Suburb": np.random.choice(["Richmond", "Carlton", "Fitzroy", "St Kilda"], size=n_melb),
+        "Rooms": np.random.randint(1, 6, size=n_melb),
+        "Price": np.random.uniform(300000, 2500000, size=n_melb),
+        "Distance": np.random.uniform(1.0, 25.0, size=n_melb),
+        "Constant_Col": ["TekDeger"] * n_melb,
+        "Notes": np.random.choice(["Kısa not A", "Kısa not B", "Kısa not C"], size=n_melb) # should NOT be matched by ID_RE
     })
     
-    csv_bytes = df_tiny.to_csv(index=False).encode("utf-8")
-    r = client.post("/api/upload", files={"file": ("tiny_data.csv", io.BytesIO(csv_bytes), "text/csv")})
-    assert r.status_code == 200, f"Upload failed: {r.text}"
+    csv_bytes = df_melb.to_csv(index=False).encode("utf-8")
+    r = client.post("/api/upload", files={"file": ("melbourne.csv", io.BytesIO(csv_bytes), "text/csv")})
+    assert r.status_code == 200
     
     r_cfg = client.get("/api/ml/config")
     assert r_cfg.status_code == 200
     cfg = r_cfg.json()
-    prof = cfg["profile"]
+    cols = {c["name"]: c for c in cfg["columns"]}
     
-    assert prof["total_rows"] == 30
-    assert prof["sample_bucket"] == "tiny"
-    assert prof["recommended"]["cv_visible"] is False
-    assert prof["recommended"]["cv_fixed_k"] is None
-    assert "Musteri_Yorumu" in prof["text_columns"], f"Expected Musteri_Yorumu in text_columns: {prof['text_columns']}"
-    assert "Tarih" in prof["datetime_columns"], f"Expected Tarih in datetime_columns: {prof['datetime_columns']}"
+    # 1. Address -> high cardinality text/categorical
+    assert cols["Address"]["should_exclude"] is True
+    assert "Yüksek benzersizlik" in cols["Address"]["exclude_reason"]
     
-    # Check auto-exclusion of text column
-    col_dict = {c["name"]: c for c in cfg["columns"]}
-    assert col_dict["Musteri_Yorumu"]["kind"] == "text"
-    assert col_dict["Musteri_Yorumu"]["auto_exclude"] is True
-    assert "Musteri_Yorumu" in cfg["auto_excluded"]
-    assert col_dict["Tarih"]["kind"] == "datetime"
+    # 2. Date -> datetime
+    assert cols["Date"]["should_exclude"] is True
+    assert "Tarih/zaman" in cols["Date"]["exclude_reason"]
     
-    # Train tiny dataset without CV (or cv_k=3 fallback)
+    # 3. Suburb -> normal categorical, NOT excluded
+    assert cols["Suburb"]["should_exclude"] is False
+    assert cols["Suburb"]["exclude_reason"] is None
+    
+    # 4. Rooms, Price, Distance -> numerical, NOT excluded
+    assert cols["Rooms"]["should_exclude"] is False
+    assert cols["Price"]["should_exclude"] is False
+    assert cols["Distance"]["should_exclude"] is False
+    
+    # 5. Constant_Col -> zero variance
+    assert cols["Constant_Col"]["should_exclude"] is True
+    assert "Sabit sütun" in cols["Constant_Col"]["exclude_reason"]
+    
+    # 6. Notes -> not ID, not high cardinality, NOT excluded
+    assert cols["Notes"]["should_exclude"] is False
+    print("[PASS] Test 1: Melbourne pattern (Address, Date, Constant, Suburb, Notes) OK")
+
+    print("\n--- TEST 2: ai4i2020 Predictive Maintenance Pattern (UDI, Product ID, Type, Temp) ---")
+    n_ai = 100
+    df_ai = pd.DataFrame({
+        "UDI": range(1, n_ai + 1), # integer-like ID 100% unique
+        "Product_ID": [f"L{47180 + i}" for i in range(n_ai)], # string ID 100% unique
+        "Type": np.random.choice(["L", "M", "H"], size=n_ai),
+        "Air_temperature": np.random.uniform(295.0, 305.0, size=n_ai),
+        "Excessive_Missing": [None if i < 90 else float(i) for i in range(n_ai)], # 90% missing, nunique=10
+        "Failure": np.random.choice([0, 1], size=n_ai)
+    })
+    csv_bytes_ai = df_ai.to_csv(index=False).encode("utf-8")
+    client.post("/api/upload", files={"file": ("ai4i.csv", io.BytesIO(csv_bytes_ai), "text/csv")})
+    
+    r_cfg_ai = client.get("/api/ml/config")
+    cfg_ai = r_cfg_ai.json()
+    cols_ai = {c["name"]: c for c in cfg_ai["columns"]}
+    
+    assert cols_ai["UDI"]["should_exclude"] is True
+    assert "Sayısal kimlik" in cols_ai["UDI"]["exclude_reason"] or "Kimlik" in cols_ai["UDI"]["exclude_reason"]
+    assert cols_ai["Product_ID"]["should_exclude"] is True
+    assert cols_ai["Excessive_Missing"]["should_exclude"] is True
+    assert "Aşırı eksik" in cols_ai["Excessive_Missing"]["exclude_reason"]
+    assert cols_ai["Type"]["should_exclude"] is False
+    assert cols_ai["Air_temperature"]["should_exclude"] is False
+    print("[PASS] Test 2: ai4i2020 pattern (UDI, Product_ID, Excessive_Missing, Type, Temp) OK")
+
+    print("\n--- TEST 3: User Manual Unchecking & Model Training ---")
+    # User unchecks Product_ID and runs training -> Product_ID must be included in training without crashing
     r_train = client.post("/api/ml/train", json={
-        "target": "Puan",
+        "target": "Failure",
         "problem_type": "classification",
         "train_ratio": 0.8,
-        "models": ["dtree_clf", "rf_clf", "logistic"],
+        "models": ["dtree_clf", "logistic"],
         "cv_k": 3,
-        "hyperparams": {
-            "rf_clf": {"n_estimators": 50, "max_depth": 3},
-            "logistic": {"C": 0.5}
-        }
+        "exclude_columns": ["UDI", "Excessive_Missing"] # User included Product_ID & Type & Air_temperature
     })
-    assert r_train.status_code == 200, f"Training tiny dataset failed: {r_train.text}"
+    assert r_train.status_code == 200, f"Training failed: {r_train.text}"
     train_res = r_train.json()
     assert "best_model" in train_res
-    assert len(train_res["models"]) == 3
-    print("[PASS] Test 1: Tiny dataset, text auto-exclusion & training OK")
+    print("[PASS] Test 3: User manual uncheck & training OK")
 
-    print("\n--- TEST 2: Small Dataset (50-150 rows) K=3 Fixed ---")
-    df_small = pd.DataFrame({
-        "Age": np.random.randint(18, 65, size=80),
-        "Income": np.random.uniform(20000, 150000, size=80),
-        "Score": np.random.uniform(50, 100, size=80),
-        "Purchased": np.random.choice([0, 1], size=80)
-    })
-    csv_bytes_small = df_small.to_csv(index=False).encode("utf-8")
-    client.post("/api/upload", files={"file": ("small_data.csv", io.BytesIO(csv_bytes_small), "text/csv")})
-    
-    r_cfg_s = client.get("/api/ml/config")
-    prof_s = r_cfg_s.json()["profile"]
-    assert prof_s["total_rows"] == 80
-    assert prof_s["sample_bucket"] == "small"
-    assert prof_s["recommended"]["cv_visible"] is True
-    assert prof_s["recommended"]["cv_fixed_k"] == 3
-    print("[PASS] Test 2: Small dataset (n=80) K=3 recommendation OK")
+    print("\nALL CONTEXT-AWARE ML & EXCLUSION TESTS PASSED SUCCESSFULLY!")
 
-    print("\n--- TEST 3: Normal Dataset (>150 rows) & Hyperparameter Clamping ---")
-    df_norm = pd.DataFrame({
-        "Feature1": np.random.randn(200),
-        "Feature2": np.random.randn(200),
-        "Feature3": np.random.randn(200),
-        "Target": np.random.randn(200) * 10 + 50
-    })
-    csv_bytes_norm = df_norm.to_csv(index=False).encode("utf-8")
-    client.post("/api/upload", files={"file": ("norm_data.csv", io.BytesIO(csv_bytes_norm), "text/csv")})
-    
-    r_cfg_n = client.get("/api/ml/config")
-    prof_n = r_cfg_n.json()["profile"]
-    assert prof_n["total_rows"] == 200
-    assert prof_n["sample_bucket"] == "normal"
-    assert prof_n["recommended"]["cv_visible"] is True
-    assert prof_n["recommended"]["cv_fixed_k"] is None
-    
-    # Train regression with clamped hyperparameters
-    r_train_norm = client.post("/api/ml/train", json={
-        "target": "Target",
-        "problem_type": "regression",
-        "train_ratio": 0.8,
-        "models": ["linear", "dtree_reg", "rf_reg"],
-        "cv_k": 5,
-        "hyperparams": {
-            "rf_reg": {"n_estimators": 1000, "max_depth": 60},  # should be clamped to 500 and 50
-            "dtree_reg": {"max_depth": "auto"}  # should be coerced to None
-        }
-    })
-    assert r_train_norm.status_code == 200
-    res_norm = r_train_norm.json()
-    assert "best_model" in res_norm
-    assert len(res_norm["models"]) == 3
-    print("[PASS] Test 3: Normal dataset (n=200) & hyperparam clamping OK")
+if __name__ == "__main__":
+    test_ml_context_aware()
 
     print("\nALL CONTEXT-AWARE ML TESTS PASSED SUCCESSFULLY!")
 

@@ -2419,32 +2419,27 @@ def get_ml_dataframe() -> Optional[pd.DataFrame]:
     return df
 
 
-def _auto_exclude_column(name: str, s: pd.Series, kind: Optional[str] = None) -> bool:
-    n = len(s.dropna())
-    if n == 0:
+CARDINALITY_RATIO = 0.70      # metin/kategorik benzersizlik oranı eşiği
+NUMERIC_ID_RATIO = 0.90       # integer-like sayısal benzersizlik eşiği
+MISSING_RATIO = 0.80          # eksiklik oranı eşiği
+
+
+def _is_integer_like(s: pd.Series) -> bool:
+    s = s.dropna()
+    if len(s) == 0:
         return False
-    if kind == "text":
+    if pd.api.types.is_integer_dtype(s.dtype):
         return True
-    name_low = str(name).lower()
-    if re.search(r"(id|cod|no|key|kayıt|numar)", name_low):
-        return True
-    # Yüksek kardinaliteli metin: one-hot patlamasını önle (>20 benzersiz değer)
-    if not pd.api.types.is_numeric_dtype(s) and s.nunique() > 20:
-        return True
-    unique_ratio = s.nunique() / n
-    return unique_ratio >= 0.95  # satır başına neredeyse benzersiz (UDI, Product ID vb.)
+    if pd.api.types.is_float_dtype(s.dtype):
+        return bool((s == s.round()).all())
+    return False
 
 
-def _ml_data_source() -> str:
-    if processed_df_cache is not None and original_df_cache is not None:
-        if len(preprocessing_history_stack) > 1 or not processed_df_cache.equals(original_df_cache):
-            return "processed"
-    return "raw"
-
-
-def _top_class_ratio(s: pd.Series) -> float:
-    vc = s.dropna().value_counts(normalize=True)
-    return float(vc.iloc[0]) if len(vc) else 0.0
+_ID_RE = re.compile(
+    r"(\b(uuid|tckn|tc_no|udi|code|kayit_no|kayıt_no|numara)\b)|"   # tam sözcükler
+    r"(?:^|_)id$|_id(?:$|_)",                                        # 'id' ile biten / _id içeren
+    re.IGNORECASE
+)
 
 
 def _col_kind(s: pd.Series) -> str:
@@ -2474,6 +2469,56 @@ def _col_kind(s: pd.Series) -> str:
                 return "text"
 
     return "categorical"
+
+
+def _auto_exclude_reason(name: str, s: pd.Series, kind: str) -> Optional[str]:
+    n = int(s.notna().sum())
+    total = int(len(s))
+    nunique = int(s.nunique(dropna=True))
+    if n == 0:
+        return "Sütun tamamen boş"
+    unique_ratio = nunique / n if n else 0.0
+    missing_ratio = 1.0 - (n / total) if total else 1.0
+
+    # 1) Sıfır varyans
+    if nunique <= 1:
+        return "Sabit sütun (tek benzersiz değer)"
+    # 2) Aşırı eksik veri
+    if missing_ratio >= MISSING_RATIO:
+        return f"Aşırı eksik veri (%{round(missing_ratio * 100)})"
+    # 3) Tarih/zaman
+    if kind == "datetime":
+        return "Tarih/zaman sütunu (özellik çıkarımı gerekir)"
+    # 4) Serbest metin
+    if kind == "text":
+        return "Serbest metin sütunu"
+    # 5) Güvenli ad sezgisi (kelime sınırlı; 'no'/'key' alt-dizesi YOK)
+    if _ID_RE.search(str(name)):
+        return "Kimlik/numara sütunu"
+    # 6) Metin/kategorik yüksek benzersizlik
+    if kind in ("categorical", "text") and unique_ratio >= CARDINALITY_RATIO:
+        return f"Yüksek benzersizlik (%{round(unique_ratio * 100)})"
+    # 7) Integer-like sayısal yüksek benzersizlik (UDI, Product ID int vb.)
+    if kind == "numeric" and _is_integer_like(s) and unique_ratio >= NUMERIC_ID_RATIO:
+        return f"Sayısal kimlik (integer, %{round(unique_ratio * 100)} benzersiz)"
+    return None
+
+
+def _auto_exclude_column(name: str, s: pd.Series, kind: Optional[str] = None) -> bool:
+    kind = kind or _col_kind(s)
+    return _auto_exclude_reason(name, s, kind) is not None
+
+
+def _ml_data_source() -> str:
+    if processed_df_cache is not None and original_df_cache is not None:
+        if len(preprocessing_history_stack) > 1 or not processed_df_cache.equals(original_df_cache):
+            return "processed"
+    return "raw"
+
+
+def _top_class_ratio(s: pd.Series) -> float:
+    vc = s.dropna().value_counts(normalize=True)
+    return float(vc.iloc[0]) if len(vc) else 0.0
 
 
 def _detect_time_series(df: pd.DataFrame) -> tuple:
@@ -2540,9 +2585,11 @@ async def ml_config():
     for col in df.columns:
         s = df[col]
         kind = _col_kind(s)
-        n_non_null = len(s.dropna())
+        n_non_null = int(s.notna().sum())
+        total_col_rows = len(s)
+        missing_ratio = round(1.0 - (n_non_null / total_col_rows) if total_col_rows else 1.0, 3)
         avg_len = round(float(s.dropna().astype(str).str.len().mean()), 1) if n_non_null else 0.0
-        uniq_ratio = round(float(s.nunique() / len(s)) if len(s) else 0.0, 3)
+        uniq_ratio = round(float(s.nunique(dropna=True) / n_non_null) if n_non_null else 0.0, 3)
         if uniq_ratio >= 0.95:
             n_high_card += 1
 
@@ -2551,7 +2598,8 @@ async def ml_config():
         elif kind == "datetime":
             datetime_cols.append(str(col))
 
-        ex = _auto_exclude_column(col, s, kind)
+        reason = _auto_exclude_reason(col, s, kind)
+        ex = reason is not None
         columns.append({
             "name": str(col),
             "dtype": str(s.dtype),
@@ -2559,8 +2607,11 @@ async def ml_config():
             "avg_length": avg_len,
             "is_datetime": bool(kind == "datetime"),
             "unique_ratio": uniq_ratio,
+            "missing_ratio": missing_ratio,
             "class_ratio": _top_class_ratio(s) if kind == "categorical" else None,
             "auto_exclude": ex,
+            "should_exclude": ex,
+            "exclude_reason": reason,
         })
         missing_counts[str(col)] = int(s.isna().sum())
         if ex:
@@ -2704,26 +2755,20 @@ def _run_ml_training(req: dict) -> JSONResponse:
         df = df.sort_values(ts_col).reset_index(drop=True)
 
     # --- ID benzeri sütunları otomatik + kullanıcı seçimiyle hariç tut ---
-    auto_excluded = []
-    for c in df.columns:
-        if c == target:
-            continue
-        if _auto_exclude_column(c, df[c]):
-            auto_excluded.append(c)
-    excluded = sorted(set(auto_excluded) | set(user_exclude))
+    if "exclude_columns" in req and req["exclude_columns"] is not None:
+        user_exclude = [c for c in req.get("exclude_columns", []) if c != target and c in df.columns]
+        excluded = sorted(set(user_exclude))
+    else:
+        auto_excluded = [c for c in df.columns if c != target and _auto_exclude_column(c, df[c])]
+        excluded = sorted(set(auto_excluded))
 
     features = [c for c in df.columns if c != target and c not in excluded]
     if not features:
-        # Eğer otomatik hariç tutma yüzünden özellik kalmadıysa kullanıcı seçmediklerini koru
-        user_excluded_set = set(user_exclude)
-        fallback_features = [c for c in df.columns if c != target and c not in user_excluded_set]
-        if fallback_features:
-            features = fallback_features
-        else:
-            return JSONResponse(status_code=400, content={
-                "error": "Hariç tutma sonrası kullanılabilir özellik sütunu kalmadı.",
-                "detail": f"Hariç tutulan sütunlar: {', '.join(excluded) if excluded else 'yok'}. Lütfen hariç tutulan sütun listesinden en az bir özelliği kaldırın.",
-            })
+        # Eğer tüm özellikler hariç tutulduysa kullanıcıya net hata dön
+        return JSONResponse(status_code=400, content={
+            "error": "Hariç tutma sonrası kullanılabilir özellik sütunu kalmadı.",
+            "detail": f"Hariç tutulan sütunlar: {', '.join(excluded) if excluded else 'yok'}. Lütfen hariç tutulan sütun listesinden en az bir özelliği kaldırın.",
+        })
 
     X = df[features].copy()
     y = df[target].copy()
