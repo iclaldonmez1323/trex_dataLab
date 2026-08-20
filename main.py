@@ -1077,6 +1077,318 @@ async def export_current_csv():
     )
 
 
+# ==========================================
+# Görselleştirme Karar Motoru (Chart Decision Engine)
+# ==========================================
+
+# Modül seviyesinde genişletilebilir alan adı sözlüğü
+LABEL_DICT: Dict[str, str] = {
+    "order_hour": "Sipariş Saati",
+    "customer_age": "Müşteri Yaşı",
+    "order_date": "Sipariş Tarihi",
+    "product_name": "Ürün Adı",
+    "price": "Fiyat",
+    "quantity": "Adet",
+    "regionname": "Bölge Adı",
+    "propertycount": "Konut Sayısı",
+    "bedroom2": "Yatak Odası",
+    "bathroom": "Banyo",
+    "car": "Araç",
+    "landsize": "Arsa Alanı",
+    "landarea": "Arsa Alanı",
+    "buildingarea": "Bina Alanı",
+    "yearbuilt": "Yapım Yılı",
+    "date": "Tarih",
+    "time": "Saat",
+    "hour": "Saat",
+    "day": "Gün",
+    "month": "Ay",
+    "year": "Yıl",
+    "timestamp": "Zaman Damgası",
+    "age": "Yaş",
+    "income": "Gelir",
+    "credit_score": "Kredi Skoru",
+    "segment": "Segment",
+    "city": "Şehir",
+    "status": "Durum",
+    "target": "Hedef",
+    "oee": "OEE",
+    "availability": "Kullanılabilirlik",
+    "performance": "Performans",
+    "quality": "Kalite"
+}
+
+
+def pretty_label(col: Optional[str]) -> str:
+    """Sütun adlarını güzelleştirir; sözlükte yoksa Title Case formatlar."""
+    if not col:
+        return ""
+    col_str = str(col).strip()
+    norm = re.sub(r'[\s\-_]+', '', col_str).lower()
+    for k, v in LABEL_DICT.items():
+        k_norm = re.sub(r'[\s\-_]+', '', k).lower()
+        if norm == k_norm:
+            return v
+    # Fallback: alt çizgi / tireleri boşluğa çevir ve Title Case yap
+    cleaned = re.sub(r'[_\-]+', ' ', col_str).strip()
+    return cleaned.title() if cleaned else col_str
+
+
+def _looks_like_datetime(s: pd.Series, sample_size: int = 200) -> bool:
+    """Bir serinin tarih/zaman içerip içermediğini tespit eder."""
+    if pd.api.types.is_datetime64_any_dtype(s):
+        return True
+    sample = s.dropna().head(sample_size)
+    if len(sample) == 0:
+        return False
+    if pd.api.types.is_numeric_dtype(sample):
+        return False
+    parsed = pd.to_datetime(sample, errors="coerce")
+    return float(parsed.notna().sum()) / len(sample) >= 0.8
+
+
+def _is_integer_like(s: pd.Series) -> bool:
+    """Serinin tam sayı veya tam sayıya yuvarlanmış değerlerden oluşup oluşmadığını tespit eder."""
+    s = s.dropna()
+    if len(s) == 0:
+        return False
+    if pd.api.types.is_integer_dtype(s.dtype):
+        return True
+    if pd.api.types.is_float_dtype(s.dtype):
+        try:
+            return bool((s == s.round()).all())
+        except Exception:
+            return False
+    return False
+
+
+def _classify_columns(df: pd.DataFrame) -> Dict[str, list]:
+    """Sütunları numeric, datetime ve categorical olarak gruplar."""
+    numeric_cols = []
+    datetime_cols = []
+    categorical_cols = []
+
+    for col in df.columns:
+        series = df[col]
+        if pd.api.types.is_numeric_dtype(series):
+            numeric_cols.append(str(col))
+        elif _looks_like_datetime(series):
+            datetime_cols.append(str(col))
+        else:
+            categorical_cols.append(str(col))
+
+    return {
+        "numeric": numeric_cols,
+        "datetime": datetime_cols,
+        "categorical": categorical_cols
+    }
+
+
+def decide_chart_plan(x_col: Optional[str], y_col: Optional[str], df: pd.DataFrame) -> dict:
+    """Ortak Karar Motoru: Verilen sütun çifti için en uygun grafik planını üretir."""
+    classification = _classify_columns(df)
+    num_cols = set(classification["numeric"])
+    dt_cols = set(classification["datetime"])
+    cat_cols = set(classification["categorical"])
+
+    def _get_axis_meta(col: Optional[str]) -> dict:
+        if not col or col not in df.columns:
+            return {"role": "none", "is_integer_like": False, "nunique": 0, "min": None, "max": None}
+        s = df[col].dropna()
+        if col in dt_cols:
+            role = "time"
+            return {"role": role, "is_integer_like": False, "nunique": int(s.nunique()), "min": None, "max": None}
+        elif col in num_cols:
+            int_like = _is_integer_like(s)
+            role = "discrete" if (int_like and s.nunique() <= 30) else "continuous"
+            min_val = float(s.min()) if len(s) > 0 else None
+            max_val = float(s.max()) if len(s) > 0 else None
+            return {"role": role, "is_integer_like": int_like, "nunique": int(s.nunique()), "min": min_val, "max": max_val}
+        else:
+            role = "categorical"
+            return {"role": role, "is_integer_like": False, "nunique": int(s.nunique()), "min": None, "max": None}
+
+    x_meta = _get_axis_meta(x_col)
+    y_meta = _get_axis_meta(y_col)
+
+    x_label = pretty_label(x_col) if x_col else ""
+    y_label = pretty_label(y_col) if y_col else ""
+
+    # Gözlem sayısı
+    n_points = 0
+    if x_col and y_col and x_col in df.columns and y_col in df.columns:
+        n_points = int(df[[x_col, y_col]].dropna().shape[0])
+    elif x_col and x_col in df.columns:
+        n_points = int(df[x_col].dropna().shape[0])
+
+    needs_jitter = bool(
+        (x_meta["is_integer_like"] or y_meta["is_integer_like"] or
+         (x_meta["nunique"] > 0 and x_meta["nunique"] <= 0.25 * max(1, n_points)) or
+         (y_meta["nunique"] > 0 and y_meta["nunique"] <= 0.25 * max(1, n_points))) and
+        x_meta["role"] in ["continuous", "discrete"] and y_meta["role"] in ["continuous", "discrete"]
+    )
+
+    overplot_meta = {
+        "needs_jitter": needs_jitter,
+        "opacity": 0.4 if needs_jitter else 0.6,
+        "symbol_size": 4 if n_points > 5000 else (5 if n_points > 1000 else 7),
+        "large_mode": bool(n_points > 2000),
+        "n_points": n_points
+    }
+
+    # 1. Tek Değişken (x == y veya y yok)
+    if not y_col or x_col == y_col:
+        if x_col in dt_cols:
+            return {
+                "chart_type": "line",
+                "title": f"{x_label} Zaman Serisi",
+                "reason": "Zaman Serisi Dağılımı",
+                "x_col": x_col, "y_col": None,
+                "axis": {"x": x_meta, "y": y_meta},
+                "overplot": overplot_meta,
+                "render_hint": {"rotate_labels": 30, "horizontal_bar": False}
+            }
+        elif x_col in num_cols:
+            return {
+                "chart_type": "histogram",
+                "title": f"{x_label} Dağılımı",
+                "reason": "Sayısal Değişken Frekans Dağılımı",
+                "x_col": x_col, "y_col": None,
+                "axis": {"x": x_meta, "y": y_meta},
+                "overplot": overplot_meta,
+                "render_hint": {"rotate_labels": None, "horizontal_bar": False}
+            }
+        else:
+            n_cats = x_meta["nunique"]
+            return {
+                "chart_type": "bar",
+                "title": f"{x_label} Kategorileri",
+                "reason": f"Kategori Sayımları ({n_cats} farklı sınıf)",
+                "x_col": x_col, "y_col": None,
+                "axis": {"x": x_meta, "y": y_meta},
+                "overplot": overplot_meta,
+                "render_hint": {
+                    "rotate_labels": 45 if 8 <= n_cats <= 15 else (30 if 5 <= n_cats < 8 else 0),
+                    "horizontal_bar": bool(n_cats > 15)
+                }
+            }
+
+    # 2. Zaman Serisi: x datetime + y numeric OR y datetime + x numeric
+    if (x_col in dt_cols and y_col in num_cols) or (y_col in dt_cols and x_col in num_cols):
+        time_c = x_col if x_col in dt_cols else y_col
+        num_c = y_col if x_col in dt_cols else x_col
+        t_label = pretty_label(time_c)
+        n_label = pretty_label(num_c)
+        return {
+            "chart_type": "line",
+            "title": f"{t_label} ile {n_label} Zaman Serisi",
+            "reason": "Zaman İçindeki Değişim Eğilimi",
+            "x_col": time_c, "y_col": num_c,
+            "axis": {"x": _get_axis_meta(time_c), "y": _get_axis_meta(num_c)},
+            "overplot": overplot_meta,
+            "render_hint": {"rotate_labels": 30, "horizontal_bar": False}
+        }
+
+    # 3. Kesikli/Kategorik × Sürekli
+    # Durum A: x kategorik veya kesikli (nunique <= 30), y sürekli sayısal
+    if (x_col in cat_cols or (x_col in num_cols and x_meta["nunique"] <= 30)) and y_col in num_cols:
+        n_cats = x_meta["nunique"]
+        if n_cats <= 12:
+            return {
+                "chart_type": "grouped_boxplot",
+                "title": f"{x_label}'a Göre {y_label}",
+                "reason": f"Grup Dağılımı ve Çeyreklikler ({n_cats} grup)",
+                "x_col": x_col, "y_col": y_col, "cat": x_col, "num": y_col,
+                "axis": {"x": x_meta, "y": y_meta},
+                "overplot": overplot_meta,
+                "render_hint": {
+                    "rotate_labels": 45 if 8 <= n_cats <= 12 else 0,
+                    "horizontal_bar": False
+                }
+            }
+        else:
+            return {
+                "chart_type": "bar_mean",
+                "title": f"{x_label}'a Göre Ortalama {y_label}",
+                "reason": f"Grup Ortalamaları ({n_cats} kategori için özet bar)",
+                "x_col": x_col, "y_col": y_col, "cat": x_col, "num": y_col,
+                "axis": {"x": x_meta, "y": y_meta},
+                "overplot": overplot_meta,
+                "render_hint": {
+                    "rotate_labels": 45 if 12 < n_cats <= 15 else 0,
+                    "horizontal_bar": bool(n_cats > 15)
+                }
+            }
+
+    # Durum B: y kategorik veya kesikli (nunique <= 30), x sürekli sayısal
+    if (y_col in cat_cols or (y_col in num_cols and y_meta["nunique"] <= 30)) and x_col in num_cols:
+        n_cats = y_meta["nunique"]
+        if n_cats <= 12:
+            return {
+                "chart_type": "grouped_boxplot",
+                "title": f"{y_label}'a Göre {x_label}",
+                "reason": f"Grup Dağılımı ve Çeyreklikler ({n_cats} grup)",
+                "x_col": x_col, "y_col": y_col, "cat": y_col, "num": x_col,
+                "axis": {"x": x_meta, "y": y_meta},
+                "overplot": overplot_meta,
+                "render_hint": {
+                    "rotate_labels": 45 if 8 <= n_cats <= 12 else 0,
+                    "horizontal_bar": False
+                }
+            }
+        else:
+            return {
+                "chart_type": "bar_mean",
+                "title": f"{y_label}'a Göre Ortalama {x_label}",
+                "reason": f"Grup Ortalamaları ({n_cats} kategori için özet bar)",
+                "x_col": x_col, "y_col": y_col, "cat": y_col, "num": x_col,
+                "axis": {"x": x_meta, "y": y_meta},
+                "overplot": overplot_meta,
+                "render_hint": {
+                    "rotate_labels": 45 if 12 < n_cats <= 15 else 0,
+                    "horizontal_bar": bool(n_cats > 15)
+                }
+            }
+
+    # 4. Sürekli × Sürekli (Her iki eksen sayısal ve nunique > 30)
+    if x_col in num_cols and y_col in num_cols:
+        if n_points > 500:
+            return {
+                "chart_type": "density_heatmap",
+                "title": f"{x_label} × {y_label} Yoğunluk",
+                "reason": f"n={n_points} > 500 olduğu için 2D Yoğunluk Haritası (Overplotting Koruması)",
+                "x_col": x_col, "y_col": y_col,
+                "axis": {"x": x_meta, "y": y_meta},
+                "overplot": overplot_meta,
+                "render_hint": {"rotate_labels": 0, "horizontal_bar": False}
+            }
+        else:
+            return {
+                "chart_type": "scatter",
+                "title": f"{x_label} ile {y_label} Dağılımı",
+                "reason": f"İki Değişkenli Sürekli Dağılım (n={n_points})",
+                "x_col": x_col, "y_col": y_col,
+                "axis": {"x": x_meta, "y": y_meta},
+                "overplot": overplot_meta,
+                "render_hint": {"rotate_labels": 0, "horizontal_bar": False}
+            }
+
+    # 5. Kategorik × Kategorik
+    n_cats = x_meta["nunique"]
+    return {
+        "chart_type": "bar",
+        "title": f"{x_label} Kategorileri",
+        "reason": f"Kategorik Dağılım Karşılaştırması ({n_cats} sınıf)",
+        "x_col": x_col, "y_col": y_col,
+        "axis": {"x": x_meta, "y": y_meta},
+        "overplot": overplot_meta,
+        "render_hint": {
+            "rotate_labels": 45 if 8 <= n_cats <= 15 else 0,
+            "horizontal_bar": bool(n_cats > 15)
+        }
+    }
+
+
 @app.get("/api/visualization/overview")
 async def get_visualization_overview():
     global processed_df_cache, active_df_cache, original_df_cache, active_dataset, dropped_columns
@@ -1090,8 +1402,10 @@ async def get_visualization_overview():
     active_cols = [c for c in df.columns if c not in dropped_columns]
     curr_df = df[active_cols]
 
-    numeric_cols = [c for c in active_cols if pd.api.types.is_numeric_dtype(curr_df[c])]
-    categorical_cols = [c for c in active_cols if c not in numeric_cols]
+    classification = _classify_columns(curr_df)
+    numeric_cols = classification["numeric"]
+    datetime_cols = classification["datetime"]
+    categorical_cols = classification["categorical"]
 
     # Numeric stats
     stats_dict = {}
@@ -1149,75 +1463,88 @@ async def get_visualization_overview():
         strongest_pairs.sort(key=lambda x: x["abs_corr"], reverse=True)
         strongest_pairs = strongest_pairs[:5]
 
-    # Suggestions
+    # Karar Motoru ile Dinamik Öneriler Üretimi
     suggestions = []
-    # 1. Histogram for first numeric col
-    if len(numeric_cols) > 0:
-        col0 = numeric_cols[0]
+
+    # 1. Zaman Serisi varsa ilk öneri Line
+    if len(datetime_cols) > 0 and len(numeric_cols) > 0:
+        plan_line = decide_chart_plan(datetime_cols[0], numeric_cols[0], curr_df)
+        suggestions.append({
+            "type": "line",
+            "x": datetime_cols[0],
+            "y": numeric_cols[0],
+            "title": plan_line["title"],
+            "reason": plan_line["reason"],
+            "plan": plan_line
+        })
+    elif len(numeric_cols) > 0:
+        plan_hist = decide_chart_plan(numeric_cols[0], None, curr_df)
         suggestions.append({
             "type": "histogram",
-            "column": str(col0),
-            "title": f"{col0} Dağılımı",
-            "reason": "Sayısal Dağılım"
+            "column": str(numeric_cols[0]),
+            "title": plan_hist["title"],
+            "reason": plan_hist["reason"],
+            "plan": plan_hist
         })
 
-    # 2. Bar for first categorical col
+    # 2. Kategorik çubuk grafik
     if len(categorical_cols) > 0:
-        cat0 = categorical_cols[0]
+        plan_bar = decide_chart_plan(categorical_cols[0], None, curr_df)
         suggestions.append({
             "type": "bar",
-            "column": str(cat0),
-            "title": f"{cat0} Kategorileri",
-            "reason": "Kategori Sayıları"
+            "column": str(categorical_cols[0]),
+            "title": plan_bar["title"],
+            "reason": plan_bar["reason"],
+            "plan": plan_bar
         })
 
-    # 3. Scatter for strongest correlation pair or 2 numeric cols
+    # 3. İki değişkenli ilişki (Scatter veya 2D Heatmap)
     if len(strongest_pairs) > 0:
         p0 = strongest_pairs[0]
+        plan_2d = decide_chart_plan(p0["a"], p0["b"], curr_df)
         suggestions.append({
-            "type": "scatter",
+            "type": plan_2d["chart_type"],
             "x": p0["a"],
             "y": p0["b"],
-            "title": f"{p0['a']} × {p0['b']}",
-            "reason": f"En Güçlü Korelasyon (r = {p0['corr']})"
+            "title": plan_2d["title"],
+            "reason": f"En Güçlü Korelasyon (r = {p0['corr']}) - {plan_2d['reason']}",
+            "plan": plan_2d
         })
     elif len(numeric_cols) >= 2:
+        plan_2d = decide_chart_plan(numeric_cols[0], numeric_cols[1], curr_df)
         suggestions.append({
-            "type": "scatter",
+            "type": plan_2d["chart_type"],
             "x": str(numeric_cols[0]),
             "y": str(numeric_cols[1]),
-            "title": f"{numeric_cols[0]} × {numeric_cols[1]}",
-            "reason": "İki Değişkenli İlişki"
+            "title": plan_2d["title"],
+            "reason": plan_2d["reason"],
+            "plan": plan_2d
         })
 
-    # 4. Grouped boxplot if we have cat and num
+    # 4. Kategoriye göre sayısal dağılım (Grouped boxplot veya Ortalama Bar)
     if len(categorical_cols) > 0 and len(numeric_cols) > 0:
+        plan_grp = decide_chart_plan(categorical_cols[0], numeric_cols[0], curr_df)
         suggestions.append({
-            "type": "grouped_boxplot",
+            "type": plan_grp["chart_type"],
             "cat": str(categorical_cols[0]),
             "num": str(numeric_cols[0]),
-            "title": f"{categorical_cols[0]}'a Göre {numeric_cols[0]}",
-            "reason": "Kategori Bazlı Dağılım"
+            "title": plan_grp["title"],
+            "reason": plan_grp["reason"],
+            "plan": plan_grp
         })
 
-    # 5. Boxplot for second or first numeric col
-    if len(numeric_cols) > 1:
-        col1 = numeric_cols[1]
+    # 5. Boxplot (Uç Değer ve Çeyreklikler)
+    target_box_col = numeric_cols[1] if len(numeric_cols) > 1 else (numeric_cols[0] if len(numeric_cols) > 0 else None)
+    if target_box_col:
         suggestions.append({
             "type": "boxplot",
-            "column": str(col1),
-            "title": f"{col1} Kutu Grafiği",
-            "reason": "Uç Değer ve Çeyreklikler"
-        })
-    elif len(numeric_cols) == 1:
-        suggestions.append({
-            "type": "boxplot",
-            "column": str(numeric_cols[0]),
-            "title": f"{numeric_cols[0]} Kutu Grafiği",
-            "reason": "Uç Değer ve Çeyreklikler"
+            "column": str(target_box_col),
+            "title": f"{pretty_label(target_box_col)} Kutu Grafiği",
+            "reason": "Uç Değer ve Çeyreklikler (Boxplot)"
         })
 
     return JSONResponse(content={
+        "date_columns": [str(c) for c in datetime_cols],
         "numeric_columns": [str(c) for c in numeric_cols],
         "categorical_columns": [str(c) for c in categorical_cols],
         "stats": stats_dict,
@@ -1246,42 +1573,82 @@ async def get_visualization_focus(column: str):
     if column not in curr_df.columns:
         raise HTTPException(status_code=400, detail="Geçersiz odak değişkeni.")
 
-    numeric_cols = [c for c in active_cols if pd.api.types.is_numeric_dtype(curr_df[c])]
-    categorical_cols = [c for c in active_cols if c not in numeric_cols]
+    classification = _classify_columns(curr_df)
+    numeric_cols = classification["numeric"]
+    datetime_cols = classification["datetime"]
+    categorical_cols = classification["categorical"]
+
     is_numeric = column in numeric_cols
+    is_datetime = column in datetime_cols
 
     suggestions = []
     univariate = None
     note = None
 
-    if is_numeric:
-        # --- Galeri: odak merkezli ---
-        # 1. Histogram (odak sütunu)
+    if is_datetime:
+        # --- Tarih/Zaman Odak ---
+        # 1. Sayısal sütunlarla Line grafikleri
+        for num in numeric_cols[:3]:
+            plan_line = decide_chart_plan(column, num, curr_df)
+            suggestions.append({
+                "type": "line",
+                "x": str(column),
+                "y": str(num),
+                "title": plan_line["title"],
+                "reason": plan_line["reason"],
+                "plan": plan_line
+            })
+
+        # Univariate: Tarih dağılımı
+        series_dt = pd.to_datetime(curr_df[column], errors="coerce").dropna()
+        min_dt = str(series_dt.min()) if len(series_dt) > 0 else "—"
+        max_dt = str(series_dt.max()) if len(series_dt) > 0 else "—"
+        total_obs = len(series_dt)
+
+        univariate = {
+            "is_datetime": True,
+            "is_numeric": False,
+            "stats": {
+                "count": total_obs,
+                "min": min_dt,
+                "max": max_dt,
+                "nunique": int(series_dt.nunique())
+            }
+        }
+        note = f"'{pretty_label(column)}' zaman serisi değişkenidir; zaman içindeki eğilimleri incelemek için çizgi (line) grafikleri önerilmektedir."
+
+    elif is_numeric:
+        # --- Sayısal Odak ---
+        # 1. Histogram
+        plan_hist = decide_chart_plan(column, None, curr_df)
         suggestions.append({
             "type": "histogram",
             "column": str(column),
-            "title": f"{column} Dağılımı",
-            "reason": "Sayısal Dağılım (Odak)"
+            "title": plan_hist["title"],
+            "reason": "Sayısal Dağılım (Odak)",
+            "plan": plan_hist
         })
-        # 2. Diğer sayısal sütunlarla scatter (max 3)
+        # 2. Diğer sayısal sütunlarla ilişki (Scatter / Density)
         others = [c for c in numeric_cols if c != column]
         for other in others[:3]:
+            plan_2d = decide_chart_plan(column, other, curr_df)
             suggestions.append({
-                "type": "scatter",
+                "type": plan_2d["chart_type"],
                 "x": str(column),
                 "y": str(other),
-                "title": f"{column} × {other}",
-                "reason": "Odak Değişkeni İlişkisi"
+                "title": plan_2d["title"],
+                "reason": plan_2d["reason"],
+                "plan": plan_2d
             })
-        # 3. Boxplot (odak sütunu)
+        # 3. Boxplot
         suggestions.append({
             "type": "boxplot",
             "column": str(column),
-            "title": f"{column} Kutu Grafiği",
+            "title": f"{pretty_label(column)} Kutu Grafiği",
             "reason": "Uç Değer ve Çeyreklikler"
         })
 
-        # --- Univariate: istatistikler + histogram + boxplot ---
+        # Univariate: istatistikler + histogram + boxplot
         series = pd.to_numeric(curr_df[column], errors="coerce").dropna()
         stats = {}
         if len(series) > 0:
@@ -1328,28 +1695,33 @@ async def get_visualization_focus(column: str):
 
         univariate = {
             "is_numeric": True,
+            "is_datetime": False,
             "stats": stats,
             "histogram": histogram,
             "boxplot": boxplot
         }
 
     else:
-        # --- Kategorik odak: bar + grouped boxplot + not ---
-        # 1. Bar (odak sütunu)
+        # --- Kategorik Odak ---
+        # 1. Bar
+        plan_bar = decide_chart_plan(column, None, curr_df)
         suggestions.append({
             "type": "bar",
             "column": str(column),
-            "title": f"{column} Kategorileri",
-            "reason": "Kategori Sayıları (Odak)"
+            "title": plan_bar["title"],
+            "reason": "Kategori Sayıları (Odak)",
+            "plan": plan_bar
         })
-        # 2. Kategorilere göre sayısal dağılım (max 3 sayısal sütun)
+        # 2. Sayısal değişkenlere göre dağılımlar (Grouped boxplot / Bar Mean)
         for num in numeric_cols[:3]:
+            plan_grp = decide_chart_plan(column, num, curr_df)
             suggestions.append({
-                "type": "grouped_boxplot",
+                "type": plan_grp["chart_type"],
                 "cat": str(column),
                 "num": str(num),
-                "title": f"{column}'a Göre {num}",
-                "reason": "Kategori Bazlı Dağılım"
+                "title": plan_grp["title"],
+                "reason": plan_grp["reason"],
+                "plan": plan_grp
             })
 
         # Bar verisi
@@ -1363,11 +1735,10 @@ async def get_visualization_focus(column: str):
                 "count": int(count),
                 "ratio": round((count / total_cnt) * 100, 1)
             })
-        univariate = {"is_numeric": False, "bar": {"items": items}}
+        univariate = {"is_numeric": False, "is_datetime": False, "bar": {"items": items}}
 
-        note = (f"'{column}' kategorik bir değişkendir; histogram/boxplot yerine kategori "
-                f"sayıları (bar) ve kategorilere göre sayısal dağılım (kutu grafiği) gösterilmektedir. "
-                f"Korelasyon yalnızca sayısal değişkenler arasında hesaplanır.")
+        note = (f"'{pretty_label(column)}' kategorik bir değişkendir; histogram/boxplot yerine kategori "
+                f"sayıları (bar) ve kategorilere göre sayısal dağılım gösterilmektedir.")
 
     # --- Korelasyon: heatmap tüm matris + liste odak sütununa göre ---
     corr_matrix = []
@@ -1379,13 +1750,11 @@ async def get_visualization_focus(column: str):
         corr_matrix = [[round(float(v), 2) for v in row] for row in corr_np.values.tolist()]
 
         if is_numeric and column in corr_cols:
-            # Odak sütununun diğerleriyle korelasyonu (liste odaklı)
             col_row = corr_np[column].drop(labels=[column])
             sorted_pairs = col_row.abs().sort_values(ascending=False)
             for other, r in sorted_pairs.head(5).items():
                 strongest.append({"a": str(column), "b": str(other), "corr": round(float(r), 2)})
         else:
-            # Tüm çiftler arasında en güçlü
             pairs = []
             n = len(corr_cols)
             for i in range(n):
@@ -1402,6 +1771,7 @@ async def get_visualization_focus(column: str):
     return JSONResponse(content={
         "column": str(column),
         "is_numeric": is_numeric,
+        "is_datetime": is_datetime,
         "suggestions": suggestions,
         "univariate": univariate,
         "correlation": {"columns": corr_cols, "matrix": corr_matrix, "strongest": strongest},
@@ -1429,31 +1799,49 @@ async def get_visualization_chart(
     active_cols = [c for c in df.columns if c not in dropped_columns]
     curr_df = df[active_cols]
 
+    if type == "auto":
+        col_x = x or column or cat
+        col_y = y or num
+        plan = decide_chart_plan(col_x, col_y, curr_df)
+        target_type = plan["chart_type"]
+        type = target_type
+        if target_type in ["grouped_boxplot", "bar_mean", "bar_median"]:
+            cat = plan.get("cat", col_x)
+            num = plan.get("num", col_y)
+        elif target_type in ["scatter", "density_heatmap", "line"]:
+            x = plan.get("x_col", col_x)
+            y = plan.get("y_col", col_y)
+        else:
+            column = plan.get("x_col", col_x)
+
     if type == "histogram":
         col_name = column or x or num
         if not col_name or col_name not in curr_df.columns:
             raise HTTPException(status_code=400, detail="Geçersiz histogram kolonu.")
-        
+
         series = pd.to_numeric(curr_df[col_name], errors="coerce").dropna()
         if len(series) == 0:
-            return JSONResponse(content={"bins": [0, 1], "bin_labels": ["0 - 1"], "counts": [0]})
+            return JSONResponse(content={"bins": [0, 1], "bin_labels": ["0 - 1"], "counts": [0], "column_label": pretty_label(col_name)})
 
         counts, bin_edges = np.histogram(series, bins=min(15, max(5, int(np.sqrt(len(series))))))
         bin_labels = [f"{bin_edges[i]:.1f} - {bin_edges[i+1]:.1f}" for i in range(len(counts))]
         return JSONResponse(content={
+            "column": str(col_name),
+            "column_label": pretty_label(col_name),
             "bins": [round(float(b), 2) for b in bin_edges],
             "bin_labels": bin_labels,
-            "counts": [int(c) for c in counts]
+            "counts": [int(c) for c in counts],
+            "plan": decide_chart_plan(col_name, None, curr_df)
         })
 
     elif type == "boxplot":
         col_name = column or x or num
         if not col_name or col_name not in curr_df.columns:
             raise HTTPException(status_code=400, detail="Geçersiz boxplot kolonu.")
-        
+
         series = pd.to_numeric(curr_df[col_name], errors="coerce").dropna()
         if len(series) == 0:
-            return JSONResponse(content={"box": [0, 0, 0, 0, 0], "outliers": []})
+            return JSONResponse(content={"box": [0, 0, 0, 0, 0], "outliers": [], "column_label": pretty_label(col_name)})
 
         q1 = float(series.quantile(0.25))
         med = float(series.median())
@@ -1468,6 +1856,8 @@ async def get_visualization_chart(
         outliers = [round(float(v), 2) for v in series[(series < low_bound) | (series > high_bound)].tolist()]
 
         return JSONResponse(content={
+            "column": str(col_name),
+            "column_label": pretty_label(col_name),
             "box": [round(whisker_min, 2), round(q1, 2), round(med, 2), round(q3, 2), round(whisker_max, 2)],
             "outliers": outliers[:100],
             "q1": round(q1, 2),
@@ -1476,17 +1866,18 @@ async def get_visualization_chart(
             "lower_bound": round(low_bound, 2),
             "upper_bound": round(high_bound, 2),
             "outlier_count": len(outliers),
-            "total": int(len(series))
+            "total": int(len(series)),
+            "plan": decide_chart_plan(col_name, None, curr_df)
         })
 
     elif type == "bar":
         col_name = column or x or cat
         if not col_name or col_name not in curr_df.columns:
             raise HTTPException(status_code=400, detail="Geçersiz bar kolonu.")
-        
+
         series = curr_df[col_name].dropna()
         total_cnt = max(1, len(series))
-        val_counts = series.value_counts().head(15)
+        val_counts = series.value_counts().head(30)
         items = []
         for val, count in val_counts.items():
             items.append({
@@ -1494,7 +1885,46 @@ async def get_visualization_chart(
                 "count": int(count),
                 "ratio": round((count / total_cnt) * 100, 1)
             })
-        return JSONResponse(content={"items": items})
+        return JSONResponse(content={
+            "column": str(col_name),
+            "column_label": pretty_label(col_name),
+            "items": items,
+            "plan": decide_chart_plan(col_name, None, curr_df)
+        })
+
+    elif type in ["bar_mean", "bar_median"]:
+        cat_col = cat or x
+        num_col = num or y or column
+        if not cat_col or not num_col or cat_col not in curr_df.columns or num_col not in curr_df.columns:
+            raise HTTPException(status_code=400, detail="Geçersiz bar_mean/bar_median kolonları.")
+
+        sub = curr_df[[cat_col, num_col]].dropna()
+        sub[num_col] = pd.to_numeric(sub[num_col], errors="coerce")
+        sub = sub.dropna(subset=[num_col])
+
+        is_median = (type == "bar_median")
+        grouped = sub.groupby(cat_col)[num_col].agg(["mean", "median", "count"]).reset_index()
+        sort_key = "median" if is_median else "mean"
+        grouped = grouped.sort_values(sort_key, ascending=False).head(30)
+
+        items = []
+        for _, row in grouped.iterrows():
+            items.append({
+                "value": str(row[cat_col]),
+                "mean": round(float(row["mean"]), 2),
+                "median": round(float(row["median"]), 2),
+                "count": int(row["count"])
+            })
+
+        return JSONResponse(content={
+            "cat": str(cat_col),
+            "num": str(num_col),
+            "cat_label": pretty_label(cat_col),
+            "num_label": pretty_label(num_col),
+            "type": type,
+            "items": items,
+            "plan": decide_chart_plan(cat_col, num_col, curr_df)
+        })
 
     elif type == "scatter":
         x_col = x or column
@@ -1502,18 +1932,144 @@ async def get_visualization_chart(
         if not x_col or not y_col or x_col not in curr_df.columns or y_col not in curr_df.columns:
             raise HTTPException(status_code=400, detail="Geçersiz scatter kolonları.")
 
-        scatter_df = curr_df[[x_col, y_col]].dropna()
-        if len(scatter_df) > 1000:
-            scatter_df = scatter_df.sample(1000, random_state=42)
+        sub = curr_df[[x_col, y_col]].dropna()
+        plan = decide_chart_plan(x_col, y_col, curr_df)
+        overplot = plan.get("overplot", {})
+        needs_jitter = overplot.get("needs_jitter", False)
 
-        x_vals = [round(float(v), 2) if isinstance(v, (int, float, np.number)) else str(v) for v in scatter_df[x_col].tolist()]
-        y_vals = [round(float(v), 2) if isinstance(v, (int, float, np.number)) else str(v) for v in scatter_df[y_col].tolist()]
+        x_raw = pd.to_numeric(sub[x_col], errors="coerce")
+        y_raw = pd.to_numeric(sub[y_col], errors="coerce")
+        valid = x_raw.notna() & y_raw.notna()
+        x_valid = x_raw[valid].values
+        y_valid = y_raw[valid].values
+
+        total_pts = len(x_valid)
+        if total_pts == 0:
+            return JSONResponse(content={
+                "x_name": str(x_col), "y_name": str(y_col),
+                "x_label": pretty_label(x_col), "y_label": pretty_label(y_col),
+                "x": [], "y": [], "points": [], "n": 0, "needs_jitter": False, "plan": plan
+            })
+
+        # Jitter uygulama (deterministik seed)
+        if needs_jitter:
+            rng = np.random.default_rng(42)
+            x_range = float(x_valid.max() - x_valid.min()) if len(x_valid) > 0 else 1.0
+            y_range = float(y_valid.max() - y_valid.min()) if len(y_valid) > 0 else 1.0
+            jitter_x = rng.uniform(-x_range * 0.02, x_range * 0.02, size=len(x_valid))
+            jitter_y = rng.uniform(-y_range * 0.02, y_range * 0.02, size=len(y_valid))
+            x_out = np.round(x_valid + jitter_x, 3).tolist()
+            y_out = np.round(y_valid + jitter_y, 3).tolist()
+        else:
+            x_out = np.round(x_valid, 3).tolist()
+            y_out = np.round(y_valid, 3).tolist()
+
+        # Çakışan nokta frekanslarını hesapla
+        pair_counts = {}
+        for xv, yv in zip(x_valid, y_valid):
+            k = (round(float(xv), 2), round(float(yv), 2))
+            pair_counts[k] = pair_counts.get(k, 0) + 1
+
+        points_data = []
+        for xo, yo, xv, yv in zip(x_out, y_out, x_valid, y_valid):
+            cnt = pair_counts.get((round(float(xv), 2), round(float(yv), 2)), 1)
+            ratio = round((cnt / max(1, total_pts)) * 100, 1)
+            points_data.append([float(xo), float(yo), int(cnt), float(ratio), float(xv), float(yv)])
 
         return JSONResponse(content={
             "x_name": str(x_col),
             "y_name": str(y_col),
+            "x_label": pretty_label(x_col),
+            "y_label": pretty_label(y_col),
+            "x": x_out,
+            "y": y_out,
+            "points": points_data,
+            "n": total_pts,
+            "needs_jitter": needs_jitter,
+            "plan": plan
+        })
+
+    elif type == "density_heatmap":
+        x_col = x or column
+        y_col = y
+        if not x_col or not y_col or x_col not in curr_df.columns or y_col not in curr_df.columns:
+            raise HTTPException(status_code=400, detail="Geçersiz density_heatmap kolonları.")
+
+        sub = curr_df[[x_col, y_col]].dropna()
+        x_raw = pd.to_numeric(sub[x_col], errors="coerce")
+        y_raw = pd.to_numeric(sub[y_col], errors="coerce")
+        valid = x_raw.notna() & y_raw.notna()
+        x_clean = x_raw[valid].values
+        y_clean = y_raw[valid].values
+
+        if len(x_clean) == 0:
+            return JSONResponse(content={
+                "x_name": str(x_col), "y_name": str(y_col),
+                "x_label": pretty_label(x_col), "y_label": pretty_label(y_col),
+                "bins_x": [0.0, 1.0], "bins_y": [0.0, 1.0],
+                "counts": [[0]], "n": 0, "min_count": 0, "max_count": 0,
+                "plan": decide_chart_plan(x_col, y_col, curr_df)
+            })
+
+        H, xedges, yedges = np.histogram2d(x_clean, y_clean, bins=[50, 40])
+        max_c = int(H.max()) if H.size > 0 else 0
+        min_c = int(H[H > 0].min()) if (H > 0).any() else 0
+
+        # ECharts heatmap için [x_idx, y_idx, count] listesi
+        matrix_data = []
+        for i in range(len(xedges) - 1):
+            for j in range(len(yedges) - 1):
+                c_val = int(H[i, j])
+                if c_val > 0:
+                    matrix_data.append([i, j, c_val])
+
+        return JSONResponse(content={
+            "x_name": str(x_col),
+            "y_name": str(y_col),
+            "x_label": pretty_label(x_col),
+            "y_label": pretty_label(y_col),
+            "bins_x": [round(float(v), 4) for v in xedges],
+            "bins_y": [round(float(v), 4) for v in yedges],
+            "data": matrix_data,
+            "n": int(len(x_clean)),
+            "min_count": min_c,
+            "max_count": max_c,
+            "plan": decide_chart_plan(x_col, y_col, curr_df)
+        })
+
+    elif type == "line":
+        x_col = x or column
+        y_col = y or num
+        if not x_col or not y_col or x_col not in curr_df.columns or y_col not in curr_df.columns:
+            raise HTTPException(status_code=400, detail="Geçersiz line kolonları.")
+
+        sub = curr_df[[x_col, y_col]].dropna().copy()
+        sub["_parsed_dt"] = pd.to_datetime(sub[x_col], errors="coerce")
+        sub = sub.dropna(subset=["_parsed_dt"])
+        sub = sub.sort_values("_parsed_dt")
+        sub[y_col] = pd.to_numeric(sub[y_col], errors="coerce")
+        sub = sub.dropna(subset=[y_col])
+
+        # Satır > 20.000 ise sıralı adımla küçült
+        if len(sub) > 20000:
+            step = int(np.ceil(len(sub) / 20000.0))
+            sub = sub.iloc[::step]
+
+        x_vals = [
+            ts.strftime("%Y-%m-%d %H:%M:%S") if (ts.hour or ts.minute or ts.second) else ts.strftime("%Y-%m-%d")
+            for ts in sub["_parsed_dt"]
+        ]
+        y_vals = [round(float(v), 2) for v in sub[y_col].tolist()]
+
+        return JSONResponse(content={
+            "x_name": str(x_col),
+            "y_name": str(y_col),
+            "x_label": pretty_label(x_col),
+            "y_label": pretty_label(y_col),
             "x": x_vals,
-            "y": y_vals
+            "y": y_vals,
+            "n": len(x_vals),
+            "plan": decide_chart_plan(x_col, y_col, curr_df)
         })
 
     elif type == "grouped_boxplot":
@@ -1523,7 +2079,7 @@ async def get_visualization_chart(
             raise HTTPException(status_code=400, detail="Geçersiz grouped boxplot kolonları.")
 
         sub_df = curr_df[[cat_col, num_col]].dropna()
-        top_cats = sub_df[cat_col].value_counts().head(6).index.tolist()
+        top_cats = sub_df[cat_col].value_counts().head(8).index.tolist()
 
         groups = []
         for c_val in top_cats:
@@ -1552,7 +2108,10 @@ async def get_visualization_chart(
         return JSONResponse(content={
             "cat": str(cat_col),
             "num": str(num_col),
-            "groups": groups
+            "cat_label": pretty_label(cat_col),
+            "num_label": pretty_label(num_col),
+            "groups": groups,
+            "plan": decide_chart_plan(cat_col, num_col, curr_df)
         })
 
     else:
@@ -2207,3 +2766,9 @@ if os.path.exists("components"):
     app.mount("/components", StaticFiles(directory="components"), name="components")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+

@@ -151,6 +151,7 @@ def test_api():
     r = client.get("/api/visualization/overview")
     assert r.status_code == 200
     viz_data = r.json()
+    assert "date_columns" in viz_data
     assert "numeric_columns" in viz_data
     assert "categorical_columns" in viz_data
     assert "stats" in viz_data
@@ -181,12 +182,31 @@ def test_api():
 
     r_scat = client.get(f"/api/visualization/chart?type=scatter&x={viz_data['numeric_columns'][0]}&y={viz_data['numeric_columns'][1]}")
     assert r_scat.status_code == 200
-    assert "x" in r_scat.json()
+    scat_json = r_scat.json()
+    assert "x" in scat_json
+    assert "points" in scat_json
+    assert "needs_jitter" in scat_json
+    assert "plan" in scat_json
+
+    r_heat = client.get(f"/api/visualization/chart?type=density_heatmap&x={viz_data['numeric_columns'][0]}&y={viz_data['numeric_columns'][1]}")
+    assert r_heat.status_code == 200
+    heat_json = r_heat.json()
+    assert "bins_x" in heat_json
+    assert "bins_y" in heat_json
+    assert "data" in heat_json
+
+    r_mean = client.get(f"/api/visualization/chart?type=bar_mean&cat={viz_data['categorical_columns'][0]}&num={viz_data['numeric_columns'][0]}")
+    assert r_mean.status_code == 200
+    assert "items" in r_mean.json()
+
+    r_auto = client.get(f"/api/visualization/chart?type=auto&x={viz_data['numeric_columns'][0]}&y={viz_data['numeric_columns'][1]}")
+    assert r_auto.status_code == 200
+    assert "plan" in r_auto.json()
 
     r_box = client.get(f"/api/visualization/chart?type=grouped_boxplot&cat={viz_data['categorical_columns'][0]}&num={viz_data['numeric_columns'][0]}")
     assert r_box.status_code == 200
     assert "groups" in r_box.json()
-    print("[OK] GET /api/visualization/chart types OK (including boxplot metrics)")
+    print("[OK] GET /api/visualization/chart types OK (histogram, boxplot, bar, scatter, density_heatmap, bar_mean, auto, grouped_boxplot)")
 
     print("Testing GET /api/visualization/focus (numeric and categorical) ...")
     num_col = viz_data['numeric_columns'][0]
@@ -209,6 +229,32 @@ def test_api():
     r_focus_inv = client.get("/api/visualization/focus?column=NON_EXISTENT_COL")
     assert r_focus_inv.status_code == 400
     print("[OK] GET /api/visualization/focus OK")
+
+    print("Testing time series dataset upload & visualization (line chart & date_columns) ...")
+    ts_csv = b"Tarih,Uretim_Adedi,Kategori\n2025-01-01,150,A\n2025-01-02,180,B\n2025-01-03,210,A\n2025-01-04,195,B\n"
+    r_ts_up = client.post("/api/upload", files={"file": ("ts_data.csv", ts_csv, "text/csv")})
+    assert r_ts_up.status_code == 200
+    r_ts_ov = client.get("/api/visualization/overview")
+    assert r_ts_ov.status_code == 200
+    ts_ov_json = r_ts_ov.json()
+    assert "Tarih" in ts_ov_json["date_columns"]
+    # Line chart test
+    r_line = client.get("/api/visualization/chart?type=line&x=Tarih&y=Uretim_Adedi")
+    assert r_line.status_code == 200
+    line_json = r_line.json()
+    assert "x" in line_json
+    assert "y" in line_json
+    assert len(line_json["x"]) == 4
+    # Time series focus test
+    r_focus_dt = client.get("/api/visualization/focus?column=Tarih")
+    assert r_focus_dt.status_code == 200
+    focus_dt_json = r_focus_dt.json()
+    assert focus_dt_json["is_datetime"] is True
+    print("[OK] Time series date_columns, line chart, and focus OK")
+
+    # Re-upload test_data.csv for subsequent ML tests
+    with open("test_data.csv", "rb") as f:
+        client.post("/api/upload", files={"file": ("test_data.csv", f, "text/csv")})
 
     print("Testing GET /portfolio ...")
     r = client.get("/portfolio")

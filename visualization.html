@@ -412,6 +412,7 @@
                         <div class="flex justify-between items-center mb-3 border-b border-border-subtle pb-3">
                             <h4 class="font-data-table text-data-table uppercase text-on-surface tracking-wider font-semibold" id="bivariateChartTitle">X × Y Karşılaştırması</h4>
                             <div class="flex items-center gap-1.5">
+                                <div id="bivariateExtraAction" class="mr-1"></div>
                                 <span id="bivariateChartBadge" class="text-xs font-label-mono bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-medium">Dağılım Grafiği</span>
                                 <button onclick="resetChartZoom('bivariateChartContainer')" class="p-1 text-slate-gray hover:text-primary rounded hover:bg-surface-container cursor-pointer" title="Yakınlaştırmayı Sıfırla">
                                     <span class="material-symbols-outlined text-[18px]">restart_alt</span>
@@ -636,21 +637,51 @@
             document.body.removeChild(a);
         };
 
+        function prettyLabelClient(col) {
+            if (!col) return '';
+            const dict = {
+                order_hour: 'Sipariş Saati', customer_age: 'Müşteri Yaşı', order_date: 'Sipariş Tarihi',
+                product_name: 'Ürün Adı', price: 'Fiyat', quantity: 'Adet', regionname: 'Bölge Adı',
+                propertycount: 'Konut Sayısı', bedroom2: 'Yatak Odası', bathroom: 'Banyo', car: 'Araç',
+                landarea: 'Arsa Alanı', landsize: 'Arsa Alanı', buildingarea: 'Bina Alanı', yearbuilt: 'Yapım Yılı',
+                date: 'Tarih', time: 'Saat', hour: 'Saat', day: 'Gün', month: 'Ay', year: 'Yıl',
+                timestamp: 'Zaman Damgası', age: 'Yaş', income: 'Gelir', credit_score: 'Kredi Skoru',
+                segment: 'Segment', city: 'Şehir', status: 'Durum', target: 'Hedef', oee: 'OEE'
+            };
+            const lower = String(col).toLowerCase().replace(/[\s\-_]+/g, '');
+            for (let k in dict) {
+                if (lower === k.toLowerCase().replace(/[\s\-_]+/g, '')) return dict[k];
+            }
+            return String(col).replace(/[_\-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+
         // Render Overview & Main Layout
         function renderVisualization(data) {
             overviewData = data;
             hideError();
 
+            const dateCols = data.date_columns || [];
             const numCols = data.numeric_columns || [];
             const catCols = data.categorical_columns || [];
 
             // Populate Selects with optgroups
-            populateSelectOptions(focusColumnSelect, numCols, catCols);
-            populateSelectOptions(bivariateXSelect, numCols, catCols);
-            populateSelectOptions(bivariateYSelect, numCols, catCols);
+            populateSelectOptions(focusColumnSelect, numCols, catCols, dateCols);
+            populateSelectOptions(bivariateXSelect, numCols, catCols, dateCols);
+            populateSelectOptions(bivariateYSelect, numCols, catCols, dateCols);
 
             // Set initial defaults
-            if (numCols.length > 0) {
+            if (dateCols.length > 0) {
+                bivariateXSelect.value = dateCols[0];
+                if (numCols.length > 0) {
+                    bivariateYSelect.value = numCols[0];
+                    focusColumnSelect.value = numCols[0];
+                } else if (catCols.length > 0) {
+                    bivariateYSelect.value = catCols[0];
+                    focusColumnSelect.value = dateCols[0];
+                } else {
+                    focusColumnSelect.value = dateCols[0];
+                }
+            } else if (numCols.length > 0) {
                 focusColumnSelect.value = numCols[0];
                 bivariateXSelect.value = numCols[0];
                 if (numCols.length > 1) {
@@ -693,9 +724,16 @@
         }
 
         // Populate Selects with optgroups
-        function populateSelectOptions(selectEl, numCols, catCols) {
+        function populateSelectOptions(selectEl, numCols, catCols, dateCols = []) {
             if (!selectEl) return;
             let html = '';
+            if (dateCols && dateCols.length > 0) {
+                html += `<optgroup label="Tarih / Zaman Sütunları">`;
+                dateCols.forEach(col => {
+                    html += `<option value="${escapeHtml(col)}">${escapeHtml(col)}</option>`;
+                });
+                html += `</optgroup>`;
+            }
             if (numCols && numCols.length > 0) {
                 html += `<optgroup label="Sayısal Sütunlar">`;
                 numCols.forEach(col => {
@@ -733,7 +771,11 @@
                     histogram: 'HİSTOGRAM',
                     bar: 'BAR GRAFİK',
                     scatter: 'DAĞILIM (SCATTER)',
+                    density_heatmap: 'YOĞUNLUK HARİTASI',
+                    line: 'ÇİZGİ (ZAMAN SERİSİ)',
                     grouped_boxplot: 'KUTU GRAFİK',
+                    bar_mean: 'ORTALAMA BAR',
+                    bar_median: 'MEDYAN BAR',
                     boxplot: 'BOXPLOT'
                 };
                 const typeBadge = typeLabels[item.type] || item.type.toUpperCase();
@@ -770,7 +812,7 @@
 
         async function loadSuggestionChart(item, containerId) {
             try {
-                let url = `/api/visualization/chart?type=${item.type}`;
+                let url = `/api/visualization/chart?type=${encodeURIComponent(item.type)}`;
                 if (item.column) url += `&column=${encodeURIComponent(item.column)}`;
                 if (item.x) url += `&x=${encodeURIComponent(item.x)}`;
                 if (item.y) url += `&y=${encodeURIComponent(item.y)}`;
@@ -784,15 +826,21 @@
                 if (!chart) return;
 
                 if (item.type === 'histogram') {
-                    renderHistogramChart(chart, chartData, item.column);
+                    renderHistogramChart(chart, chartData, item.column || item.x);
                 } else if (item.type === 'bar') {
-                    renderBarChart(chart, chartData, item.column);
+                    renderBarChart(chart, chartData, item.column || item.x);
+                } else if (item.type === 'bar_mean' || item.type === 'bar_median') {
+                    renderBarMeanChart(chart, chartData, item.cat, item.num);
                 } else if (item.type === 'scatter') {
                     renderScatterChart(chart, chartData, item.x, item.y);
+                } else if (item.type === 'density_heatmap') {
+                    renderDensityHeatmapChart(chart, chartData, item.x, item.y, containerId);
+                } else if (item.type === 'line') {
+                    renderLineChart(chart, chartData, item.x, item.y);
                 } else if (item.type === 'grouped_boxplot') {
                     renderGroupedBoxplotChart(chart, chartData, item.cat, item.num);
                 } else if (item.type === 'boxplot') {
-                    renderBoxplotChart(chart, chartData, item.column);
+                    renderBoxplotChart(chart, chartData, item.column || item.x);
                 }
             } catch (err) {
                 console.error(`Error loading suggestion chart ${containerId}:`, err);
@@ -816,7 +864,7 @@
                 // 1) Galeri: odak merkezli yeniden üret
                 renderSuggestionsGallery(data.suggestions || []);
 
-                // 2) Univariate: istatistik + histogram/bar + boxplot
+                // 2) Univariate: istatistik + histogram/bar/line + boxplot
                 renderFocusUnivariate(colName, data.univariate || {});
 
                 // 3) Korelasyon: heatmap (tüm matris) + liste (odak sütununa göre)
@@ -832,16 +880,56 @@
 
         function renderFocusUnivariate(colName, uni) {
             const isNumeric = !!uni.is_numeric;
+            const isDatetime = !!uni.is_datetime;
             if (univariateColumnBadge) univariateColumnBadge.textContent = `Sütun: ${colName}`;
 
             const univariateSubtitle = document.getElementById('univariateSubtitle');
             if (univariateSubtitle) {
-                univariateSubtitle.textContent = isNumeric
-                    ? 'Seçili değişkenin dağılımı ve istatistiksel parametreleri'
-                    : 'Kategorik değişken: kategori sayıları gösterilir (korelasyon yalnızca sayısal sütunlar için geçerlidir)';
+                if (isDatetime) {
+                    univariateSubtitle.textContent = 'Zaman serisi değişkeni: zaman aralığı, gözlem sayısı ve zaman içindeki dağılımı';
+                } else if (isNumeric) {
+                    univariateSubtitle.textContent = 'Seçili sayısal değişkenin frekans dağılımı ve istatistiksel parametreleri';
+                } else {
+                    univariateSubtitle.textContent = 'Kategorik değişken: kategori sayıları gösterilir (korelasyon yalnızca sayısal sütunlar için geçerlidir)';
+                }
             }
 
-            if (isNumeric) {
+            if (isDatetime) {
+                if (univariateChartTitle) univariateChartTitle.textContent = `Zaman Dağılımı (${colName})`;
+                if (univariateStatsTitle) univariateStatsTitle.textContent = `Zaman Özeti (${colName})`;
+
+                const stats = uni.stats || {};
+                if (univariateStatsContainer) {
+                    univariateStatsContainer.innerHTML = `
+                        <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                            <span class="font-body-md text-on-surface-variant text-sm">Toplam Gözlem</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm">${formatNumber(stats.count)}</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                            <span class="font-body-md text-on-surface-variant text-sm">Farklı Tarih Sayısı</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm">${formatNumber(stats.nunique)}</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-surface-container pb-2">
+                            <span class="font-body-md text-on-surface-variant text-sm">Başlangıç Tarihi</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm truncate max-w-[150px]" title="${escapeHtml(stats.min)}">${escapeHtml(stats.min)}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-body-md text-on-surface-variant text-sm">Bitiş Tarihi</span>
+                            <span class="font-label-mono font-bold text-on-surface text-sm truncate max-w-[150px]" title="${escapeHtml(stats.max)}">${escapeHtml(stats.max)}</span>
+                        </div>
+                    `;
+                }
+
+                const chart = getOrCreateChart('univariateChartContainer');
+                if (chart) {
+                    fetch(API_BASE + `/api/visualization/chart?type=auto&column=${encodeURIComponent(colName)}`)
+                        .then(r => r.json())
+                        .then(cd => {
+                            if (cd.x && cd.y) renderLineChart(chart, cd, colName, colName);
+                            else if (cd.items) renderBarChart(chart, cd, colName);
+                        }).catch(e => console.error(e));
+                }
+            } else if (isNumeric) {
                 if (univariateChartTitle) univariateChartTitle.textContent = `Histogram Dağılımı (${colName})`;
                 if (univariateStatsTitle) univariateStatsTitle.textContent = `İstatistiksel Özet (${colName})`;
 
@@ -905,172 +993,79 @@
         }
 
         // ==========================================
-        // 2. Univariate Analysis
+        // 2. Univariate Analysis (Backward Compatibility)
         // ==========================================
         async function loadUnivariateAnalysis(colName) {
-            console.log('Odak değişkeni seçildi:', colName);
             if (!colName || !overviewData) return;
-
-            if (univariateError) univariateError.classList.add('hidden');
-
-            try {
-                const isNumeric = (overviewData.numeric_columns || []).includes(colName);
-                if (univariateColumnBadge) univariateColumnBadge.textContent = `Sütun: ${colName}`;
-
-                if (isNumeric) {
-                    if (univariateChartTitle) univariateChartTitle.textContent = `Histogram Dağılımı (${colName})`;
-                    if (univariateStatsTitle) univariateStatsTitle.textContent = `İstatistiksel Özet (${colName})`;
-
-                    // Render Numeric Stats
-                    const stats = (overviewData.stats || {})[colName] || {};
-                    if (univariateStatsContainer) {
-                        univariateStatsContainer.innerHTML = `
-                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                                <span class="font-body-md text-on-surface-variant text-sm">Gözlem Sayısı</span>
-                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatNumber(stats.count)}</span>
-                            </div>
-                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                                <span class="font-body-md text-on-surface-variant text-sm">Ortalama (Mean)</span>
-                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.mean)}</span>
-                            </div>
-                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                                <span class="font-body-md text-on-surface-variant text-sm">Medyan (Median)</span>
-                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.median)}</span>
-                            </div>
-                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                                <span class="font-body-md text-on-surface-variant text-sm">Standart Sapma</span>
-                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.std)}</span>
-                            </div>
-                            <div class="flex justify-between items-center border-b border-surface-container pb-2">
-                                <span class="font-body-md text-on-surface-variant text-sm">Minimum</span>
-                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.min)}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="font-body-md text-on-surface-variant text-sm">Maksimum</span>
-                                <span class="font-label-mono font-bold text-on-surface text-sm">${formatDecimal(stats.max)}</span>
-                            </div>
-                        `;
-                    }
-
-                    // Fetch & Render Histogram
-                    const res = await fetch(API_BASE + `/api/visualization/chart?type=histogram&column=${encodeURIComponent(colName)}`);
-                    if (!res.ok) {
-                        throw new Error(`Histogram verisi alınamadı (HTTP ${res.status})`);
-                    }
-                    const chartData = await res.json();
-                    const chart = getOrCreateChart('univariateChartContainer');
-                    if (chart) {
-                        renderHistogramChart(chart, chartData, colName);
-                        console.log('Histogram çizildi:', colName, (chartData.bin_labels || []).length, 'bin');
-                    }
-
-                } else {
-                    // Categorical
-                    if (univariateChartTitle) univariateChartTitle.textContent = `Kategori Dağılımı (${colName})`;
-                    if (univariateStatsTitle) univariateStatsTitle.textContent = `Kategori Oranları (${colName})`;
-
-                    // Render Categorical Breakdown
-                    const catSummary = (overviewData.categorical_summary || {})[colName] || [];
-                    if (univariateStatsContainer) {
-                        let catListHtml = '<div class="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">';
-                        if (catSummary.length === 0) {
-                            catListHtml += '<div class="text-xs text-slate-gray py-4 text-center">Özet veri bulunamadı.</div>';
-                        } else {
-                            catSummary.forEach(item => {
-                                catListHtml += `
-                                    <div class="flex justify-between items-center border-b border-surface-container pb-1.5 text-xs">
-                                        <span class="font-medium text-on-surface truncate max-w-[140px]" title="${escapeHtml(item.value)}">${escapeHtml(item.value)}</span>
-                                        <div class="flex items-center gap-2 font-label-mono">
-                                            <span class="text-slate-gray font-semibold">${formatNumber(item.count)}</span>
-                                            <span class="bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">%${formatDecimal(item.ratio, 1)}</span>
-                                        </div>
-                                    </div>
-                                `;
-                            });
-                        }
-                        catListHtml += '</div>';
-                        univariateStatsContainer.innerHTML = catListHtml;
-                    }
-
-                    // Fetch & Render Bar
-                    const res = await fetch(API_BASE + `/api/visualization/chart?type=bar&column=${encodeURIComponent(colName)}`);
-                    if (!res.ok) {
-                        throw new Error(`Kategori grafiği verisi alınamadı (HTTP ${res.status})`);
-                    }
-                    const chartData = await res.json();
-                    const chart = getOrCreateChart('univariateChartContainer');
-                    if (chart) {
-                        renderBarChart(chart, chartData, colName);
-                        console.log('Bar grafik çizildi:', colName, (chartData.items || []).length, 'kategori');
-                    }
-                }
-            } catch (err) {
-                console.error('loadUnivariateAnalysis hatası:', err);
-                if (univariateError) {
-                    univariateError.textContent = `Grafik yüklenemedi: ${err.message || err}`;
-                    univariateError.classList.remove('hidden');
-                }
-            }
+            updateFocusAnalysis(colName);
         }
 
         // ==========================================
         // 3. Bivariate Analysis
         // ==========================================
-        async function loadBivariateAnalysis(xCol, yCol) {
+        async function loadBivariateAnalysis(xCol, yCol, forcedType = null) {
             if (!xCol || !yCol || !overviewData) return;
-            const isXNum = (overviewData.numeric_columns || []).includes(xCol);
-            const isYNum = (overviewData.numeric_columns || []).includes(yCol);
-
-            bivariateChartTitle.textContent = `${xCol} × ${yCol} Karşılaştırması`;
 
             try {
-                if (isXNum && isYNum) {
-                    // Both Numeric -> Scatter Plot
+                const reqType = forcedType || 'auto';
+                const res = await fetch(API_BASE + `/api/visualization/chart?type=${encodeURIComponent(reqType)}&x=${encodeURIComponent(xCol)}&y=${encodeURIComponent(yCol)}`);
+                if (!res.ok) {
+                    console.error('Bivariate chart fetch error status:', res.status);
+                    return;
+                }
+                const chartData = await res.json();
+                const plan = chartData.plan || {};
+                const chartType = chartData.type || plan.chart_type || (forcedType || 'scatter');
+
+                bivariateChartTitle.textContent = plan.title || `${xCol} × ${yCol} Karşılaştırması`;
+
+                const chart = getOrCreateChart('bivariateChartContainer');
+                if (!chart) return;
+
+                // Update badge and extra action (e.g. Raw Scatter toggle)
+                const actionContainer = document.getElementById('bivariateExtraAction');
+                if (actionContainer) actionContainer.innerHTML = '';
+
+                if (chartType === 'line') {
+                    bivariateChartBadge.textContent = 'Zaman Serisi (Line)';
+                    bivariateChartBadge.className = 'text-xs font-label-mono bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-medium';
+                    renderLineChart(chart, chartData, xCol, yCol);
+                } else if (chartType === 'density_heatmap') {
+                    bivariateChartBadge.textContent = '2D Yoğunluk Haritası';
+                    bivariateChartBadge.className = 'text-xs font-label-mono bg-teal-500/10 text-teal-700 dark:text-teal-400 px-2.5 py-0.5 rounded-full font-medium';
+                    if (actionContainer) {
+                        actionContainer.innerHTML = `
+                            <button onclick="loadBivariateAnalysis('${escapeHtml(xCol)}', '${escapeHtml(yCol)}', 'scatter')" class="text-xs text-primary hover:underline flex items-center gap-1 cursor-pointer font-medium">
+                                <span class="material-symbols-outlined text-[14px]">scatter_plot</span>
+                                <span>Ham Scatter Göster</span>
+                            </button>
+                        `;
+                    }
+                    renderDensityHeatmapChart(chart, chartData, xCol, yCol, 'bivariateChartContainer');
+                } else if (chartType === 'scatter') {
                     bivariateChartBadge.textContent = 'Dağılım (Scatter Plot)';
                     bivariateChartBadge.className = 'text-xs font-label-mono bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-medium';
-
-                    const res = await fetch(API_BASE + `/api/visualization/chart?type=scatter&x=${encodeURIComponent(xCol)}&y=${encodeURIComponent(yCol)}`);
-                    if (res.ok) {
-                        const chartData = await res.json();
-                        const chart = getOrCreateChart('bivariateChartContainer');
-                        renderScatterChart(chart, chartData, xCol, yCol);
+                    if (actionContainer && (chartData.n > 500 || (plan.overplot && plan.overplot.n_points > 500))) {
+                        actionContainer.innerHTML = `
+                            <button onclick="loadBivariateAnalysis('${escapeHtml(xCol)}', '${escapeHtml(yCol)}', 'density_heatmap')" class="text-xs text-primary hover:underline flex items-center gap-1 cursor-pointer font-medium">
+                                <span class="material-symbols-outlined text-[14px]">grid_view</span>
+                                <span>Yoğunluk Haritasına Geç</span>
+                            </button>
+                        `;
                     }
-
-                } else if (!isXNum && isYNum) {
-                    // X Categorical, Y Numeric -> Grouped Boxplot
+                    renderScatterChart(chart, chartData, xCol, yCol);
+                } else if (chartType === 'grouped_boxplot') {
                     bivariateChartBadge.textContent = 'Grup Bazlı Kutu Grafiği (Boxplot)';
                     bivariateChartBadge.className = 'text-xs font-label-mono bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-medium';
-
-                    const res = await fetch(API_BASE + `/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(xCol)}&num=${encodeURIComponent(yCol)}`);
-                    if (res.ok) {
-                        const chartData = await res.json();
-                        const chart = getOrCreateChart('bivariateChartContainer');
-                        renderGroupedBoxplotChart(chart, chartData, xCol, yCol);
-                    }
-
-                } else if (isXNum && !isYNum) {
-                    // X Numeric, Y Categorical -> Grouped Boxplot with reversed roles
-                    bivariateChartBadge.textContent = 'Grup Bazlı Kutu Grafiği (Boxplot)';
+                    renderGroupedBoxplotChart(chart, chartData, chartData.cat || xCol, chartData.num || yCol);
+                } else if (chartType === 'bar_mean' || chartType === 'bar_median') {
+                    bivariateChartBadge.textContent = 'Kategori Ortalamaları (Bar)';
                     bivariateChartBadge.className = 'text-xs font-label-mono bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-medium';
-
-                    const res = await fetch(API_BASE + `/api/visualization/chart?type=grouped_boxplot&cat=${encodeURIComponent(yCol)}&num=${encodeURIComponent(xCol)}`);
-                    if (res.ok) {
-                        const chartData = await res.json();
-                        const chart = getOrCreateChart('bivariateChartContainer');
-                        renderGroupedBoxplotChart(chart, chartData, yCol, xCol);
-                    }
-
+                    renderBarMeanChart(chart, chartData, chartData.cat || xCol, chartData.num || yCol);
                 } else {
-                    // Both Categorical
                     bivariateChartBadge.textContent = 'Kategori Karşılaştırması';
                     bivariateChartBadge.className = 'text-xs font-label-mono bg-warning-orange/10 text-[#a1680d] px-2.5 py-0.5 rounded-full font-medium';
-
-                    const res = await fetch(API_BASE + `/api/visualization/chart?type=bar&column=${encodeURIComponent(xCol)}`);
-                    if (res.ok) {
-                        const chartData = await res.json();
-                        const chart = getOrCreateChart('bivariateChartContainer');
-                        renderBarChart(chart, chartData, xCol);
-                    }
+                    renderBarChart(chart, chartData, xCol);
                 }
             } catch (e) {
                 console.error('Bivariate chart fetch error:', e);
@@ -1102,7 +1097,7 @@
                             const val = params.data[2];
                             const colX = columns[params.data[0]];
                             const colY = columns[params.data[1]];
-                            return `<strong>${colX} × ${colY}</strong><br/>Korelasyon (r): <strong>${val}</strong>`;
+                            return `<strong>${prettyLabelClient(colX)} × ${prettyLabelClient(colY)}</strong><br/>Korelasyon (r): <strong>${val}</strong>`;
                         }
                     },
                     grid: {
@@ -1114,27 +1109,27 @@
                     },
                     xAxis: applyAxisLabelSafe({
                         type: 'category',
-                        data: columns,
+                        data: columns.map(c => prettyLabelClient(c)),
                         splitArea: { show: true },
                         axisLabel: {
                             interval: 'auto',
                             rotate: columns.length > 5 ? 35 : 0,
                             fontSize: 11,
                             formatter: function(val) {
-                                return val && val.length > 12 ? val.slice(0, 10) + '…' : val;
+                                return val && val.length > 15 ? val.slice(0, 13) + '…' : val;
                             }
                         }
                     }),
                     yAxis: applyAxisLabelSafe({
                         type: 'category',
-                        data: columns,
+                        data: columns.map(c => prettyLabelClient(c)),
                         splitArea: { show: true },
                         axisLabel: {
                             interval: 'auto',
                             rotate: 0,
                             fontSize: 11,
                             formatter: function(val) {
-                                return val && val.length > 12 ? val.slice(0, 10) + '…' : val;
+                                return val && val.length > 15 ? val.slice(0, 13) + '…' : val;
                             }
                         }
                     }),
@@ -1194,8 +1189,8 @@
 
                     html += `
                         <tr class="hover:bg-surface-faint transition-colors">
-                            <td class="py-2.5 px-3 font-semibold text-on-surface truncate max-w-[120px]" title="${escapeHtml(pair.a)}">${escapeHtml(pair.a)}</td>
-                            <td class="py-2.5 px-3 text-slate-gray truncate max-w-[120px]" title="${escapeHtml(pair.b)}">${escapeHtml(pair.b)}</td>
+                            <td class="py-2.5 px-3 font-semibold text-on-surface truncate max-w-[120px]" title="${escapeHtml(pair.a)}">${escapeHtml(prettyLabelClient(pair.a))}</td>
+                            <td class="py-2.5 px-3 text-slate-gray truncate max-w-[120px]" title="${escapeHtml(pair.b)}">${escapeHtml(prettyLabelClient(pair.b))}</td>
                             <td class="py-2.5 px-3 text-right">
                                 <span class="font-label-mono font-bold px-2 py-0.5 rounded ${badgeClass}">${formatDecimal(r, 2)} (${badgeText})</span>
                             </td>
@@ -1213,12 +1208,10 @@
         }
 
         // ==========================================
-        // ECharts Builders
+        // ECharts Builders & Helpers
         // ==========================================
 
-        // ---------- Tekerlekle Yakınlaştırma (Wheel Zoom) ----------
         function applyChartZoomOption(option) {
-            // Tekerlekle kademeli zoom + sürükleyerek kaydırma
             option.dataZoom = [{
                 type: 'inside',
                 zoomOnMouseWheel: true,
@@ -1239,7 +1232,6 @@
                 return dza.some(dz => (dz.start !== undefined && dz.start > 0) || (dz.end !== undefined && dz.end < 100));
             }
 
-            // Çift tıkla yakınlaştırmayı sıfırla
             chart.on('dblclick', function() {
                 chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
                 if (chart.getDom()) chart.getDom().style.cursor = '';
@@ -1259,27 +1251,56 @@
             if (chart.getDom()) chart.getDom().style.cursor = '';
         };
 
-        function applyAxisLabelSafe(axis) {
+        function applyAxisLabelSafe(axis, rotateOverride = null) {
             if (!axis) return axis;
-            // Kategori eksenlerinde üst üste binen etiketleri gizle + uzun adları kısalt
             if (axis.type === 'category') {
+                const rot = (rotateOverride !== null && rotateOverride !== undefined)
+                    ? rotateOverride
+                    : (axis.axisLabel && axis.axisLabel.rotate !== undefined ? axis.axisLabel.rotate : 0);
                 axis.axisLabel = Object.assign({
                     interval: 'auto',
                     hideOverlap: true,
-                    rotate: 0,
+                    rotate: rot,
                     fontSize: 10,
                     color: '#4A5568',
                     formatter: function(val) {
                         if (!val) return val;
-                        return val.length > 12 ? val.slice(0, 10) + '…' : val;
+                        return val.length > 24 ? val.slice(0, 22) + '…' : val;
                     }
                 }, axis.axisLabel || {});
+                axis.axisLabel.rotate = rot;
                 axis.axisLabel.hideOverlap = true;
             }
             return axis;
         }
 
+        function applyIntegerTicks(axis, meta) {
+            if (!axis || !meta) return axis;
+            if (meta.is_integer_like) {
+                axis.minInterval = 1;
+                axis.axisLabel = Object.assign(axis.axisLabel || {}, {
+                    formatter: function(val) {
+                        return Math.round(val) === val ? Math.round(val) : formatDecimal(val, 2);
+                    }
+                });
+                if (meta.min !== null && meta.max !== null && meta.min !== undefined && meta.max !== undefined) {
+                    const range = Math.max(1, meta.max - meta.min);
+                    const pad = Math.ceil(range * 0.05) || 1;
+                    axis.min = Math.floor(meta.min - pad);
+                    axis.max = Math.ceil(meta.max + pad);
+                }
+            } else if (meta.min !== null && meta.max !== null && meta.min !== undefined && meta.max !== undefined) {
+                const range = Math.max(0.01, meta.max - meta.min);
+                const pad = range * 0.05;
+                axis.min = parseFloat((meta.min - pad).toFixed(3));
+                axis.max = parseFloat((meta.max + pad).toFixed(3));
+            }
+            return axis;
+        }
+
         function renderHistogramChart(chart, chartData, colName) {
+            const plan = chartData.plan || {};
+            const colLabel = chartData.column_label || prettyLabelClient(colName);
             const binLabels = chartData.bin_labels || [];
             const counts = chartData.counts || [];
 
@@ -1301,7 +1322,7 @@
                 },
                 xAxis: applyAxisLabelSafe({
                     type: 'category',
-                    name: colName,
+                    name: colLabel,
                     nameLocation: 'middle',
                     nameGap: 28,
                     nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
@@ -1345,9 +1366,65 @@
         }
 
         function renderBarChart(chart, chartData, colName) {
+            const plan = chartData.plan || {};
+            const hint = plan.render_hint || {};
+            const colLabel = chartData.column_label || prettyLabelClient(colName);
             const items = chartData.items || [];
+            const nCats = items.length;
+
+            const isHorizontal = !!hint.horizontal_bar || nCats > 15;
+            const rotate = hint.rotate_labels !== undefined ? hint.rotate_labels : (nCats >= 8 ? 45 : (nCats >= 5 ? 30 : 0));
+
             const categories = items.map(i => i.value);
             const counts = items.map(i => i.count);
+
+            let xAxisOpt, yAxisOpt;
+            if (isHorizontal) {
+                xAxisOpt = {
+                    type: 'value',
+                    name: 'Adet',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+                };
+                yAxisOpt = applyAxisLabelSafe({
+                    type: 'category',
+                    name: colLabel,
+                    nameLocation: 'middle',
+                    nameGap: 45,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    data: [...categories].reverse(),
+                    axisLabel: { fontSize: 10, color: '#4A5568' }
+                });
+            } else {
+                xAxisOpt = applyAxisLabelSafe({
+                    type: 'category',
+                    name: colLabel,
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    data: categories,
+                    axisLabel: {
+                        interval: 0,
+                        rotate: rotate,
+                        fontSize: 10,
+                        color: '#4A5568'
+                    }
+                }, rotate);
+                yAxisOpt = {
+                    type: 'value',
+                    name: 'Adet',
+                    nameLocation: 'middle',
+                    nameGap: 42,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+                };
+            }
+
+            const dataSeries = isHorizontal ? [...counts].reverse() : counts;
 
             const option = {
                 tooltip: {
@@ -1355,55 +1432,126 @@
                     axisPointer: { type: 'shadow' },
                     formatter: function(params) {
                         const item = params[0];
-                        const raw = items[item.dataIndex];
-                        return `Kategori: <strong>${item.name}</strong><br/>Kayıt: <strong>${formatNumber(item.value)}</strong> (%${raw ? raw.ratio : 0})`;
+                        const matched = items.find(it => String(it.value) === String(item.name)) || {};
+                        return `Kategori: <strong>${escapeHtml(item.name)}</strong><br/>Kayıt: <strong>${formatNumber(item.value)}</strong> (%${matched.ratio || 0})`;
                     }
                 },
                 grid: {
                     top: 25,
-                    bottom: 45,
-                    left: 55,
+                    bottom: isHorizontal ? 35 : (rotate > 0 ? 55 : 40),
+                    left: isHorizontal ? 80 : 55,
                     right: 25,
                     containLabel: true
                 },
-                xAxis: applyAxisLabelSafe({
-                    type: 'category',
-                    name: colName,
-                    nameLocation: 'middle',
-                    nameGap: 28,
-                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
-                    data: categories,
-                    axisLabel: {
-                        interval: 'auto',
-                        rotate: categories.length > 4 ? 30 : 0,
-                        fontSize: 10,
-                        color: '#4A5568',
-                        formatter: function(val) {
-                            return val && val.length > 10 ? val.slice(0, 8) + '...' : val;
-                        }
-                    }
-                }),
-                yAxis: {
-                    type: 'value',
-                    name: 'Adet',
-                    nameLocation: 'middle',
-                    nameGap: 42,
-                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
-                    axisLabel: {
-                        fontSize: 10,
-                        color: '#4A5568'
-                    },
-                    splitLine: {
-                        lineStyle: { color: '#E2E8F0', type: 'dashed' }
-                    }
-                },
+                xAxis: xAxisOpt,
+                yAxis: yAxisOpt,
                 series: [{
                     name: 'Adet',
                     type: 'bar',
-                    data: counts,
+                    data: dataSeries,
                     itemStyle: {
                         color: '#006b33',
-                        borderRadius: [4, 4, 0, 0]
+                        borderRadius: isHorizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]
+                    },
+                    emphasis: {
+                        itemStyle: { color: '#008742' }
+                    }
+                }]
+            };
+            chart.setOption(applyChartZoomOption(option), { notMerge: true });
+            chart.resize();
+        }
+
+        function renderBarMeanChart(chart, chartData, catName, numName) {
+            const plan = chartData.plan || {};
+            const hint = plan.render_hint || {};
+            const catLabel = chartData.cat_label || prettyLabelClient(catName);
+            const numLabel = chartData.num_label || prettyLabelClient(numName);
+            const isMedian = (chartData.type === 'bar_median');
+            const items = chartData.items || [];
+            const nCats = items.length;
+
+            const isHorizontal = !!hint.horizontal_bar || nCats > 15;
+            const rotate = hint.rotate_labels !== undefined ? hint.rotate_labels : (nCats >= 8 ? 45 : (nCats >= 5 ? 30 : 0));
+
+            const categories = items.map(i => i.value);
+            const values = items.map(i => (isMedian ? i.median : i.mean));
+            const metricName = isMedian ? 'Medyan' : 'Ortalama';
+
+            let xAxisOpt, yAxisOpt;
+            if (isHorizontal) {
+                xAxisOpt = {
+                    type: 'value',
+                    name: `${metricName} ${numLabel}`,
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+                };
+                yAxisOpt = applyAxisLabelSafe({
+                    type: 'category',
+                    name: catLabel,
+                    nameLocation: 'middle',
+                    nameGap: 45,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    data: [...categories].reverse(),
+                    axisLabel: { fontSize: 10, color: '#4A5568' }
+                });
+            } else {
+                xAxisOpt = applyAxisLabelSafe({
+                    type: 'category',
+                    name: catLabel,
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    data: categories,
+                    axisLabel: {
+                        interval: 0,
+                        rotate: rotate,
+                        fontSize: 10,
+                        color: '#4A5568'
+                    }
+                }, rotate);
+                yAxisOpt = {
+                    type: 'value',
+                    name: `${metricName} ${numLabel}`,
+                    nameLocation: 'middle',
+                    nameGap: 45,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+                };
+            }
+
+            const dataSeries = isHorizontal ? [...values].reverse() : values;
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    formatter: function(params) {
+                        const item = params[0];
+                        const matched = items.find(it => String(it.value) === String(item.name)) || {};
+                        return `<strong>${escapeHtml(catLabel)}: ${escapeHtml(item.name)}</strong><br/>Ortalama ${escapeHtml(numLabel)}: <strong>${formatDecimal(matched.mean)}</strong><br/>Medyan: <strong>${formatDecimal(matched.median)}</strong><br/>Gözlem Sayısı: ${formatNumber(matched.count)}`;
+                    }
+                },
+                grid: {
+                    top: 25,
+                    bottom: isHorizontal ? 35 : (rotate > 0 ? 55 : 40),
+                    left: isHorizontal ? 80 : 55,
+                    right: 25,
+                    containLabel: true
+                },
+                xAxis: xAxisOpt,
+                yAxis: yAxisOpt,
+                series: [{
+                    name: `${metricName} ${numLabel}`,
+                    type: 'bar',
+                    data: dataSeries,
+                    itemStyle: {
+                        color: '#006b33',
+                        borderRadius: isHorizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]
                     },
                     emphasis: {
                         itemStyle: { color: '#008742' }
@@ -1415,18 +1563,59 @@
         }
 
         function renderScatterChart(chart, chartData, xName, yName) {
-            const xVals = chartData.x || [];
-            const yVals = chartData.y || [];
-            const points = [];
-            for (let i = 0; i < xVals.length; i++) {
-                points.push([xVals[i], yVals[i]]);
+            const plan = chartData.plan || {};
+            const overplot = plan.overplot || { opacity: 0.6, symbol_size: 7, large_mode: false };
+            const axisMeta = plan.axis || {};
+            const xLabel = chartData.x_label || prettyLabelClient(xName);
+            const yLabel = chartData.y_label || prettyLabelClient(yName);
+
+            // Points data: [xo, yo, cnt, ratio, xv, yv] or fallback to x/y arrays
+            const rawPoints = chartData.points || [];
+            let points = [];
+            if (rawPoints.length > 0) {
+                points = rawPoints;
+            } else {
+                const xVals = chartData.x || [];
+                const yVals = chartData.y || [];
+                for (let i = 0; i < xVals.length; i++) {
+                    points.push([xVals[i], yVals[i], 1, 100, xVals[i], yVals[i]]);
+                }
             }
+
+            const opacity = overplot.opacity !== undefined ? overplot.opacity : 0.6;
+            const symbolSize = overplot.symbol_size !== undefined ? overplot.symbol_size : 7;
+            const isLarge = !!overplot.large_mode || points.length > 2000;
+
+            const xAxisOpt = applyIntegerTicks({
+                type: 'value',
+                name: xLabel,
+                nameLocation: 'middle',
+                nameGap: 30,
+                nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                axisLabel: { fontSize: 10, color: '#4A5568' },
+                splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+            }, axisMeta.x);
+
+            const yAxisOpt = applyIntegerTicks({
+                type: 'value',
+                name: yLabel,
+                nameLocation: 'middle',
+                nameGap: 45,
+                nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                axisLabel: { fontSize: 10, color: '#4A5568' },
+                splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+            }, axisMeta.y);
 
             const option = {
                 tooltip: {
                     trigger: 'item',
                     formatter: function(params) {
-                        return `${xName}: <strong>${params.value[0]}</strong><br/>${yName}: <strong>${params.value[1]}</strong>`;
+                        const pt = params.value;
+                        const xv = pt[4] !== undefined ? pt[4] : pt[0];
+                        const yv = pt[5] !== undefined ? pt[5] : pt[1];
+                        const cnt = pt[2] || 1;
+                        const ratio = pt[3] !== undefined ? pt[3] : 100;
+                        return `<strong>${escapeHtml(xLabel)}</strong>: ${xv}<br/><strong>${escapeHtml(yLabel)}</strong>: ${yv}<br/><span style="color:#006b33; font-weight:600;">${cnt} kayıt (%${ratio})</span>`;
                     }
                 },
                 grid: {
@@ -1436,18 +1625,160 @@
                     right: 25,
                     containLabel: true
                 },
-                xAxis: {
-                    type: 'value',
-                    name: xName,
+                xAxis: xAxisOpt,
+                yAxis: yAxisOpt,
+                series: [{
+                    name: `${xLabel} × ${yLabel}`,
+                    type: 'scatter',
+                    large: isLarge,
+                    largeThreshold: 2000,
+                    symbolSize: symbolSize,
+                    data: points.map(p => [p[0], p[1], p[2], p[3], p[4], p[5]]),
+                    itemStyle: {
+                        color: `rgba(0, 107, 51, ${opacity})`,
+                        borderColor: '#006b33',
+                        borderWidth: isLarge ? 0 : 0.8
+                    }
+                }]
+            };
+            chart.setOption(applyChartZoomOption(option), { notMerge: true });
+            chart.resize();
+        }
+
+        function renderDensityHeatmapChart(chart, chartData, xName, yName, containerId) {
+            const xLabel = chartData.x_label || prettyLabelClient(xName);
+            const yLabel = chartData.y_label || prettyLabelClient(yName);
+            const binsX = chartData.bins_x || [];
+            const binsY = chartData.bins_y || [];
+            const matrixData = chartData.data || [];
+            const minCount = chartData.min_count || 1;
+            const maxCount = chartData.max_count || 10;
+            const totalN = chartData.n || 1;
+
+            const xCategories = [];
+            for (let i = 0; i < binsX.length - 1; i++) {
+                xCategories.push(`${binsX[i].toFixed(1)}`);
+            }
+            const yCategories = [];
+            for (let j = 0; j < binsY.length - 1; j++) {
+                yCategories.push(`${binsY[j].toFixed(1)}`);
+            }
+
+            const option = {
+                tooltip: {
+                    position: 'top',
+                    formatter: function(params) {
+                        const i = params.data[0];
+                        const j = params.data[1];
+                        const cnt = params.data[2];
+                        const x0 = binsX[i] !== undefined ? binsX[i].toFixed(2) : i;
+                        const x1 = binsX[i + 1] !== undefined ? binsX[i + 1].toFixed(2) : i;
+                        const y0 = binsY[j] !== undefined ? binsY[j].toFixed(2) : j;
+                        const y1 = binsY[j + 1] !== undefined ? binsY[j + 1].toFixed(2) : j;
+                        const pct = ((cnt / Math.max(1, totalN)) * 100).toFixed(1);
+                        return `<strong>${escapeHtml(xLabel)}</strong>: [${x0} - ${x1}]<br/><strong>${escapeHtml(yLabel)}</strong>: [${y0} - ${y1}]<br/><span style="color:#006b33; font-weight:600;">Kayıt: ${formatNumber(cnt)} (%${pct})</span>`;
+                    }
+                },
+                grid: {
+                    top: 25,
+                    bottom: 60,
+                    left: 60,
+                    right: 30,
+                    containLabel: true
+                },
+                xAxis: applyAxisLabelSafe({
+                    type: 'category',
+                    name: xLabel,
                     nameLocation: 'middle',
                     nameGap: 30,
                     nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
-                    axisLabel: { fontSize: 10, color: '#4A5568' },
-                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
+                    data: xCategories,
+                    axisLabel: {
+                        interval: Math.max(1, Math.floor(xCategories.length / 8)),
+                        rotate: 0,
+                        fontSize: 10,
+                        color: '#4A5568'
+                    }
+                }),
+                yAxis: applyAxisLabelSafe({
+                    type: 'category',
+                    name: yLabel,
+                    nameLocation: 'middle',
+                    nameGap: 45,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    data: yCategories,
+                    axisLabel: {
+                        interval: Math.max(1, Math.floor(yCategories.length / 8)),
+                        fontSize: 10,
+                        color: '#4A5568'
+                    }
+                }),
+                visualMap: {
+                    min: minCount,
+                    max: maxCount,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: 0,
+                    inRange: {
+                        color: ['#f0fdf4', '#bbf7d0', '#4ade80', '#16a34a', '#006b33']
+                    },
+                    textStyle: { fontSize: 10 }
                 },
+                series: [{
+                    name: 'Yoğunluk',
+                    type: 'heatmap',
+                    data: matrixData,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }]
+            };
+            chart.setOption(applyChartZoomOption(option), { notMerge: true });
+            chart.resize();
+        }
+
+        function renderLineChart(chart, chartData, xName, yName) {
+            const xLabel = chartData.x_label || prettyLabelClient(xName);
+            const yLabel = chartData.y_label || prettyLabelClient(yName);
+            const xVals = chartData.x || [];
+            const yVals = chartData.y || [];
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        const item = params[0];
+                        return `Tarih: <strong>${item.name}</strong><br/>${escapeHtml(yLabel)}: <strong>${formatDecimal(item.value)}</strong>`;
+                    }
+                },
+                grid: {
+                    top: 25,
+                    bottom: 45,
+                    left: 55,
+                    right: 25,
+                    containLabel: true
+                },
+                xAxis: applyAxisLabelSafe({
+                    type: 'category',
+                    name: xLabel,
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
+                    data: xVals,
+                    axisLabel: {
+                        interval: 'auto',
+                        rotate: xVals.length > 5 ? 30 : 0,
+                        fontSize: 10,
+                        color: '#4A5568'
+                    }
+                }),
                 yAxis: {
                     type: 'value',
-                    name: yName,
+                    name: yLabel,
                     nameLocation: 'middle',
                     nameGap: 45,
                     nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
@@ -1455,14 +1786,24 @@
                     splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } }
                 },
                 series: [{
-                    name: `${xName} × ${yName}`,
-                    type: 'scatter',
-                    symbolSize: 7,
-                    data: points,
+                    name: yLabel,
+                    type: 'line',
+                    data: yVals,
+                    smooth: true,
+                    showSymbol: xVals.length < 50,
+                    symbolSize: 5,
+                    lineStyle: {
+                        color: '#006b33',
+                        width: 2.5
+                    },
                     itemStyle: {
-                        color: 'rgba(0, 107, 51, 0.65)',
-                        borderColor: '#006b33',
-                        borderWidth: 1
+                        color: '#006b33'
+                    },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(0, 107, 51, 0.28)' },
+                            { offset: 1, color: 'rgba(0, 107, 51, 0.02)' }
+                        ])
                     }
                 }]
             };
@@ -1471,6 +1812,8 @@
         }
 
         function renderGroupedBoxplotChart(chart, chartData, catName, numName) {
+            const catLabel = chartData.cat_label || prettyLabelClient(catName);
+            const numLabel = chartData.num_label || prettyLabelClient(numName);
             const groups = chartData.groups || [];
             const categories = groups.map(g => g.name);
             const boxData = groups.map(g => g.box); // [min, q1, med, q3, max]
@@ -1496,17 +1839,22 @@
                 },
                 xAxis: applyAxisLabelSafe({
                     type: 'category',
-                    name: catName,
+                    name: catLabel,
                     nameLocation: 'middle',
                     nameGap: 28,
                     nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
                     data: categories,
-                    axisLabel: { fontSize: 10, color: '#4A5568' },
+                    axisLabel: {
+                        interval: 0,
+                        rotate: categories.length > 5 ? 30 : 0,
+                        fontSize: 10,
+                        color: '#4A5568'
+                    },
                     splitArea: { show: true }
                 }),
                 yAxis: {
                     type: 'value',
-                    name: numName,
+                    name: numLabel,
                     nameLocation: 'middle',
                     nameGap: 45,
                     nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
@@ -1525,7 +1873,7 @@
                         },
                         tooltip: {
                             formatter: function(param) {
-                                return `<strong>${param.name}</strong><br/>
+                                return `<strong>${escapeHtml(param.name)}</strong><br/>
                                         Maksimum: ${param.data[5]}<br/>
                                         Üst Çeyreklik (Q3): ${param.data[4]}<br/>
                                         Medyan: ${param.data[3]}<br/>
@@ -1550,6 +1898,7 @@
         }
 
         function renderBoxplotChart(chart, chartData, colName) {
+            const colLabel = chartData.column_label || prettyLabelClient(colName);
             const box = chartData.box || [0, 0, 0, 0, 0];
             const outliers = chartData.outliers || [];
             const outlierPoints = outliers.map(v => [0, v]);
@@ -1568,11 +1917,11 @@
                 },
                 xAxis: applyAxisLabelSafe({
                     type: 'category',
-                    name: colName,
+                    name: colLabel,
                     nameLocation: 'middle',
                     nameGap: 28,
                     nameTextStyle: { fontSize: 10, fontWeight: 'bold', color: '#334155' },
-                    data: [colName],
+                    data: [colLabel],
                     axisLabel: { fontSize: 10, color: '#4A5568' }
                 }),
                 yAxis: {
@@ -1586,13 +1935,23 @@
                 },
                 series: [
                     {
-                        name: colName,
+                        name: colLabel,
                         type: 'boxplot',
                         data: [box],
                         itemStyle: {
                             color: '#bfeac7',
                             borderColor: '#006b33',
                             borderWidth: 1.5
+                        },
+                        tooltip: {
+                            formatter: function(param) {
+                                return `<strong>${escapeHtml(colLabel)}</strong><br/>
+                                        Maksimum: ${param.data[5]}<br/>
+                                        Üst Çeyreklik (Q3): ${param.data[4]}<br/>
+                                        Medyan: ${param.data[3]}<br/>
+                                        Alt Çeyreklik (Q1): ${param.data[2]}<br/>
+                                        Minimum: ${param.data[1]}`;
+                            }
                         }
                     },
                     {
