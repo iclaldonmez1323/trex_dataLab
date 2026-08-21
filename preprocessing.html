@@ -334,7 +334,7 @@
                                         <select id="outlierMethodSelect" class="block w-full rounded-md border-border-subtle bg-surface py-2 pl-3 pr-10 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-primary sm:text-sm">
                                             <option value="">Yöntem seçin...</option>
                                             <option value="cap" selected>Baskılama / Kırpma (Capping)</option>
-                                            <option value="remove_iqr">IQR ile Aykırı Satırları Sil (3.0×IQR, ≥2 sütun)</option>
+                                            <option value="remove_iqr">IQR ile Aykırı Satırları Sil (1.5×IQR)</option>
                                             <option value="remove_zscore">Z-Score ile Aykırı Satırları Sil (Z &gt; 3)</option>
                                             <option value="replace_median">Medyan ile Değiştir</option>
                                         </select>
@@ -904,10 +904,10 @@
                     return;
                 }
                 const methodNames = {
-                    'cap': 'Aykırı değerler sınırlandırıldı (Capping)',
-                    'remove_iqr': 'Aykırı değerler temizlendi (IQR)',
-                    'remove_zscore': 'Aykırı değerler temizlendi (Z-Score)',
-                    'replace_median': 'Aykırı değerler medyan ile değiştirildi'
+                    'cap': 'Aykırı değerler sınırlandırıldı (Capping, 1.5×IQR)',
+                    'remove_iqr': 'Aykırı satırlar silindi (1.5×IQR)',
+                    'remove_zscore': 'Aykırı satırlar silindi (Z-Score)',
+                    'replace_median': 'Aykırı değerler medyan ile değiştirildi (1.5×IQR)'
                 };
                 applyOperation(
                     { op: 'outlier_management', method: method, columns: selectedCols },

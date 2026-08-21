@@ -435,61 +435,14 @@ async def search_dataset(q: Optional[str] = None, limit: int = 10):
     })
 
 
-@app.get("/api/quality")
-async def get_quality_report():
-    global active_dataset, active_df_cache
-    if not active_dataset:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Veri seti bulunamadı. Lütfen önce bir CSV dosyası yükleyin."
-        )
-
-    # If we have dataframe or cached data
-    df = active_df_cache if active_df_cache is not None else None
-    if df is None:
-        # Construct fallback structure from active_dataset
-        rows = active_dataset.get("rows", 0)
-        cols = active_dataset.get("columns", 0)
-        missing = active_dataset.get("missing", 0)
-        duplicates = active_dataset.get("duplicates", 0)
-        missing_rate = round((missing / max(1, rows * cols)) * 100, 2)
-        duplicate_rate = round((duplicates / max(1, rows)) * 100, 2)
-        score = max(0, 100 - int(missing_rate * 1.5) - int(duplicate_rate * 2))
-        status_text = "iyi" if score >= 85 else ("iyilestirme_gerekli" if score >= 70 else "zayif")
-        return JSONResponse(content={
-            "filename": active_dataset.get("filename", "veri.csv"),
-            "rows": rows,
-            "columns": cols,
-            "upload_time": active_dataset.get("upload_time", "Bugün"),
-            "score": score,
-            "score_status": status_text,
-            "score_breakdown": [
-                {"component": "Kayıp Veri", "formula": "Eksik oran × 1.5 (maks 30)", "value": f"%{missing_rate}", "penalty": min(30, int(missing_rate * 1.5))},
-                {"component": "Tekrarlanan Kayıt", "formula": "Tekrar oranı × 2 (maks 20)", "value": f"%{duplicate_rate}", "penalty": min(20, int(duplicate_rate * 2))}
-            ],
-            "metrics": {
-                "missing_rate": missing_rate,
-                "duplicate_rate": duplicate_rate,
-                "type_issues": 0,
-                "constant_cols": 0,
-                "high_cardinality_cols": 0,
-                "outlier_summary": "Minimal"
-            },
-            "missing": {"total_missing": missing, "rate": missing_rate, "columns": []},
-            "duplicates": {"count": duplicates, "rate": duplicate_rate, "samples": []},
-            "cardinality": {"columns": []},
-            "constant_cols": [],
-            "outliers": {"columns": [], "total_outliers": 0, "overall_rate": 0.0, "method": "IQR"},
-            "dtypes": []
-        })
-
+def _compute_quality_report(df: pd.DataFrame, baseline_rows: int) -> dict:
     rows_count = int(len(df))
     cols_count = int(len(df.columns))
     total_cells = max(1, rows_count * cols_count)
     total_missing = int(df.isna().sum().sum())
     missing_rate = round((total_missing / total_cells) * 100, 2)
     
-    duplicate_count = int(df.duplicated().sum())
+    duplicate_count = int(df.duplicated().sum()) if rows_count > 0 else 0
     duplicate_rate = round((duplicate_count / max(1, rows_count)) * 100, 2)
     
     # Duplicate samples
@@ -524,12 +477,12 @@ async def get_quality_report():
                 "ratio": 100.0
             })
 
-    # Cardinality
+    # Cardinality (Denominator fixed to baseline_rows)
     cardinality_columns = []
     high_card_count = 0
     for col in df.columns:
         unique_cnt = int(df[col].nunique(dropna=True))
-        is_high = (unique_cnt / max(1, rows_count)) > 0.5
+        is_high = (unique_cnt / max(1, baseline_rows)) > 0.5
         label = "Yuksek" if is_high else "Dusuk"
         if is_high:
             high_card_count += 1
@@ -639,11 +592,9 @@ async def get_quality_report():
         {"component": "Aykırı değer", "formula": "oran × 40 (maks 10)", "value": f"%{outlier_rate}", "penalty": outlier_penalty}
     ]
 
-    return JSONResponse(content={
-        "filename": active_dataset.get("filename", "veri.csv"),
+    return {
         "rows": rows_count,
         "columns": cols_count,
-        "upload_time": active_dataset.get("upload_time", "14:32"),
         "score": final_score,
         "score_status": score_status,
         "score_breakdown": score_breakdown,
@@ -677,7 +628,101 @@ async def get_quality_report():
         },
         "numeric_columns": [str(c) for c in df.select_dtypes(include=[np.number]).columns],
         "dtypes": dtypes_list
-    })
+    }
+
+
+@app.get("/api/quality")
+async def get_quality_report():
+    global active_dataset, active_df_cache, original_df_cache, processed_df_cache, dropped_columns
+    if not active_dataset:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Veri seti bulunamadı. Lütfen önce bir CSV dosyası yükleyin."
+        )
+
+    # If we have dataframe or cached data
+    df_raw = original_df_cache if original_df_cache is not None else active_df_cache
+    df_proc = processed_df_cache if processed_df_cache is not None else active_df_cache
+
+    if df_raw is None and df_proc is None:
+        # Construct fallback structure from active_dataset
+        rows = active_dataset.get("rows", 0)
+        cols = active_dataset.get("columns", 0)
+        missing = active_dataset.get("missing", 0)
+        duplicates = active_dataset.get("duplicates", 0)
+        missing_rate = round((missing / max(1, rows * cols)) * 100, 2)
+        duplicate_rate = round((duplicates / max(1, rows)) * 100, 2)
+        score = max(0, 100 - int(missing_rate * 1.5) - int(duplicate_rate * 2))
+        status_text = "iyi" if score >= 85 else ("iyilestirme_gerekli" if score >= 70 else "zayif")
+        return JSONResponse(content={
+            "filename": active_dataset.get("filename", "veri.csv"),
+            "rows": rows,
+            "columns": cols,
+            "upload_time": active_dataset.get("upload_time", "Bugün"),
+            "score": score,
+            "score_status": status_text,
+            "score_breakdown": [
+                {"component": "Kayıp Veri", "formula": "Eksik oran × 1.5 (maks 30)", "value": f"%{missing_rate}", "penalty": min(30, int(missing_rate * 1.5))},
+                {"component": "Tekrarlanan Kayıt", "formula": "Tekrar oranı × 2 (maks 20)", "value": f"%{duplicate_rate}", "penalty": min(20, int(duplicate_rate * 2))}
+            ],
+            "metrics": {
+                "missing_rate": missing_rate,
+                "duplicate_rate": duplicate_rate,
+                "type_issues": 0,
+                "constant_cols": 0,
+                "high_cardinality_cols": 0,
+                "outlier_summary": "Minimal"
+            },
+            "missing": {"total_missing": missing, "rate": missing_rate, "columns": []},
+            "duplicates": {"count": duplicates, "rate": duplicate_rate, "samples": []},
+            "cardinality": {"columns": []},
+            "constant_cols": [],
+            "outliers": {"columns": [], "total_outliers": 0, "overall_rate": 0.0, "method": "IQR"},
+            "numeric_columns": [],
+            "dtypes": [],
+            "comparison": {
+                "raw_score": score,
+                "processed_score": score,
+                "delta": 0,
+                "raw_rows": rows,
+                "processed_rows": rows
+            }
+        })
+
+    baseline_rows = int(len(df_raw)) if df_raw is not None else (int(len(df_proc)) if df_proc is not None else 0)
+
+    # İşlenmiş rapor: mantıksal olarak kaldırılmış kolonlar hariç
+    if dropped_columns and df_proc is not None:
+        active_cols = [c for c in df_proc.columns if c not in dropped_columns]
+        df_proc_active = df_proc[active_cols]
+    else:
+        df_proc_active = df_proc
+
+    raw_report = _compute_quality_report(df_raw.copy(), baseline_rows) if df_raw is not None else {}
+    proc_report = _compute_quality_report(df_proc_active.copy(), baseline_rows) if df_proc_active is not None else raw_report
+
+    raw_score = raw_report.get("score", 0)
+    proc_score = proc_report.get("score", 0)
+    raw_rows = raw_report.get("rows", baseline_rows)
+    proc_rows = proc_report.get("rows", baseline_rows)
+    delta = proc_score - raw_score
+
+    comparison = {
+        "raw_score": int(raw_score),
+        "processed_score": int(proc_score),
+        "delta": int(delta),
+        "raw_rows": int(raw_rows),
+        "processed_rows": int(proc_rows)
+    }
+
+    response_data = {
+        "filename": active_dataset.get("filename", "veri.csv"),
+        "upload_time": active_dataset.get("upload_time", "14:32"),
+        "comparison": comparison,
+        **proc_report
+    }
+
+    return JSONResponse(content=response_data)
 
 
 def build_preprocessing_state_response():
@@ -861,7 +906,12 @@ async def apply_preprocessing_op(payload: Dict[str, Any]):
                     if len(mode_vals) > 0:
                         processed_df_cache[c] = processed_df_cache[c].fillna(mode_vals[0])
                 elif method == "unknown":
-                    processed_df_cache[c] = processed_df_cache[c].fillna("Unknown")
+                    if pd.api.types.is_numeric_dtype(processed_df_cache[c]):
+                        mode_vals = processed_df_cache[c].mode()
+                        if len(mode_vals) > 0:
+                            processed_df_cache[c] = processed_df_cache[c].fillna(mode_vals[0])
+                    else:
+                        processed_df_cache[c] = processed_df_cache[c].fillna("Unknown")
                 elif method == "drop_rows":
                     processed_df_cache = processed_df_cache.dropna(subset=[c])
 
@@ -942,77 +992,107 @@ async def apply_preprocessing_op(payload: Dict[str, Any]):
                               if pd.api.types.is_numeric_dtype(processed_df_cache[c])
                               and not _is_id_like(c)]
 
-            # 2) Seçilen sütunlar filtresi (boşsa: muaf olmayan tüm adaylar)
+            # 2) Seçilen sütunlar filtresi (kullanıcı açıkça seçtiyse ID muafiyeti uygulanmaz)
             if selected_cols:
-                numeric_cols = [c for c in candidate_cols if c in selected_cols]
+                numeric_cols = [c for c in processed_df_cache.columns
+                                if c in selected_cols and c not in dropped_columns
+                                and pd.api.types.is_numeric_dtype(processed_df_cache[c])]
             else:
                 numeric_cols = candidate_cols
 
             if not numeric_cols:
                 raise ValueError("İşlenecek sayısal sütun bulunamadı; aykırı değer işlemi uygulanamadı.")
 
-            # 3) Sınırlar (remove_iqr için 3.0×IQR; cap/replace_median için 1.5×IQR + %1-%99 clip)
-            iqr_factor = 3.0
+            # 3) Sınırlar (Tüm sayaçlarla uyumlu 1.5×IQR)
+            iqr_factor = 1.5
             bounds = {}
             for c in numeric_cols:
                 series = pd.to_numeric(processed_df_cache[c], errors="coerce").dropna()
                 if len(series) == 0:
                     continue
-                q1 = series.quantile(0.25)
-                q3 = series.quantile(0.75)
+                q1 = float(series.quantile(0.25))
+                q3 = float(series.quantile(0.75))
                 iqr = q3 - q1
-                p01 = float(series.quantile(0.01))
-                p99 = float(series.quantile(0.99))
                 bounds[c] = {
                     "iqr_lower": q1 - iqr_factor * iqr,
                     "iqr_upper": q3 + iqr_factor * iqr,
-                    "clip_lower": p01,
-                    "clip_upper": p99,
                     "median": float(series.median())
                 }
 
-            # 4) Her sütun için aykırı işaretleri (IQR 3.0 sınırına göre)
+            # 4) Her sütun için aykırı işaretleri (1.5×IQR sınırına göre)
             outlier_flags = {}
             for c in numeric_cols:
-                s = pd.to_numeric(processed_df_cache[c], errors="coerce")
-                outlier_flags[c] = (s < bounds[c]["iqr_lower"]) | (s > bounds[c]["iqr_upper"])
+                if c in bounds:
+                    s = pd.to_numeric(processed_df_cache[c], errors="coerce")
+                    outlier_flags[c] = (s < bounds[c]["iqr_lower"]) | (s > bounds[c]["iqr_upper"])
+                else:
+                    outlier_flags[c] = pd.Series(False, index=processed_df_cache.index)
 
             if method == "remove_iqr":
-                # Çoğunluk eşiği: yalnızca 2+ sütunda aşırı aykırı olan satırlar silinir
-                flag_sum = pd.Series(0, index=processed_df_cache.index, dtype=int)
-                for c in numeric_cols:
-                    flag_sum = flag_sum + outlier_flags[c].fillna(False).astype(int)
-                mask = flag_sum < 2
-                removed = int((~mask).sum())
-                processed_df_cache = processed_df_cache[mask].reset_index(drop=True)
-                desc = f"Aykırı değerler temizlendi ({removed} satır silindi, 3.0×IQR, ≥2 sütun eşiği)"
+                start_rows = len(processed_df_cache)
+                total_removed = 0
+                for _ in range(5):
+                    if len(processed_df_cache) == 0:
+                        break
+                    # Güncel df ile 1.5×IQR bayrakları yeniden hesaplanır
+                    cur_flags = {}
+                    for c in numeric_cols:
+                        s = pd.to_numeric(processed_df_cache[c], errors="coerce")
+                        s_clean = s.dropna()
+                        if len(s_clean) >= 4:
+                            q1 = float(s_clean.quantile(0.25))
+                            q3 = float(s_clean.quantile(0.75))
+                            iqr = q3 - q1
+                            if iqr > 0:
+                                lower = q1 - 1.5 * iqr
+                                upper = q3 + 1.5 * iqr
+                                cur_flags[c] = (s < lower) | (s > upper)
+                            else:
+                                cur_flags[c] = pd.Series(False, index=processed_df_cache.index)
+                        else:
+                            cur_flags[c] = pd.Series(False, index=processed_df_cache.index)
+
+                    bad = pd.Series(False, index=processed_df_cache.index)
+                    for c in numeric_cols:
+                        bad = bad | cur_flags[c].fillna(False)
+
+                    bad_cnt = int(bad.sum())
+                    if bad_cnt == 0:
+                        break
+                    if len(processed_df_cache) - bad_cnt < start_rows * 0.5:
+                        break
+                    processed_df_cache = processed_df_cache[~bad].reset_index(drop=True)
+                    total_removed += bad_cnt
+
+                desc = f"Aykırı satırlar silindi ({total_removed} satır, 1.5×IQR, seçili {len(numeric_cols)} sütun)"
 
             elif method == "remove_zscore":
-                flag_sum = pd.Series(0, index=processed_df_cache.index, dtype=int)
+                bad = pd.Series(False, index=processed_df_cache.index)
                 for c in numeric_cols:
                     s = pd.to_numeric(processed_df_cache[c], errors="coerce")
                     mean = float(s.mean())
                     std = float(s.std())
                     if std == 0 or pd.isna(std):
                         continue
-                    flag_sum = flag_sum + ((s - mean).abs() > 3 * std).fillna(False).astype(int)
-                mask = flag_sum < 2
-                removed = int((~mask).sum())
-                processed_df_cache = processed_df_cache[mask].reset_index(drop=True)
-                desc = f"Aykırı değerler temizlendi ({removed} satır silindi, Z-Score > 3, ≥2 sütun eşiği)"
+                    bad = bad | ((s - mean).abs() > 3 * std).fillna(False)
+                removed = int(bad.sum())
+                processed_df_cache = processed_df_cache[~bad].reset_index(drop=True)
+                desc = f"Aykırı satırlar silindi ({removed} satır, Z-Score > 3, seçili {len(numeric_cols)} sütun)"
 
             elif method == "cap":
                 for c in numeric_cols:
-                    processed_df_cache[c] = pd.to_numeric(processed_df_cache[c], errors="coerce").clip(
-                        lower=bounds[c]["clip_lower"], upper=bounds[c]["clip_upper"])
-                desc = "Aykırı değerler sınır değerlere eşitlendi (Capping, %1-%99 yüzdelik)"
+                    if c in bounds:
+                        processed_df_cache[c] = pd.to_numeric(processed_df_cache[c], errors="coerce").clip(
+                            lower=bounds[c]["iqr_lower"], upper=bounds[c]["iqr_upper"])
+                desc = f"Aykırı değerler sınır değerlere eşitlendi (Capping, 1.5×IQR, seçili {len(numeric_cols)} sütun)"
 
             elif method == "replace_median":
                 for c in numeric_cols:
-                    s = pd.to_numeric(processed_df_cache[c], errors="coerce").astype(float)
-                    s = s.mask(outlier_flags[c], bounds[c]["median"])
-                    processed_df_cache[c] = s
-                desc = "Aykırı değerler medyan ile değiştirildi (3.0×IQR sınırı)"
+                    if c in bounds:
+                        s = pd.to_numeric(processed_df_cache[c], errors="coerce").astype(float)
+                        s = s.mask(outlier_flags[c], bounds[c]["median"])
+                        processed_df_cache[c] = s
+                desc = f"Aykırı değerler medyan ile değiştirildi (1.5×IQR sınırı, seçili {len(numeric_cols)} sütun)"
 
             else:
                 raise ValueError(f"Geçersiz aykırı değer yöntemi: {method}")

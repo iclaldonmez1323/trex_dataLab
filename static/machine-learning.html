@@ -680,6 +680,22 @@
                 .replace(/'/g, '&#039;');
         }
 
+        const EXCLUDE_REASON_INFO = [
+            { match: 'Yüksek benzersizlik', text: 'Bu sütun satırların çoğunda farklı bir değer içeriyor (adres, isim vb.). Modele genellenebilir bilgi katmaz ve kategorik dönüşümde sütun sayısını patlatır.' },
+            { match: 'Kimlik/numara',       text: 'Sütun adı kimlik veya numara alanına işaret ediyor (ID, kod vb.). Her satırı tekilleştirdiği için modelde gürültü yaratır.' },
+            { match: 'Sayısal kimlik',      text: 'Değerler satır sırası gibi artan benzersiz tam sayılardan oluşuyor; model bunu anlamlı bir özellik olarak kullanamaz.' },
+            { match: 'Tarih/zaman',         text: 'Ham tarih/zaman değeri doğrudan modele verilemez; gün, ay, yıl gibi özelliklerin çıkarılması gerekir.' },
+            { match: 'Serbest metin',       text: 'Uzun serbest metin içeriyor; doğrudan sayısallaştırılamaz ve işlenirse çok yüksek boyut üretir.' },
+            { match: 'Sabit sütun',         text: 'Tüm satırlarda aynı değer var; hiçbir ayırt edici bilgi taşımıyor.' },
+            { match: 'Aşırı eksik veri',    text: 'Değerlerin büyük çoğunluğu boş; doldurmak yanıltıcı sonuç üretir.' },
+            { match: 'Sütun tamamen boş',   text: 'Hiç veri içermiyor; işlenmesi mümkün değil.' }
+        ];
+
+        function getExcludeInfoText(reason) {
+            const found = EXCLUDE_REASON_INFO.find(r => (reason || '').startsWith(r.match));
+            return found ? found.text : '';
+        }
+
         function renderExcludeList() {
             const target = document.getElementById('mlTargetColumn').value;
             const container = document.getElementById('mlExcludeList');
@@ -690,43 +706,91 @@
             mlConfigData.columns.forEach(col => {
                 if (col.name === target) return;
                 const isExcluded = (col.should_exclude === true) || (mlConfigData.auto_excluded && mlConfigData.auto_excluded.includes(col.name));
-                const label = document.createElement('label');
                 const bgClass = isExcluded ? 'bg-warning-orange/5 border-warning-orange/30' : 'bg-surface-container-low border-border-subtle';
-                label.className = `flex items-center gap-2.5 px-3 py-2 ${bgClass} border rounded-lg cursor-pointer hover:border-primary transition-colors text-xs text-on-surface`;
 
+                const row = document.createElement('div');
+                row.className = `${bgClass} border rounded-lg transition-colors text-xs text-on-surface`;
+
+                const mainRow = document.createElement('div');
+                mainRow.className = 'flex items-center gap-2.5 px-3 py-2';
+
+                const cbId = 'ml-excl-' + String(col.name).replace(/[^a-zA-Z0-9_-]/g, '_');
                 const cb = document.createElement('input');
                 cb.type = 'checkbox';
+                cb.id = cbId;
                 cb.value = col.name;
                 cb.checked = isExcluded;
-                cb.className = 'accent-primary w-4 h-4 rounded text-primary focus:ring-primary flex-shrink-0';
+                cb.className = 'accent-primary w-4 h-4 rounded text-primary focus:ring-primary flex-shrink-0 cursor-pointer';
 
                 cb.addEventListener('change', () => {
                     if (cb.checked) {
-                        label.classList.add('bg-warning-orange/5', 'border-warning-orange/30');
-                        label.classList.remove('bg-surface-container-low', 'border-border-subtle');
+                        row.classList.add('bg-warning-orange/5', 'border-warning-orange/30');
+                        row.classList.remove('bg-surface-container-low', 'border-border-subtle');
                     } else {
-                        label.classList.remove('bg-warning-orange/5', 'border-warning-orange/30');
-                        label.classList.add('bg-surface-container-low', 'border-border-subtle');
+                        row.classList.remove('bg-warning-orange/5', 'border-warning-orange/30');
+                        row.classList.add('bg-surface-container-low', 'border-border-subtle');
                     }
                 });
 
-                const reason = col.exclude_reason
+                const reasonHtml = col.exclude_reason
                     ? `<span class="block text-[10px] text-warning-orange font-medium truncate max-w-[210px]" title="${escapeHtml(col.exclude_reason)}">${escapeHtml(col.exclude_reason)}</span>`
                     : '';
 
-                const span = document.createElement('span');
-                span.className = 'flex-1 flex justify-between items-center gap-2 min-w-0';
-                span.innerHTML = `
-                    <span class="flex-1 min-w-0">
-                        <span class="block truncate font-medium" title="${escapeHtml(col.name)}">${escapeHtml(col.name)}</span>
-                        ${reason}
-                    </span>
-                    <span class="text-slate-gray font-label-mono text-[10px] flex-shrink-0" title="Tekillik Oranı">%${Math.round((col.unique_ratio || 0) * 100)}</span>
+                const nameLabel = document.createElement('label');
+                nameLabel.htmlFor = cbId;
+                nameLabel.className = 'flex-1 min-w-0 cursor-pointer';
+                nameLabel.innerHTML = `
+                    <span class="block truncate font-medium" title="${escapeHtml(col.name)}">${escapeHtml(col.name)}</span>
+                    ${reasonHtml}
                 `;
 
-                label.appendChild(cb);
-                label.appendChild(span);
-                container.appendChild(label);
+                const ratioSpan = document.createElement('span');
+                ratioSpan.className = 'text-slate-gray font-label-mono text-[10px] flex-shrink-0';
+                ratioSpan.title = 'Tekillik Oranı';
+                ratioSpan.textContent = `%${Math.round((col.unique_ratio || 0) * 100)}`;
+
+                mainRow.appendChild(cb);
+                mainRow.appendChild(nameLabel);
+                mainRow.appendChild(ratioSpan);
+
+                if (col.exclude_reason) {
+                    const infoBtn = document.createElement('button');
+                    infoBtn.type = 'button';
+                    infoBtn.className = 'material-symbols-outlined text-sm text-slate-gray hover:text-primary flex-shrink-0 cursor-pointer p-0.5 rounded';
+                    infoBtn.textContent = 'info';
+                    const whyText = (window.t ? window.t('ml.whyExcluded', 'Neden dışlandı?') : 'Neden dışlandı?');
+                    infoBtn.setAttribute('aria-label', whyText);
+                    infoBtn.setAttribute('title', whyText);
+                    infoBtn.setAttribute('aria-expanded', 'false');
+
+                    const detail = document.createElement('div');
+                    detail.className = 'hidden px-3 pb-2.5';
+                    const infoText = getExcludeInfoText(col.exclude_reason);
+                    detail.innerHTML = `
+                        <div class="rounded-md bg-surface-container-lowest border border-border-subtle p-2.5 text-[11px] leading-relaxed text-on-surface-variant">
+                            <p class="font-semibold text-warning-orange mb-0.5">${escapeHtml(col.exclude_reason)}</p>
+                            ${infoText ? `<p class="text-slate-gray">${escapeHtml(infoText)}</p>` : ''}
+                        </div>`;
+
+                    infoBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const willOpen = detail.classList.contains('hidden');
+                        detail.classList.toggle('hidden');
+                        infoBtn.setAttribute('aria-expanded', String(willOpen));
+                    });
+
+                    mainRow.appendChild(infoBtn);
+                    row.appendChild(mainRow);
+                    row.appendChild(detail);
+                } else {
+                    const spacer = document.createElement('span');
+                    spacer.className = 'w-[20px] flex-shrink-0';
+                    mainRow.appendChild(spacer);
+                    row.appendChild(mainRow);
+                }
+
+                container.appendChild(row);
             });
         }
 

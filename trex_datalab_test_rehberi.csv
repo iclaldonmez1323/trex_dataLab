@@ -1,0 +1,21 @@
+Musteri_ID,Ad_Soyad,Yas,Gelir,Kredi_Skoru,Departman,Ulke_Kodu,Kayit_Tarihi,Eski_Kod,Harcama_Skoru,Segment
+1001,Ali Yilmaz,25.0,35000.0,72.5,Yazilim,TR,2023-01-15,,320.0,Standart
+1002,Ayse Kaya,32.0,48000.0,84.0,Satis,TR,2023-02-10,,450.0,Standart
+1003,Mehmet Demir,45.0,72000.0,91.2,Pazarlama,TR,2023-03-05,KOD-1,680.0,Premium
+1004,Fatma Celik,,55000.0,68.0,Yazilim,TR,2023-03-22,,510.0,Standart
+1005,Can Oz,29.0,32000.0,55.4,IK,TR,2023-04-12,,290.0,Standart
+1006,Zeynep Ak,38.0,68000.0,88.5,Finans,TR,2023-05-01,,640.0,Premium
+1007,Burak Kurt,52.0,95000.0,96.0,Yazilim,TR,2023-05-19,KOD-2,890.0,Premium
+1008,Elif Simsek,24.0,28000.0,62.0,Satis,TR,2023-06-11,,260.0,Standart
+1009,Omer Koc,41.0,62000.0,78.4,Pazarlama,TR,2023-06-30,,580.0,Standart
+1010,Gamze Acar,36.0,51000.0,81.0,Finans,TR,2023-07-14,,490.0,Standart
+1011,Murat Polat,30.0,42000.0,74.5,Yazilim,TR,2023-08-02,,390.0,Standart
+1012,Seda Yildiz,48.0,88000.0,92.8,Satis,TR,2023-08-20,,820.0,Premium
+1013,Emre Sahin,27.0,36000.0,65.2,IK,TR,2023-09-09,,340.0,Standart
+1014,Derya Guven,,49000.0,70.0,Pazarlama,TR,2023-09-27,,470.0,Standart
+1015,Tolga Er,33.0,53000.0,79.5,Yazilim,TR,2023-10-15,,500.0,Standart
+1016,Berna Aydin,58.0,,94.0,Finans,TR,2023-10-31,,880.0,Premium
+1017,Kaan Cinar,26.0,38000.0,60.5,Satis,TR,2023-11-18,,360.0,Standart
+1018,Pelin Ozturk,35.0,60000.0,82.0,IK,TR,2023-12-05,,560.0,Standart
+1018,Pelin Ozturk,35.0,60000.0,82.0,IK,TR,2023-12-05,,560.0,Standart
+1020,Hakan Arslan,135.0,850000.0,85.0,Yazilim,TR,2023-12-28,,750.0,Premium

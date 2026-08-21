@@ -72,7 +72,7 @@ def test_api():
     assert len(r_search_none.json()["results"]) == 0
     print("[OK] GET /api/search tests passed")
 
-    print("Testing GET /api/quality ...")
+    print("Testing GET /api/quality (Initial State) ...")
     r = client.get("/api/quality")
     assert r.status_code == 200
     q_data = r.json()
@@ -84,7 +84,14 @@ def test_api():
     assert "cardinality" in q_data
     assert "outliers" in q_data
     assert "dtypes" in q_data
-    print(f"[OK] GET /api/quality OK (Score: {q_data['score']}, Status: {q_data['score_status']})")
+    assert "comparison" in q_data
+    assert q_data["comparison"]["raw_score"] == q_data["score"]
+    assert q_data["comparison"]["processed_score"] == q_data["score"]
+    assert q_data["comparison"]["delta"] == 0
+    assert q_data["comparison"]["raw_rows"] == 12
+    assert q_data["comparison"]["processed_rows"] == 12
+    initial_raw_score = q_data["comparison"]["raw_score"]
+    print(f"[OK] GET /api/quality initial OK (Score: {q_data['score']}, Status: {q_data['score_status']}, Delta: {q_data['comparison']['delta']})")
 
     print("Testing GET /preprocessing ...")
     r = client.get("/preprocessing")
@@ -125,6 +132,48 @@ def test_api():
     assert r_undo2.status_code == 200
     assert r_undo2.json()["processed"]["missing"] == 3
     print("[OK] POST /api/preprocessing/apply (outlier_management) and undo OK")
+
+    print("Testing Quality Report after Preprocessing Operations ...")
+    # 1. Fill missing
+    r_fill = client.post("/api/preprocessing/apply", json={"op": "fill_missing", "method": "median"})
+    assert r_fill.status_code == 200
+    r_q_after_fill = client.get("/api/quality")
+    assert r_q_after_fill.status_code == 200
+    q_fill_data = r_q_after_fill.json()
+    assert q_fill_data["comparison"]["raw_score"] == initial_raw_score
+    assert q_fill_data["comparison"]["processed_score"] > initial_raw_score
+    assert q_fill_data["comparison"]["delta"] > 0
+    assert q_fill_data["missing"]["total_missing"] == 0
+    print(f"[OK] Quality score increased after fill_missing: {initial_raw_score} -> {q_fill_data['score']} (Delta: +{q_fill_data['comparison']['delta']})")
+
+    # 2. Drop duplicates
+    r_dedup = client.post("/api/preprocessing/apply", json={"op": "drop_duplicates"})
+    assert r_dedup.status_code == 200
+    r_q_after_dedup = client.get("/api/quality")
+    q_dedup_data = r_q_after_dedup.json()
+    assert q_dedup_data["duplicates"]["count"] == 0
+    assert q_dedup_data["comparison"]["processed_rows"] == 11
+    assert q_dedup_data["comparison"]["raw_rows"] == 12
+    assert q_dedup_data["comparison"]["processed_score"] >= q_fill_data["comparison"]["processed_score"]
+    print(f"[OK] Quality score after drop_duplicates: {q_dedup_data['score']} (Rows: {q_dedup_data['comparison']['processed_rows']}/{q_dedup_data['comparison']['raw_rows']})")
+
+    # 3. Test Unknown Fill method on numeric column preserves dtype and doesn't trigger type penalty
+    client.post("/api/preprocessing/reset")
+    r_q_reset = client.get("/api/quality")
+    assert r_q_reset.json()["comparison"]["delta"] == 0
+    
+    r_unknown = client.post("/api/preprocessing/apply", json={"op": "fill_missing", "method": "unknown", "column": "Yaş"})
+    assert r_unknown.status_code == 200
+    r_q_unknown = client.get("/api/quality")
+    q_unknown_data = r_q_unknown.json()
+    yas_dtype = next((d for d in q_unknown_data["dtypes"] if d["name"] == "Yaş"), None)
+    assert yas_dtype is not None
+    assert yas_dtype["ok"] is True  # No type issue should be flagged
+    assert q_unknown_data["metrics"]["type_issues"] == 0
+    print("[OK] method='unknown' on numeric column preserved numeric type and caused 0 type penalty")
+
+    # Reset again to clean state for subsequent tests
+    client.post("/api/preprocessing/reset")
 
     print("Testing GET /api/preprocessing/download ...")
     r = client.get("/api/preprocessing/download")

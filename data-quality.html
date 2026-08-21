@@ -231,6 +231,11 @@
                             <span id="scoreStatusDot" class="w-2 h-2 rounded-full bg-success-green"></span>
                             <span id="scoreStatusText">Analiz Ediliyor</span>
                         </span>
+                        <!-- Comparison Row (Before -> After) -->
+                        <div id="scoreComparisonContainer" class="hidden items-center gap-2 mt-1 text-xs">
+                            <span id="rawScoreRef" class="text-slate-gray font-mono text-xs" title="Temizlenmemiş ham veri skoru">Ham veri: —</span>
+                            <span id="scoreDeltaBadge" class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold"></span>
+                        </div>
                         <a href="#toggleScoreBreakdownBtn" id="scrollToBreakdownLink" class="text-xs text-primary hover:underline mt-1 inline-flex items-center gap-1 cursor-pointer">
                             <span>Skor nasıl hesaplanır?</span>
                             <span class="material-symbols-outlined text-xs">help</span>
@@ -647,6 +652,38 @@
             if (scoreStatusDot) scoreStatusDot.className = `w-2 h-2 rounded-full ${dotBg}`;
             if (scoreStatusText) scoreStatusText.textContent = statusText;
 
+            // Comparison Before -> After
+            const comp = data.comparison;
+            const scoreComparisonContainer = document.getElementById('scoreComparisonContainer');
+            const rawScoreRef = document.getElementById('rawScoreRef');
+            const scoreDeltaBadge = document.getElementById('scoreDeltaBadge');
+
+            if (comp && comp.raw_score !== undefined && scoreComparisonContainer && rawScoreRef && scoreDeltaBadge) {
+                scoreComparisonContainer.classList.remove('hidden');
+                scoreComparisonContainer.classList.add('flex');
+
+                const rawLabel = (window.t ? window.t('quality.rawScore', 'Ham veri') : 'Ham veri');
+                rawScoreRef.textContent = `${rawLabel}: ${comp.raw_score}`;
+
+                const delta = Number(comp.delta || 0);
+                if (delta > 0) {
+                    scoreDeltaBadge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-success-green/10 text-success-green';
+                    scoreDeltaBadge.textContent = `▲ +${delta}`;
+                    scoreDeltaBadge.title = window.t ? window.t('quality.deltaImproved', 'İyileşme') : 'İyileşme';
+                } else if (delta < 0) {
+                    scoreDeltaBadge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-error-container text-on-error-container';
+                    scoreDeltaBadge.textContent = `▼ ${delta}`;
+                    scoreDeltaBadge.title = window.t ? window.t('quality.deltaDeclined', 'Düşüş') : 'Düşüş';
+                } else {
+                    scoreDeltaBadge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold bg-slate-gray/10 text-slate-gray';
+                    scoreDeltaBadge.textContent = window.t ? window.t('quality.deltaNone', 'Değişmedi') : 'Değişmedi';
+                    scoreDeltaBadge.title = '';
+                }
+            } else if (scoreComparisonContainer) {
+                scoreComparisonContainer.classList.add('hidden');
+                scoreComparisonContainer.classList.remove('flex');
+            }
+
             // Key Metrics
             const metrics = data.metrics || {};
             if (metricMissingRate) metricMissingRate.textContent = `%${metrics.missing_rate !== undefined ? metrics.missing_rate : (data.missing ? data.missing.rate : 0)}`;
@@ -834,6 +871,10 @@
             if (scoreBreakdownBody) scoreBreakdownBody.innerHTML = breakdownHtml;
 
             if (scoreBreakdownFoot) {
+                const comp = data.comparison;
+                const rawScore = (comp && comp.raw_score !== undefined) ? comp.raw_score : score;
+                const rawTotalLabel = (window.t ? window.t('quality.rawTotal', 'Ham veri toplamı') : 'Ham veri toplamı');
+
                 scoreBreakdownFoot.innerHTML = `
                     <tr>
                         <td colspan="3" class="px-4 py-3 text-on-surface">Toplam Uygulanan Ceza</td>
@@ -842,6 +883,10 @@
                     <tr class="bg-surface-container text-primary">
                         <td colspan="3" class="px-4 py-2 font-bold">Hesaplanan Kalite Skoru (100 - ${totalPenalty})</td>
                         <td class="px-4 py-2 text-right font-headline-md font-bold text-sm text-primary">${score} / 100</td>
+                    </tr>
+                    <tr class="border-t border-border-subtle text-slate-gray text-xs">
+                        <td colspan="3" class="px-4 py-2 text-slate-gray">${escapeHtml(rawTotalLabel)}</td>
+                        <td class="px-4 py-2 text-right font-mono font-medium text-slate-gray">${rawScore} / 100</td>
                     </tr>
                 `;
             }

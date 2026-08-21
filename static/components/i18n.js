@@ -113,6 +113,11 @@
             'dq.scoreBreakdown': 'Skor Dağılımı ve Ağırlıklar',
             'dq.recommendations': 'Önerilen Eylemler',
             'dq.proceedPrep': 'Veri Hazırlama Adımına Geç',
+            'quality.rawScore': 'Ham veri',
+            'quality.deltaImproved': 'İyileşme',
+            'quality.deltaDeclined': 'Düşüş',
+            'quality.deltaNone': 'Değişmedi',
+            'quality.rawTotal': 'Ham veri toplamı',
 
             // Preprocessing
             'prep.pageTitle': 'Veri Hazırlama & Ön İşleme',
@@ -145,6 +150,7 @@
             'viz.selectColY': 'Y Ekseni Sütunu Seçin',
             'viz.chartType': 'Grafik Tipi',
             'viz.exportCharts': 'Tüm Grafikleri Dışa Aktar',
+            'ml.whyExcluded': 'Neden dışlandı?',
 
             // Portfolio
             'port.pageTitle': 'trex OEE Staj Portföy Raporu',
@@ -445,6 +451,11 @@
             'dq.scoreBreakdown': 'Score Breakdown & Weights',
             'dq.recommendations': 'Recommended Actions',
             'dq.proceedPrep': 'Proceed to Preprocessing',
+            'quality.rawScore': 'Raw data',
+            'quality.deltaImproved': 'Improvement',
+            'quality.deltaDeclined': 'Decline',
+            'quality.deltaNone': 'Unchanged',
+            'quality.rawTotal': 'Raw data total',
 
             // Preprocessing
             'prep.pageTitle': 'Data Cleaning & Preprocessing',
@@ -477,6 +488,7 @@
             'viz.selectColY': 'Select Y-Axis Column',
             'viz.chartType': 'Chart Type',
             'viz.exportCharts': 'Export All Charts',
+            'ml.whyExcluded': 'Why excluded?',
 
             // Portfolio
             'port.pageTitle': 'trex OEE Internship Portfolio Report',
